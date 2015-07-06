@@ -1,2 +1,4 @@
-# thepeg
-ThePEG with patches for ALICE
+ThePEG
+======
+
+ThePEG with patches for ALICE.
