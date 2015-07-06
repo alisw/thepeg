@@ -1,0 +1,57 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ImpactParameters class.
+//
+
+namespace DIPSY {
+
+inline ImpactParameters::
+ImpactParameters(const Point & newBVec, double newPhi, InvEnergy2 newWeight)
+  : theBVec(newBVec), thePhi(newPhi), theCosPhi(cos(newPhi)),
+    theSinPhi(sin(newPhi)), theWeight(newWeight) {}
+
+inline ImpactParameters & ImpactParameters::
+operator=(const ImpactParameters & x) {
+  theBVec = x.theBVec;
+  thePhi = x.thePhi;
+  theCosPhi = x.theCosPhi;
+  theSinPhi = x.theSinPhi;
+  theWeight = x.theWeight;
+  return *this;
+}
+
+inline const ImpactParameters::Point & ImpactParameters::bVec() const {
+  return theBVec;
+}
+
+inline double ImpactParameters::phi() const {
+  return thePhi;
+}
+
+inline InvEnergy2 ImpactParameters::
+dist2(const Parton & pi, const Parton & pj) const {
+  return sqr(pi.position().x() - bVec().x()
+	     - pj.position().x()*cosPhi() - pj.position().y()*sinPhi()) +
+    sqr(pi.position().y() - bVec().y()
+	- pj.position().y()*cosPhi() + pj.position().x()*sinPhi());
+}
+
+inline InvEnergy ImpactParameters::
+dist(const Parton & pi, const Parton & pj) const {
+  return sqrt(dist2(pi, pj));
+}
+
+inline ImpactParameters::Point ImpactParameters::
+difference(const ImpactParameters::Point pi, const ImpactParameters::Point pj) const {
+  return ImpactParameters::Point(- pi.x() + bVec().x()
+				 + pj.x()*cosPhi() + pj.y()*sinPhi(),
+				 - pi.y() + bVec().y()
+				 + pj.y()*cosPhi() - pj.x()*sinPhi());
+}
+
+inline InvEnergy2 ImpactParameters::weight() const {
+  return theWeight;
+}
+
+}

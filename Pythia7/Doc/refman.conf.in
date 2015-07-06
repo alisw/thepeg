@@ -1,0 +1,8 @@
+@INCLUDE=@top_builddir@/../ThePEG/Doc/refman.conf
+PROJECT_NAME           = Pythia7
+PROJECT_NUMBER         = @VERSION@
+INPUT                  = ../include/Pythia7 .
+FILE_PATTERNS          = *.h
+GENERATE_TAGFILE       = Pythia7-refman.tag
+TAGFILES               = tagfileThePEG.tag=../../../ThePEG/Doc/refman-html
+

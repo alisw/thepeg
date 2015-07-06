@@ -1,0 +1,4 @@
+library Pythia7Strategy.so
+library libP7String.so
+library libP7Shower.so
+doxygendump Pythia7:: AllInterfaces.h

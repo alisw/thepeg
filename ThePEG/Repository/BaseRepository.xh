@@ -1,0 +1,67 @@
+// -*- C++ -*-
+//
+// BaseRepository.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_BaseRepository_XH
+#define ThePEG_BaseRepository_XH
+//
+// This is the declarations of the exception classes used by the
+// BaseRepository class.
+//
+
+#include "ThePEG/Interface/InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by BaseRepository if an object does not
+    implement the InterfacedBase::clone() function properly. */
+struct BadClassClone: public InterfaceException {
+  /** Standard constructor. */
+  BadClassClone(const InterfacedBase &);
+};
+
+/** Exception class used by BaseRepository if an objects
+    InterfacedBase::clone() function throws an exception. */
+struct BadClone: public InterfaceException {
+  /** Standard constructor. */
+  BadClone(const InterfacedBase &);
+};
+
+/** Exception class used by BaseRepository if the name of an object in
+    the repository has been changed outside the repository. */
+struct RepoNameException: public InterfaceException {
+  /** Standard constructor. */
+  RepoNameException(string);
+};
+
+/** Exception class used by BaseRepository when trying to access a
+    non-existing directory. */
+struct RepositoryNoDirectory: public InterfaceException {
+  /** Standard constructor. */
+  RepositoryNoDirectory(string);
+};
+
+/** Exception class used by BaseRepository when trying to access a
+    non-existent object. */
+struct RepositoryNotFound: public InterfaceException {
+  /** Standard constructor. */
+  RepositoryNotFound(string name);
+};
+
+/** Exception class used by BaseRepository if a specified object was
+    not of the expected class. */
+struct RepositoryClassMisMatch: public InterfaceException {
+  /** Standard constructor. */
+  RepositoryClassMisMatch(const InterfacedBase & o, string name);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_BaseRepository_XH */
+

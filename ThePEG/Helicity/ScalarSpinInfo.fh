@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VectorSpinInfo class.
+//
+#ifndef ThePEG_ScalarSpinInfo_FH
+#define ThePEG_ScalarSpinInfo_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+ThePEG_DECLARE_CLASS_POINTERS(ScalarSpinInfo,ScalarSpinPtr);
+
+}
+}
+
+#endif

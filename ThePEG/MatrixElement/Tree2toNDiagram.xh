@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// Tree2toNDiagram.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Tree2toNDiagram_XH
+#define ThePEG_Tree2toNDiagram_XH
+//
+// This is the declarations of the exception classes used by the
+// Tree2toNDiagram class.
+//
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by Tree2toNDiagram to signal inconsistencies. */
+struct Tree2toNDiagramError: public Exception {
+  /** Default constructor. */
+  Tree2toNDiagramError();
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Tree2toNDiagram_XH */
+

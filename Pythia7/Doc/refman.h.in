@@ -1,0 +1,12 @@
+/**\mainpage PYTHIA7 Reference Manual
+
+This is the reference manual for P<small>YTHIA</small>7, the C++
+version of the Pythia generator built on the Toolkit for High Energy
+Physics Event Generation - T<small>HE</small>PEG.
+
+\section Pythia7Introduction Introduction
+
+P<small>YTHIA</small>7 implements the group of Lund event generator models previously available in the Fortran Pythia program-
+
+*/
+

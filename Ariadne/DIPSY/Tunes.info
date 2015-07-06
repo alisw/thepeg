@@ -1,0 +1,1063 @@
+*****************************
+change:
+- coherencescale
+retune sigma_tot with:
+- rmax, r_p
+effects:
+- below 0.5 some less Nch.
+- Energy dependence weaker below 0.5.
+
+change:
+- BothOrdered (all) True
+effect:
+- cross section slightly suppressed, about 10%
+- seems to grow slower with energy
+
+change:
+- Effective Weights
+effect:
+- cross section almost unchanged
+
+change:
+-interaction confinement in string difference
+effect:
+- total cross section increase about 25%
+
+change:
+- changed confinement to 2:nd order (making it fall off a bit faster)
+- retune total xsec
+effect:
+- Seems to make the energy dependence of dN/deta a bit stronger
+
+change:
+- add FS swings (colour reconnection)
+effect:
+- multiplicity goes down, and specially for low pt
+- average pt increased
+- tail to high N weaker
+- energy dependence of dN/deta seems to weaken
+
+change:
+- interaction 0 --> 3 (at tune 11)
+effect:
+- lowers total xsec about 25%, increase E-dep (more than angel width)
+- lowers el/tot
+- dN/deta and N_ch dist does not change
+
+change:
+- rapidity width 0.1 --> 0.5
+effect:
+- slightly lowered tot and el xsec (5%), maybe sliglty slower E-dep
+- suppresses dN_ch tail (probably)
+- slightly (5%) lowers dN/deta, specially at low E
+
+change:
+- proton size width 0.1 --> 1.0
+effect:
+- maybe slightly increase E-dep for tot xsec (just a few %)
+- lowers el/tot a little (at least for low E)
+- no big difference in dN/deta or N_ch dist
+
+change:
+- angle width 0.1 --> 1.0
+effect:
+- xsec goes down (20%) E-dep probably stronger
+- el/tot lowers (specially at low E)
+- no big difference in dN/deta or N_ch dist
+
+change:
+- Both ordered (all true --> all false) (from tune 11)
+effect:
+- tot and el xsec increased 20%
+- dN/deta increase 20-40%
+- N_ch dist tail increase much
+
+change:
+- both ordered int true --> false (tune 11)
+effect:
+- tot and el xsec unchanged (with int 0, trivial result)
+
+change:
+- both ordered FS true --> false (tune 11)
+effect:
+- tot and el xsec unchanged (as they should)
+- increased dN/deta (about 10%), maybe increased E-dep
+- slightly increased N_ch fluct, at least at 7 TeV
+
+change:
+- both ordered evo true --> false (tune 11)
+effect:
+- tot and el xsec increase 20%
+- dN/deta increase 20-40%, E-dep probably increase
+
+change:
+- coherence range 0.5 --> 2.0 (tune 11)
+effect:
+- tot and el xsec increase 20%
+- dN/deta increase 10-15%
+- slightly increased fluct in N_ch
+
+change:
+- coherence range 0.5 --> 0.1 (tune 11)
+effect:
+- 5-10% decrease in tot and el xsec
+- 5-10% decrease in dN/deta, decreased E-dep
+- flucts in N_ch slightly decreased
+
+change:
+- lambdaQCD 0.22 --> 0.18
+effect:
+- tot el xsec decreased 20%, E-dep increase?
+- N_ch fluct decrease
+- dN/deta decrease (decreased E-dep?)
+
+change:
+- rmax 3.0 --> 3.5
+effect:
+- increased tot el xsec 40%
+- dN/deta change little. increased E-dep
+- N_ch fluct slightly increased at high energy
+
+change:
+- proton size 3.5 --> 3.0
+effect:
+- total xsec decrease 20%, stronger E-dep
+- dN/deta and N_ch dist does not change significantly
+
+change:
+- Andreys hadronisation paremeters (ropes) (compared to ariadne tune)
+effect:
+- a lot of things. see tune 12, 13, 14, compare to tune 11
+- dN/deta lowered
+- N_ch flucts lowered
+
+change:
+- turn on ymax veto
+effect:
+- tot xsec decrease 10-15%, energy dependence up?
+- N_ch fluct decrease slightly
+- dN/deta down 5-10%
+
+change:
+- turn on large-b veto in interaction
+effect:
+- lower xsec < 5%
+- no visible effect in N_ch dist or dN/deta
+
+change:
+- FSordering:generous -> true, OnlyOriginal --> false
+effect:
+- dN/deta increase a bit (5%) for higher energy. So energy dep increase.
+- No other visible effects, neither in rivet or v2.
+
+change:
+- add recoilers
+effect:
+- More dN/deta by maybe 20%
+- Much stronger N_ch tail
+- More correlations forward-backward
+  - larger v2!!
+  - stronger away region in N_ch (or pt) as fnc of phi
+- stronger transverse region
+- larger <pt>
+******************************
+
+
+
+
+
+Tune 5: ------------------------------------------------------
+
+set stdProton:R 0.01
+set stdProton:R0 3.5
+set stdProton:RapidityWidth 0.01
+set stdProton:AngleWidth 0.01
+set stdAntiProton:R 0.01
+set stdAntiProton:R0 3.5
+set stdAntiProton:RapidityWidth 0.01
+set stdAntiProton:AngleWidth 0.01
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.4
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo True
+set stdEmitter:BothOrderedInt True
+set stdEmitter:BothOrderedFS True
+set stdSwinger:Lambda 1.0
+set stdFiller:RecoilScheme PreservePlus
+set stdFiller:Mode SingleSweep
+set stdFiller:SingleMother 0
+set stdXSec:Interaction 3
+set LHCEventHandler:LambdaQCD 0.23
+set LHCEventHandler:RMax 2.7
+set LHCEventHandler:CoherenceRange 0.5
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+improved fixDGLAP and fixordered a bit to try to avoid merging interacting partons when possible. added y0 veto to interaction.
+
+
+Tune 6: --------------------------------------------------
+
+added interface plusEvenWeigthed, evenly wighted pt recoils in effective parton. also SingleWeighted, where only true mother gets pt recoil.
+
+ptscale calulated to be 1, from equivalency of the log-interaction and sin-interaction in LL.
+
+changed confinement in interaction to second order. seems to improve energy dependence of dN/deta.
+
+Tune 6b: added final state swinging after interaction, were the distance is defined as xT^2 + (y*t)^2 where y is rapidity difference, and t is the time that the state has been evolved. The final state is evolved 5 units of time before being sent to Ariadne. INTERFACE!!
+
+set stdProton:R 0.01
+set stdProton:R0 3.0
+set stdProton:RapidityWidth 0.01
+set stdProton:AngleWidth 0.01
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS False
+set stdSwinger:Lambda 1.0
+set stdFiller:RecoilScheme PreservePlus
+set stdFiller:Mode SingleSweep
+set stdFiller:EffectiveWeights PlusSingleWeighted
+set stdFiller:SingleMother 0
+set stdXSec:Interaction 3
+set LHCEventHandler:LambdaQCD 0.21
+set LHCEventHandler:RMax 3.0
+set LHCEventHandler:CoherenceRange 0.5
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+Tune 8
+andrat interaction 0 till att ge en rekyl mellan de narmsta partoerna enbart. ett avstand som ger mer konsistent sin-interaktion.
+
+Tune 9
+andrat confinement till k^4/(k^2+m^2)^2.
+andrat int 0 till att ge rekyl mellan den forsta partonen i varje dipol. (tune 8 ger for hog fij eftersom der ar tva toppar)
+
+Korde utan swing av misstag i final states!!! :o
+
+set stdProton:R 0.1
+set stdProton:R0 3.5
+set stdProton:RapidityWidth 1.0
+set stdProton:AngleWidth 0.3
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS True
+set stdSwinger:Lambda 0.0
+set stdFiller:RecoilScheme PreservePlus
+set stdFiller:Mode SingleSweep
+set stdFiller:EffectiveWeights PlusWeighted
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.0
+set LHCEventHandler:LambdaQCD 0.22
+set LHCEventHandler:RMax 3.0
+set LHCEventHandler:CoherenceRange 0.5
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+Tune 10
+som 9, men med swing overallt!
+
+Tune 11
+
+
+Tune15
+mkdir /DIPSY
+cd /DIPSY
+library libArCascade.so
+create DIPSY::DipoleEventHandler LHCEventHandler libDIPSY.so
+set LHCEventHandler:PartonExtractor /Defaults/Handlers/StandardExtractor
+create ThePEG::Cuts NoCuts
+set LHCEventHandler:Cuts NoCuts
+create DIPSY::ImpactParameterGenerator stdBGenerator
+set stdBGenerator:Width 5
+set LHCEventHandler:BGen stdBGenerator
+create DIPSY::SimpleProton stdProton
+set stdProton:Particle /Defaults/Particles/p+
+create DIPSY::SimpleProton stdAntiProton
+set stdAntiProton:Particle /Defaults/Particles/pbar-
+set /Defaults/Particles/p+:PDF /Defaults/Partons/NoPDF
+set /Defaults/Particles/pbar-:PDF /Defaults/Partons/NoPDF
+create DIPSY::VirtualPhoton virtualPhoton VirtualPhoton.so
+set virtualPhoton:Q2 14.0
+set virtualPhoton:Particle /Defaults/Particles/gamma
+#set LHCEventHandler:WFL virtualPhoton
+#set LHCEventHandler:WFR virtualPhoton
+set LHCEventHandler:WFL stdProton
+set LHCEventHandler:WFR stdAntiProton
+set stdProton:R 0.1
+set stdProton:R0 3.5
+set stdProton:RapidityWidth 0.1
+set stdProton:AngleWidth 0.1
+set stdAntiProton:R 0.1
+set stdAntiProton:R0 3.5
+set stdAntiProton:RapidityWidth 0.1
+set stdAntiProton:AngleWidth 0.1
+set LHCEventHandler:PreSamples 10000
+create DIPSY::TotalXSecAnalysis TotXSec
+insert LHCEventHandler:AnalysisHandlers[0] TotXSec
+create DIPSY::ElasticXSecAnalysis ElXSec ElasticXSecAnalysis.so
+set ElXSec:NBins 100
+set ElXSec:DeltaB 0.5
+insert LHCEventHandler:AnalysisHandlers[0] ElXSec
+#cp ElXSec ElXSec1
+#set ElXSec1:DeltaB 0.01
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec1
+#cp ElXSec ElXSec2
+#set ElXSec2:DeltaB 0.02
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec2
+#cp ElXSec ElXSec4
+#set ElXSec4:DeltaB 0.04
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec4
+
+#create DIPSY::PT1DEmitter pt1DEmitter PT1DEmitter.so
+#create DIPSY::OldStyleEmitter oldEmitter OldStyleEmitter.so
+create DIPSY::Emitter stdEmitter
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo True
+set stdEmitter:BothOrderedInt True
+set stdEmitter:BothOrderedFS True
+set LHCEventHandler:Emitter stdEmitter
+create DIPSY::Swinger stdSwinger
+#create DIPSY::RecoilSwinger recSwinger RecoilSwinger.so
+set stdSwinger:Lambda 1.0
+set LHCEventHandler:Swinger stdSwinger
+create DIPSY::SmallDipoleAbsorber stdAbsorber
+# create DIPSY::LargePTDipoleAbsorber largePTAbsorber LargePTDipoleAbsorber.so
+create DIPSY::EventFiller stdFiller
+set stdFiller:DipoleAbsorber stdAbsorber
+# set stdFiller:RecoilScheme FrameFan
+set stdFiller:RecoilScheme PreservePlus
+# set stdFiller:DipoleAbsorber largePTAbsorber
+# set stdFiller:Mode Consistent
+set stdFiller:Mode SingleSweep
+# set stdFiller:Mode NonRecursive
+# set stdFiller:Mode Fast
+set stdFiller:EffectiveWeights PlusWeighted
+#set stdFiller:EffectiveWeights PlusEvenWeighted
+#set stdFiller:EffectiveWeights PlusSingleWeighted
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.0
+set LHCEventHandler:EventFiller stdFiller
+create DIPSY::DipoleXSec stdXSec
+set stdXSec:Interaction 0
+set LHCEventHandler:XSecFn stdXSec
+create ThePEG::FixedCMSLuminosity LHCLumi
+set LHCLumi:Energy 500.0
+set LHCEventHandler:LuminosityFunction LHCLumi
+set LHCEventHandler:LambdaQCD 0.25
+set LHCEventHandler:RMax 2.8
+set LHCEventHandler:CoherenceRange 1.0
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set LHCEventHandler:ShowHistory 0
+create ThePEG::LWHFactory HFac LWHFactory.so
+set HFac:StoreType flat
+set HFac:Suffix dat
+create ThePEG::MultiEventGenerator LHCGenerator MultiEventGenerator.so
+set LHCGenerator:RandomNumberGenerator /Defaults/Random
+set LHCGenerator:StandardModelParameters /Defaults/StandardModel
+set LHCGenerator:EventHandler LHCEventHandler
+set LHCGenerator:NumberOfEvents 100000
+set LHCGenerator:PrintEvent 0
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:HistogramFactory HFac
+set LHCGenerator:DumpPeriod 1000
+# insert LHCGenerator:DefaultObjects[0] stdEmitter
+# insert LHCGenerator:DefaultObjects[0] oldStyleEmitter
+# insert LHCGenerator:DefaultObjects[0] pt1DEmitter
+# do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:Emitter /DIPSY/stdEmitter, /DIPSY/oldStyleEmitter, /DIPSY/pt1DEmitter
+# do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:PreSamples 250, 1000, 4000, 16000
+cp /Defaults/Particles/pi0 pi0
+set pi0:Stable Stable
+insert LHCGenerator:LocalParticles[0] pi0
+set LHCEventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+set LHCEventHandler:HadronizationHandler Frag8
+#read ../../TheP8I/src/OverlapStringFragmenter.in
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap6StringFragmenter
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap2StringFragmenter
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap1StringFragmenter
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+create Ariadne::CascadeHandler AriadneCascade libArCascade.so
+set LHCEventHandler:CascadeHandler AriadneCascade
+create DIPSY::FSDipoleOrdering FSOrdering libArCascade.so FSDipoleOrdering.so
+# set FSOrdering:Generous true
+# set FSOrdering:OnlyOriginal true
+insert AriadneCascade:Reweighters[0] FSOrdering
+create DIPSY::FSAnalysis FSAnalysis FSAnalysis.so
+insert LHCGenerator:AnalysisHandlers[0] FSAnalysis
+#create ThePEG::CMSlrnsac CMSlrnsac CMSlrnsac.so
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac
+#cp CMSlrnsac CMSlrnsac1
+#set CMSlrnsac1:Rweight 1
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac1
+#cp CMSlrnsac CMSlrnsac2
+#set CMSlrnsac2:Rweight 2
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac2
+#create ThePEG::ProgressLog Progress ProgressLog.so
+#set Progress:Interval 600
+#insert LHCGenerator:AnalysisHandlers[0] Progress
+#create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+#insert Rivet:Analyses[0] CDF_1990_S2089246
+#insert Rivet:Analyses[0] CDF_2001_S4751469
+#insert Rivet:Analyses[0] CDF_1988_S1865951
+#insert Rivet:Analyses[0] CDF_2001_S4517016
+#insert Rivet:Analyses[0] CDF_2002_S4796047
+#insert Rivet:Analyses[0] CDF_2009_S8233977
+# insert Rivet:Analyses[0] STAR_2006_S6870392
+#insert LHCGenerator:AnalysisHandlers[0] Rivet
+#set LHCGenerator:NumberOfEvents 100000
+saverun TestFull LHCGenerator
+set LHCLumi:Energy 900.0
+saverun Test15Full09 LHCGenerator
+set LHCEventHandler:YFrametest 0.3
+saverun Test15Full09frame03 LHCGenerator
+set LHCEventHandler:YFrametest 0.5
+set LHCLumi:Energy 2360.0
+saverun Test15Full23 LHCGenerator
+set LHCLumi:Energy 7000.0
+saverun Test15Full70 LHCGenerator
+set LHCLumi:Energy 200.0
+saverun Test15Full02 LHCGenerator
+create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+insert Rivet:Analyses[0] CDF_1990_S2089246
+insert Rivet:Analyses[0] CDF_2001_S4751469
+insert Rivet:Analyses[0] CDF_1988_S1865951
+insert Rivet:Analyses[0] CDF_2001_S4517016
+insert Rivet:Analyses[0] CDF_2002_S4796047
+insert Rivet:Analyses[0] CDF_2009_S8233977
+#insert Rivet:Analyses[0] STAR_2006_S6870392
+insert LHCGenerator:AnalysisHandlers[0] Rivet
+set LHCLumi:Energy 1800.0
+saverun Test15FullRivet LHCGenerator
+
+
+Tune 16
+
+library libArCascade.so
+create DIPSY::DipoleEventHandler LHCEventHandler libDIPSY.so
+set LHCEventHandler:PartonExtractor /Defaults/Handlers/StandardExtractor
+create ThePEG::Cuts NoCuts
+set LHCEventHandler:Cuts NoCuts
+create DIPSY::ImpactParameterGenerator stdBGenerator
+set stdBGenerator:Width 5
+set LHCEventHandler:BGen stdBGenerator
+create DIPSY::SimpleProton stdProton
+set stdProton:Particle /Defaults/Particles/p+
+create DIPSY::SimpleProton stdAntiProton
+set stdAntiProton:Particle /Defaults/Particles/pbar-
+set /Defaults/Particles/p+:PDF /Defaults/Partons/NoPDF
+set /Defaults/Particles/pbar-:PDF /Defaults/Partons/NoPDF
+create DIPSY::VirtualPhoton virtualPhoton VirtualPhoton.so
+set virtualPhoton:Q2 14.0
+set virtualPhoton:Particle /Defaults/Particles/gamma
+#set LHCEventHandler:WFL virtualPhoton
+#set LHCEventHandler:WFR virtualPhoton
+set LHCEventHandler:WFL stdProton
+set LHCEventHandler:WFR stdAntiProton
+set stdProton:R 0.1
+set stdProton:R0 3.7
+set stdProton:RapidityWidth 2.0
+set stdProton:AngleWidth 0.1
+set stdAntiProton:R 0.1
+set stdAntiProton:R0 3.7
+set stdAntiProton:RapidityWidth 2.0
+set stdAntiProton:AngleWidth 0.1
+set LHCEventHandler:PreSamples 000
+create DIPSY::TotalXSecAnalysis TotXSec
+insert LHCEventHandler:AnalysisHandlers[0] TotXSec
+create DIPSY::ElasticXSecAnalysis ElXSec ElasticXSecAnalysis.so
+set ElXSec:NBins 100
+set ElXSec:DeltaB 0.5
+insert LHCEventHandler:AnalysisHandlers[0] ElXSec
+#cp ElXSec ElXSec1
+#set ElXSec1:DeltaB 0.01
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec1
+#cp ElXSec ElXSec2
+#set ElXSec2:DeltaB 0.02
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec2
+#cp ElXSec ElXSec4
+#set ElXSec4:DeltaB 0.04
+#insert LHCEventHandler:AnalysisHandlers[0] ElXSec4
+
+#create DIPSY::PT1DEmitter pt1DEmitter PT1DEmitter.so
+#create DIPSY::OldStyleEmitter oldEmitter OldStyleEmitter.so
+create DIPSY::Emitter stdEmitter
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS False
+set LHCEventHandler:Emitter stdEmitter
+create DIPSY::Swinger stdSwinger
+#create DIPSY::RecoilSwinger recSwinger RecoilSwinger.so
+set stdSwinger:Lambda 1.0
+set LHCEventHandler:Swinger stdSwinger
+create DIPSY::SmallDipoleAbsorber stdAbsorber
+# create DIPSY::LargePTDipoleAbsorber largePTAbsorber LargePTDipoleAbsorber.so
+create DIPSY::EventFiller stdFiller
+set stdFiller:DipoleAbsorber stdAbsorber
+# set stdFiller:RecoilScheme FrameFan
+set stdFiller:RecoilScheme PreservePlus
+# set stdFiller:DipoleAbsorber largePTAbsorber
+# set stdFiller:Mode Consistent
+set stdFiller:Mode SingleSweep
+# set stdFiller:Mode NonRecursive
+# set stdFiller:Mode Fast
+set stdFiller:EffectiveWeights PlusWeighted
+#set stdFiller:EffectiveWeights PlusEvenWeighted
+#set stdFiller:EffectiveWeights PlusSingleWeighted
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.0
+set LHCEventHandler:EventFiller stdFiller
+create DIPSY::DipoleXSec stdXSec
+set stdXSec:Interaction 0
+set LHCEventHandler:XSecFn stdXSec
+create ThePEG::FixedCMSLuminosity LHCLumi
+set LHCLumi:Energy 500.0
+set LHCEventHandler:LuminosityFunction LHCLumi
+set LHCEventHandler:LambdaQCD 0.20
+set LHCEventHandler:RMax 3.2
+set LHCEventHandler:CoherenceRange 2.0
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set LHCEventHandler:ShowHistory 0
+create ThePEG::LWHFactory HFac LWHFactory.so
+set HFac:StoreType flat
+set HFac:Suffix dat
+create ThePEG::MultiEventGenerator LHCGenerator MultiEventGenerator.so
+set LHCGenerator:RandomNumberGenerator /Defaults/Random
+set LHCGenerator:StandardModelParameters /Defaults/StandardModel
+set LHCGenerator:EventHandler LHCEventHandler
+set LHCGenerator:NumberOfEvents 10000
+set LHCGenerator:PrintEvent 0
+set LHCGenerator:DebugLevel 0
+set LHCGenerator:HistogramFactory HFac
+set LHCGenerator:DumpPeriod 1000
+# insert LHCGenerator:DefaultObjects[0] stdEmitter
+# insert LHCGenerator:DefaultObjects[0] oldStyleEmitter
+# insert LHCGenerator:DefaultObjects[0] pt1DEmitter
+# do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:Emitter /DIPSY/stdEmitter, /DIPSY/oldStyleEmitter, /DIPSY/pt1DEmitter
+# do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:PreSamples 250, 1000, 4000, 16000
+cp /Defaults/Particles/pi0 pi0
+set pi0:Stable Stable
+insert LHCGenerator:LocalParticles[0] pi0
+set LHCEventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+set LHCEventHandler:HadronizationHandler Frag8
+#read ../../TheP8I/src/OverlapStringFragmenter.in
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap6StringFragmenter
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap2StringFragmenter
+#set LHCEventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/Overlap1StringFragmenter
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+#set Frag8:StringPT_sigma 0.5
+#set Frag8:StringZ_aLund 0.21
+#set Frag8:StringZ_bLund 0.352
+#set Frag8:StringPT_sigma 0.453
+create Ariadne::CascadeHandler AriadneCascade libArCascade.so
+set LHCEventHandler:CascadeHandler AriadneCascade
+create DIPSY::FSDipoleOrdering FSOrdering libArCascade.so FSDipoleOrdering.so
+# set FSOrdering:Generous true
+# set FSOrdering:OnlyOriginal true
+insert AriadneCascade:Reweighters[0] FSOrdering
+create DIPSY::FSAnalysis FSAnalysis FSAnalysis.so
+insert LHCGenerator:AnalysisHandlers[0] FSAnalysis
+#create ThePEG::CMSlrnsac CMSlrnsac CMSlrnsac.so
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac
+#cp CMSlrnsac CMSlrnsac1
+#set CMSlrnsac1:Rweight 1
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac1
+#cp CMSlrnsac CMSlrnsac2
+#set CMSlrnsac2:Rweight 2
+#insert LHCGenerator:AnalysisHandlers[0] CMSlrnsac2
+#create ThePEG::ProgressLog Progress ProgressLog.so
+#set Progress:Interval 600
+#insert LHCGenerator:AnalysisHandlers[0] Progress
+#create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+#insert Rivet:Analyses[0] CDF_1990_S2089246
+#insert Rivet:Analyses[0] CDF_2001_S4751469
+#insert Rivet:Analyses[0] CDF_1988_S1865951
+#insert Rivet:Analyses[0] CDF_2001_S4517016
+#insert Rivet:Analyses[0] CDF_2002_S4796047
+#insert Rivet:Analyses[0] CDF_2009_S8233977
+# insert Rivet:Analyses[0] STAR_2006_S6870392
+#insert LHCGenerator:AnalysisHandlers[0] Rivet
+#set LHCGenerator:NumberOfEvents 100000
+saverun TestFull LHCGenerator
+set LHCLumi:Energy 900.0
+saverun Test16Full09 LHCGenerator
+set LHCEventHandler:YFrametest 0.3
+saverun Test16Full09frame03 LHCGenerator
+set LHCEventHandler:YFrametest 0.5
+set LHCLumi:Energy 2360.0
+saverun Test16Full23 LHCGenerator
+set LHCLumi:Energy 7000.0
+saverun Test16Full70 LHCGenerator
+set LHCLumi:Energy 200.0
+saverun Test16Full02 LHCGenerator
+create ThePEG::RivetAnalysis Rivet RivetAnalysis.so
+insert Rivet:Analyses[0] CDF_1990_S2089246
+insert Rivet:Analyses[0] CDF_2001_S4751469
+insert Rivet:Analyses[0] CDF_1988_S1865951
+insert Rivet:Analyses[0] CDF_2001_S4517016
+insert Rivet:Analyses[0] CDF_2002_S4796047
+insert Rivet:Analyses[0] CDF_2009_S8233977
+#insert Rivet:Analyses[0] STAR_2006_S6870392
+insert LHCGenerator:AnalysisHandlers[0] Rivet
+set LHCLumi:Energy 1800.0
+saverun Test16FullRivet LHCGenerator
+
+Tune 17
+set stdProton:R 0.1
+set stdProton:R0 2.5
+set stdProton:RapidityWidth 2.0
+set stdProton:AngleWidth 0.1
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS False
+set stdSwinger:Lambda 1.0
+set stdFiller:Mode SingleSweep
+set stdFiller:EffectiveWeights PlusWeighted
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 1.0
+set LHCEventHandler:LambdaQCD 0.28
+set LHCEventHandler:RMax 3.3
+set LHCEventHandler:CoherenceRange 1.5
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+Tune 17b
+fixed y_0 checking bug where the f_ij veto for passing y0 used -y0. only changed non-mid runs.
+
+Tune 17c
+fixed starting y for evolution to 10 units of rapidity behind highestY(). This is to avoid a single nucleon spread out in rapidity to block evolution from the other more normal nucleons in a AA collision with large delta Y. Ugly fix, but should do the job.
+
+Should not be a large effect in pp, but should be checked. If only one is far ahead, the back two will get a chance to emit before that.
+
+Tune 18
+- Fixed P11 in the real interaction to set proper weights for the ordering. previously interaction 0 got the weights spread out over all four pairs, now set to 1 for the selected one.
+
+- Modified the FS swing distance to include transverse momentum. Now the partons start in a panncake at t=0, and move at speed of light in correct 3D direction, and the 3D distance is used to determine the swings. NOT FRAME INDEPENDENT! should probably be fixed more, since this doesnt really see the rapidity distances for in forward regions.
+
+- changed the FS swing to a better version. Now it is x_T + t*p_T for low t, and invariant mass times t for large t.
+effects:
+- It seems to do great improvement for Tevatron data, as mean pt as function of N_ch, and pt spectrum.
+- kills tail in N_ch dist.
+
+set stdProton:R 0.1
+set stdProton:R0 3.5
+set stdProton:RapidityWidth 0.5
+set stdProton:AngleWidth 0.1
+set stdAntiProton:R 0.1
+set stdAntiProton:R0 3.5
+set stdAntiProton:RapidityWidth 0.5
+set stdAntiProton:AngleWidth 0.1
+
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:PMinusOrdering 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS False
+set stdSwinger:Lambda 1.0
+
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.6
+set stdXSec:Interaction 0
+
+set LHCEventHandler:LambdaQCD 0.22
+set LHCEventHandler:RMax 3.0
+set LHCEventHandler:CoherenceRange 0.5
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+Tune 19
+set stdProton:R 0.1
+set stdProton:R0 3.5
+set stdProton:RapidityWidth 0.1
+set stdProton:AngleWidth 0.1
+set stdAntiProton:R 0.1
+set stdAntiProton:R0 3.5
+set stdAntiProton:RapidityWidth 0.1
+set stdAntiProton:AngleWidth 0.1
+
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.6
+
+set LHCEventHandler:LambdaQCD 0.23
+set LHCEventHandler:RMax 2.8
+set LHCEventHandler:CoherenceRange 0.33
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+
+- FSSwinger 0.6 --> 0.0
+dN/deta increase. Edep increase.
+N_ch dist stronger tail.
+lower <pt>, weaker N_ch dependence.
+low pt spectrum increase
+
+- rmax 2.8 --> 3.2, lambdaQCD 0.23 --> 0.19
+increase tot xsec at high E. low E unchanged.
+elastic xsec unchanged.
+moves dN/deta out from mid rap.
+lowers dN/deta, weaker E-dep.
+weaker N_ch tail.
+pt at CDF basically unchanged.
+
+- r_coh 0.33 --> 1.0, lambdaQCD 0.23 --> 0.22
+increase tot and el xsec E-dep. E = 200 is constant
+pushes dN/deta towards mid rap slightly.
+slightly increased dN/deta and N_ch tail.
+no visible dfference at CDF.
+
+r_p 3.5 --> 4.0, lambdaQCD 0.23 --> 0.21
+no visible difference for tot or el xsec
+dN/deta and N_ch tail lowered, Edep unchanged.
+CDF unchanged
+
+- rmax 2.8 --> 2.6, lambdaQCD 0.23 --> 0.27
+somewhat increased total and el xsec at large E.
+increased dN/deta and N_ch tail, Edep unchanged
+maybe slightly stronger <pt> at CDF
+
+- lambdaQCD 0.23 --> 0.25, r_p 3.5 --> 4.0, FSswing 0.6 --> 1.0
+tot, el xsec not significantly changed.
+dN/deta reduced. Maybe Edep stronger?
+N_ch tail weaker.
+dN/deta more central.
+<pt> probably increased for high N_ch at CDF.
+
+
+Tune 20: Hero FireBall
+- fixed the range in interaction 0. Now the single interaction range sets the range for all 4 partons. fixewd in fij and RealInt.
+
+- Fixed the DGLAP control of interacting partons in interaction 0: it now always compares to the interacting parton-parton length. It was previously always pairing up the first parton in a dip with the second parton of the interacting dip.
+
+- Fixed the pt penalty for DGLAP vetoed interacting partons. Now the running alpha is properly taken into account by iterating three times.
+
+set stdProton:R 0.1
+set stdProton:R0 3.7
+set stdProton:RapidityWidth 0.1
+set stdProton:AngleWidth 0.1
+set stdAntiProton:R 0.1
+set stdAntiProton:R0 3.7
+set stdAntiProton:RapidityWidth 0.1
+set stdAntiProton:AngleWidth 0.1
+
+set stdEmitter:RScale 1.0
+set stdEmitter:PTScale 1.0
+set stdEmitter:PSInflation 1.0
+set stdEmitter:PMinusOrdering 1.0
+set stdEmitter:BothOrderedEvo False
+set stdEmitter:BothOrderedInt False
+set stdEmitter:BothOrderedFS False
+
+set stdSwinger:Lambda 1.0
+
+set stdFiller:RecoilScheme PreservePlus
+set stdFiller:Mode SingleSweep
+set stdFiller:EffectiveWeights PlusWeighted
+set stdFiller:SingleMother 0
+set stdFiller:FSSwingTime 0.5
+
+set stdXSec:Interaction 0
+
+set LHCEventHandler:LambdaQCD 0.22
+set LHCEventHandler:RMax 2.8
+set LHCEventHandler:CoherenceRange 0.33
+set LHCEventHandler:NF 3
+set LHCEventHandler:YFrametest 0.5
+set LHCEventHandler:NColours 9
+
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+
+
+- turned of penalty in second last emission
+lowered pt in the entire midregion. didnt help much.
+
+- coherence range 0.33 --> 2.0
+lowered and widened pt. didnt help much.
+
+- remove ordering in interaction
+increase interaction pt in middle, pt more peaked.
+increased n_ch, but not better shape.
+
+- PSInflation 1.0 --> 0.5
+lowers everything evenly.
+
+- bothordered all false --> true
+lowers everything, shapde doesnt seem to change
+
+- r_p 3.7 --> 3.0
+no change
+
+- swingtime 0.5 --> 0.0
+increase dN/deta fairly evenly
+
+- swingtime 0.5 --> 2.0
+decrease dN/deta, maybe a bit more at the shoulders? maybe a bit better.
+
+- lambda QCD 0.22 --> 0.18
+lowers everything a little, shape the same.
+
+- rmax 2.8 --> 3.5
+more dN/deta, pt unchanged, shape unchanged
+
+- plusweigthed --> plussingleweighted
+more energy unconserved
+no changes
+
+Tune 21:
+- Turned of diff subcollisions
+
+- Fixed running alpha dependence in DGLAP suppression. It now sets the scale to the largest pt, rather than the smallest.
+
+- Fixed multi non-DGLAP chains. Now the mid step is always safe if top is safe.
+
+- fixed running alpha scale for int 0 to only look at the actual recoil
+
+- added single parent option
+results:
+fixed frame dependence for dN/deta
+destroyed v2?
+increased energy dep for dN/deta
+
+- added valence charge normalisation option
+
+- added disconnected valence dipoles option (doesnt work though)
+
+- tried adding limited p+ in cascade. used min(1.0, r13/r12). That is, smaller dipoles only sees a fraction of the p+.
+results:
+much less pt, and more peaked at the valence. Also much less N_ch.
+Seems from looking at events like it just causes fewer emissions (further ahead in y), and recoils ends up further back.
+Total cross section didnt change much (small vs large dipoles?).
+v2 not improved much.
+
+- coherence range 0.01
+results:
+increases v2 significantly. also gives wings to dN/deta.
+
+- tried fij = sin(s1)^2 sin(s2)^2 --> s1^2 s2^2
+results:
+does not improve v2 much. Neither without fij veto.
+
+- tried to always pick highest y in int 0.
+results:
+33% of interactions vetoed.
+more centered pt. peak at interaction, and for valence.
+v2 not improved much.
+
+- added RangeMode, controlling how the range of the effective partons are decided. Default "Min" is min od half mother dipole and emission range. "mother" is just half the size of the mother dipole.
+results:
+total xsec almost unchanged
+dN/dy and pt/dy maybe a bit more peaked in the middle
+dN/deta increase a few %
+charge mult maybe increase a little
+v2 maybe a little larger?
+
+- manually increasing interaction pt in realstate  (x4) gives better pt spectrum, and better v2. also better <pt>(n_ch). dN/deta not changed that much, except a bit more peaked in middle.
+
+- added IntOrdering, chaning how the plus/minus ordering is done in the interaction (fij and real state).
+results:
+lower xsec by about 10%
+dN/deta lower about 10%
+N_ch dist lowered
+v2 no visible change
+ATLAS rivet basically unchanged (except lowered dN/deta)
+
+- added EffectivePartonMode, controlling if the effective parton grouping in the virtual cascade should be based on coluor connections or parent/children structure.
+results:
+no visible difference on anything.
+
+
+------------------------- Tune 24 -----------------------------------
+
+change:
+- forcing all interacting partons real (this is how it is tune24. compare to without this)
+result:
+-much larger dN/deta
+- much more pt (and dN/deta) in midrapidity
+- much smaller average interaction distance
+- bias off-shell dN/deta towards interaction side
+
+change:
+- all bothordered to False
+result:
+- dN/deta increased evenly around 20%.
+- average pt basically unchanged.
+
+change:
+- rangemode Min --> Mother
+result:
+- no visible effects in FS
+
++++++++ add ++++++++++
+change:
+- FSOrdering:Genereous true
+result:
+- no visible difference, except (probably) a small increase in the far tail of N_ch dist
+
+change:
+- FSSwingTime 1.0 --> 0.0
+result:
+- dN/deta increase about 20%
+- N_ch tail much stronger
+- extra particles mainly below 1 GeV
+- lower average pt
+
+change:
+- FSSwingTime 1.0 --> 3.0
+result:
+- no visible difference (maybe very large N_ch somewhat lower?)
+
+change:
+- SingleMother 1 --> 0
+result:
+- dN/deta increase about 15%
+- stronger N_ch tail
+- no visible cahnge in v2
+- extra particles mainly at medium pt (lowest pt less increase, and tail not much affected)
+- more wings in dN/deta (much better fit to ATLAS)
+- extra N mainly in transverse region: less towards-away bias
+
+change:
+- ValenceChargeNormalisation Swing --> None
+result:
+- dN/deta increased 5-10%
+- more wings in dN/deta (mainly far out. visible at 900, and 1800, but not as much at 7000)
+- N_ch tail a litle bit stronger
+- otherwise no big changes
+
+change:
+- lambdaQCD 2.0 --> 2.5
+result:
+- dN/seta increase 15%
+- N_ch tail increase
+- v2 unchanged
+- somehwat reduced towards peak at ATLAS and CDF
+
+change:
+- coherence range 1.0 --> 0.1
+results:
+- increased dN/deta 15-20%
+- more N_ch tail
+- much increased v2
+- increase of N from 1GeV to around 50GeV, below 1 GeV little difference
+- much larger <pt>, mainly at low N_ch
+- stronger towards and away region, mainly at atlas, and mainly at low pt triggered pt lead
+- high pt lead even gives weaker towards and away regions
+
+change:
+- overlap 6 string fragmenter thingy
+results:
+- dN/deta decrease almost 20%
+- lower n_ch tail
+- forward region stronger
+- bias towards larger pt: less [0,1.5], more in [1.5, 20] unchanged above
+- increased mean pt evenly
+
+change:
+- effectivepartonmode relatives --> colours
+results:
+- no visible difference (MAYBE stronger away region at CDF. not at ATLAS)
+
+change:
+- proton: connected --> disconnected
+results:
+- dN/deta lowered about 20% (and N_ch tail)
+- slightly increased average pt
+
+
+added phase space matching with FSR
+effect:
+- not much on observables. suppressed the Nch tail a bit.
+
+Introduced MinusOrderingMode EffectivePT where the minus ordering is done as in the old program, using the pt of the effective parton, but the rapidity of the single parton.
+effects:
+- v2 increase much
+- somewhat more spiked towards region t LHC
+- forward not increased at Teva
+- energy dependence much weaker for pp
+- lowered proton-side peak for gamma-p tot xsec frame dependence.
+- lowered multiplicity in general
+
+
+Tune 27 = DIPSY 1.0
+
+__________________________________________________________________
+
+Tune28
+- A lot of small fixes since FS paper.
+- Retuning with FS swing, to maybe hit AA multiplicity.
+
+changes:
+- FSswing 0.0 --> 0.6
+- all BothOrdered True --> False
+results:
+- weaker tail in N_ch (average not changed much)
+- less N_ch activity in transverse region
+- much increased total xsecs
+
+
+
+Tune29:
+changes:
+- added recoilers
+results:
+- much more activity in middle, more <pt>, larger v2, etc
+
+Tune30:
+- added pt0/pt1 lightcone ordering suppression
+result: lowers 
+
+
+
+_______________________Diffractive versions__________________________
+d: added z-correction
+g: removed z-correction
+f: no z-correction, min rap gap 1
+h: fixed sterilise bug. min gap 3, z --> 0.5 Q2 = 4
+i: min gap 1, Q2 = 24, no z correction
+j: FSR turned off
+k: fixed multiplicity analysis to include only charged

@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the WFInfo class.
+//
+
+namespace DIPSY {
+
+inline WFInfo::WFInfo(tcWaveFunctionPtr wfin, InvEnergy rini)
+  : theWF(wfin), theR(rini) {}
+
+inline WFInfo::WFInfo(const WFInfo & x)
+  : Base(x), theWF(x.theWF), theR(x.theR) {}
+
+inline const WaveFunction & WFInfo::wf() const {
+  return *theWF;
+}
+
+inline InvEnergy WFInfo::r() const {
+  return theR;
+}
+
+}

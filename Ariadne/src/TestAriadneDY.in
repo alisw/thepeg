@@ -1,0 +1,85 @@
+mkdir LHCDY
+cd LHCDY
+create ThePEG::StandardEventHandler DYEH
+
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+
+create ThePEG::FixedCMSLuminosity LHCLumi
+#set LHCLumi:Energy 14000.0
+set LHCLumi:Energy 1800.0
+set DYEH:LuminosityFunction LHCLumi
+
+cp /Defaults/Handlers/ACDCSampler ACDC
+set DYEH:Sampler ACDC
+
+create ThePEG::Cuts DYCuts
+set DYCuts:ScaleMin 25.0
+set DYCuts:X1Min 0.0000001
+set DYCuts:X2Min 0.0000001
+set DYCuts:MHatMin 50
+set DYEH:Cuts DYCuts
+
+create ThePEG::SubProcessHandler DYSub
+cp /Defaults/Handlers/StandardExtractor PPExtractor
+create Herwig::MEqq2gZ2ll DYZME MEqq2gZ2ll.so
+insert DYSub:MatrixElements[0] DYZME
+set DYSub:PartonExtractor PPExtractor
+insert DYEH:SubProcessHandlers[0] DYSub
+set /Ariadne/AriadneCascade:NFlav 5
+#set /Ariadne/AriadneCascade:Beta 0.5
+#set /Ariadne/AriadneCascade:SoftMu 1.0
+#set /Ariadne/AriadneCascade:SoftAlpha 0.5
+#set /Ariadne/AriadneCascade:MaxEmissions 1
+set DYEH:CascadeHandler /Ariadne/AriadneCascade
+
+set /Defaults/Particles/u:NominalMass 0.33
+set /Defaults/Particles/d:NominalMass 0.33
+set /Defaults/Particles/s:NominalMass 0.5
+set /Defaults/Particles/c:NominalMass 1.5
+set /Defaults/Particles/b:NominalMass 4.8
+
+create Ariadne::DYCorr DYCorr
+insert /Ariadne/AriadneCascade:MECorrectors[0] DYCorr
+
+create ThePEG::SoftRemnantHandler RemnantHandler
+create ThePEG::SimpleBaryonRemnantDecayer RemnantDecayer
+set RemnantHandler:RemnantDecayer RemnantDecayer
+create ThePEG::LHAPDF CTEQ6l
+set CTEQ6l:RemnantHandler RemnantHandler
+set CTEQ6l:PDFName cteq6l.LHpdf
+set CTEQ6l:RangeException Freeze
+cp /Defaults/Particles/p+ p+
+set p+:PDF CTEQ6l
+set pbar-:PDF CTEQ6l
+insert /Ariadne/StdStrategy:LocalParticles[0] p+
+insert /Ariadne/StdStrategy:LocalParticles[0] pbar-
+set DYEH:BeamA p+
+set DYEH:BeamB pbar-
+# set DYEH:HadronizationHandler /Pythia7/Handlers/StringFrag/StdFragHandler
+set DYEH:HadronizationHandler Frag8
+set DYEH:DecayHandler /Pythia7/Handlers/Decay/StdDecay
+
+create ThePEG::EventGenerator DYGen
+cp /Defaults/Random Random
+set DYGen:RandomNumberGenerator Random
+cp /Defaults/StandardModel StandardModel
+set DYGen:StandardModelParameters StandardModel
+set DYGen:EventHandler DYEH
+set DYGen:Strategy /Ariadne/StdStrategy
+set DYGen:NumberOfEvents 1000
+set DYGen:DebugLevel 1
+set DYGen:PrintEvent 10
+
+create Ariadne::DYAnalysis DYAnalysis DYAnalysis.so
+create ThePEG::LWHFactory HFac LWHFactory.so
+#set HFac:StoreType flat
+#set HFac:Suffix dat
+insert DYGen:AnalysisHandlers[0] DYAnalysis
+set DYGen:HistogramFactory HFac
+
+create ThePEG::HZTool HZTool HZTool.so
+insert HZTool:Functions[0] hzh9907009
+insert HZTool:Functions[0] hzh0001021
+insert DYGen:AnalysisHandlers[0] HZTool
+
+saverun TestAriadneDY DYGen

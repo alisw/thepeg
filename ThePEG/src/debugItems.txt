@@ -1,0 +1,10 @@
+item	description
+
+1	Print every event after sub process has been generated.
+2	Print every new step directly agter it has been generated.
+3	Print extra information from (Base)Repository
+4	Print all new chunks allocated by the FixedSizeAllocators
+5	Print all pointers allocated or freed by the FixedSizeAllocators
+6	Print statistics of all PDFBase approximations.
+7	Print progress of PS2to2Generic Matrix element approximations
+8	Print final PS2to2Generic Matrix element approximations

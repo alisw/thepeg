@@ -1,0 +1,8 @@
+#!/bin/csh -f
+if ( -e $1/lib/lib${2}.so ) then
+  cp $1/lib/lib${2}.so libCLHEP.so
+else
+  set wd = `pwd`
+  cd $1/lib
+  g++ -shared -Wl,--whole-archive lib${2}.a -o $wd/libCLHEP.so
+endif

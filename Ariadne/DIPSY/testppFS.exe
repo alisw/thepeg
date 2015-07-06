@@ -1,0 +1,11 @@
+make -j Test5ppFS.run
+
+#make TestppFS09.out &
+#make TestppFS18.out &
+#make TestppFS23.out &
+#make TestppFS09frame03.out
+
+make Test5ppFS70.out
+
+#make TestppFS18frame03.out &
+#make TestppFS70frame03.out

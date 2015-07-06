@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SimpleNucleus class.
+//
+
+namespace DIPSY {
+
+inline SimpleNucleus::SimpleNucleus()
+  : A(208), Z(82), R(6.68*femtometer), a(0.546*femtometer), w(0.0),
+    wf(WaveFunctionPtr()), Rn(1.3*femtometer) {}
+
+inline SimpleNucleus::SimpleNucleus(const SimpleNucleus & x)
+  : A(x.A), Z(x.Z), R(x.R), a(x.a), w(x.w), wf(x.wf), Rn(x.Rn) {}
+
+inline IBPtr SimpleNucleus::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SimpleNucleus::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

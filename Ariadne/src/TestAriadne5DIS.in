@@ -1,0 +1,7 @@
+mkdir /Ariadne5/SimpleHERA
+cd /Ariadne5/SimpleHERA
+cp /Ariadne5/Generators/HERA/HERAGenerator SimpleHERAGenerator
+set SimpleHERAGenerator:NumberOfEvents 1000
+set SimpleHERAGenerator:DebugLevel 1
+set SimpleHERAGenerator:PrintEvent 10
+saverun TestAriadne5DIS SimpleHERAGenerator

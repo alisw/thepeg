@@ -1,0 +1,60 @@
+// -*- C++ -*-
+//
+// Reference.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Reference_XH
+#define ThePEG_Reference_XH
+//
+// This is the declarations of the exception classes used by the
+// Reference class.
+//
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by Reference if trying to set a pointer of
+ *  the wrong type.  */
+struct RefExSetRefClass: public InterfaceException {
+  /** Standard constructor. */
+  RefExSetRefClass(const RefInterfaceBase & i, const InterfacedBase & o,
+		   cIBPtr r);
+};
+
+/** Exception class used by  Referenceif an unknown error occurs.  */
+struct RefExSetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  RefExSetUnknown(const InterfaceBase & i, const InterfacedBase & o,
+		  cIBPtr r);
+};
+
+/** Exception class used by Reference if an unknown error occurs.  */
+struct RefExGetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  RefExGetUnknown(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used by Reference of a specified object was not
+ *  found.  */
+struct RefExSetNoobj: public InterfaceException {
+  /** Standard constructor. */
+  RefExSetNoobj(const InterfaceBase & i, const InterfacedBase & o, string);
+};
+
+/** Exception class used by Reference for issuing warnings.  */
+struct RefExSetMessage: public InterfaceException {
+  /** Standard constructor. */
+  RefExSetMessage(string ref, const InterfacedBase & o,
+		  const InterfacedBase & o2, string);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Reference_XH */
+

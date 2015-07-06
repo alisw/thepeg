@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TwoCutBase class.
+//
+#ifndef ThePEG_TwoCutBase_FH
+#define ThePEG_TwoCutBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class TwoCutBase;
+ThePEG_DECLARE_POINTERS(TwoCutBase,TwoCutPtr);
+
+}
+
+#endif

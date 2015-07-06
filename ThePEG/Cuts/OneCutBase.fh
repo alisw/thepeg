@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OneCutBase class.
+//
+#ifndef ThePEG_OneCutBase_FH
+#define ThePEG_OneCutBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class OneCutBase;
+ThePEG_DECLARE_POINTERS(OneCutBase,OneCutPtr);
+
+}
+
+#endif

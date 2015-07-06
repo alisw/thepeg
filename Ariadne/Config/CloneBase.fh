@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CloneBase class.
+//
+#ifndef ARIADNE_CloneBase_FH
+#define ARIADNE_CloneBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne5 {
+
+class CloneBase;
+ThePEG_DECLARE_POINTERS(CloneBase,ClonePtr);
+
+}
+
+#endif

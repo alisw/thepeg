@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DISDipole class.
+//
+#ifndef ARIADNE_DISDipole_FH
+#define ARIADNE_DISDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class DISDipole;
+ThePEG_DECLARE_POINTERS(DISDipole,DISDipPtr);
+
+}
+
+#endif

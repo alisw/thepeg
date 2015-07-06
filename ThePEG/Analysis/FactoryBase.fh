@@ -1,0 +1,15 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FactoryBase class.
+//
+#ifndef THEPEG_FactoryBase_FH
+#define THEPEG_FactoryBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+class FactoryBase;
+ThePEG_DECLARE_POINTERS(ThePEG::FactoryBase,HistFacPtr);
+}
+
+#endif

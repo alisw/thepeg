@@ -1,0 +1,142 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TimeShowerHandler class.
+//
+
+namespace Pythia7 {
+
+inline TimeShowerHandler::TimeShowerHandler()
+  : theShowerModel(0), theAngularOrdering(2), theNQuark(5), theAlphaSMode(2),
+    theMEMode(1), theQEDShower(2), theInitialCone(2), thePhiPolAsym(1),
+    thePhiCoherAsym(1), theRespectScale(0), theQ0(1.0*GeV), theQ0ChgQ(1.0*GeV),
+    theQ0ChgL(0.001*GeV), theAlphaSFix(0.2), theLambda5(0.25*GeV),
+    theAlphaEMFix(0.0073), theQ0FracPS(0.25) {}
+
+inline TimeShowerHandler::TimeShowerHandler(const TimeShowerHandler & x)
+  : HandlerBase(x), theShowerModel(0),
+    theAngularOrdering(x.theAngularOrdering),
+    theNQuark(x.theNQuark), theAlphaSMode(x.theAlphaSMode),
+    theMEMode(x.theMEMode), theQEDShower(x.theQEDShower),
+    theInitialCone(x.theInitialCone), thePhiPolAsym(x.thePhiPolAsym),
+    thePhiCoherAsym(x.thePhiCoherAsym), theRespectScale(x.theRespectScale),
+    theQ0(x.theQ0), theQ0ChgQ(x.theQ0ChgQ), theQ0ChgL(x.theQ0ChgL),
+    theAlphaSFix(x.theAlphaSFix), theLambda5(x.theLambda5),
+    theAlphaEMFix(x.theAlphaEMFix), theQ0FracPS(x.theQ0FracPS) {}
+
+inline IBPtr TimeShowerHandler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TimeShowerHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TimeShowerHandler::doupdate() throw(UpdateException) {
+  HandlerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void TimeShowerHandler::doinit() throw(InitException) {
+  HandlerBase::doinit();
+}
+
+inline void TimeShowerHandler::dofinish() {
+  HandlerBase::dofinish();
+}
+
+inline void TimeShowerHandler::doinitrun() {
+  HandlerBase::doinitrun();
+}
+
+inline void TimeShowerHandler::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  HandlerBase::rebind(trans);
+}
+
+inline IVector TimeShowerHandler::getReferences() {
+  IVector ret = HandlerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+inline int TimeShowerHandler::angularOrder() const {
+  return theAngularOrdering;
+}
+
+inline int TimeShowerHandler::nQuark() const {
+  return theNQuark;
+}
+
+inline int TimeShowerHandler::alphaSMode() const {
+  return theAlphaSMode;
+}
+
+inline int TimeShowerHandler::QEDShower() const {
+  return theQEDShower;
+}
+
+inline int TimeShowerHandler::MEMode() const {
+  return theMEMode;
+}
+
+inline int TimeShowerHandler::initialCone() const {
+  return theInitialCone;
+}
+
+inline int TimeShowerHandler::phiPolAsym() const {
+  return thePhiPolAsym;
+}
+
+inline int TimeShowerHandler::phoCoherAsym() const {
+  return thePhiCoherAsym;
+}
+
+inline int TimeShowerHandler::respectScale() const {
+  return theRespectScale;
+}
+
+inline Energy TimeShowerHandler::Q0() const {
+  return theQ0;
+}
+
+inline Energy TimeShowerHandler::Q0ChgQ() const {
+  return theQ0ChgQ;
+}
+
+inline Energy TimeShowerHandler::Q0ChgL() const {
+  return theQ0ChgL;
+}
+
+inline double TimeShowerHandler::alphaSFix() const {
+  return theAlphaSFix;
+}
+
+inline Energy TimeShowerHandler::Lambda5() const {
+  return theLambda5;
+}
+
+inline double TimeShowerHandler::alphaEMFix() const {
+  return theAlphaEMFix;
+}
+
+inline double TimeShowerHandler::Q0FracPS() const {
+  return theQ0FracPS;
+}
+
+
+}

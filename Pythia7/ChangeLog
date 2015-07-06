@@ -1,0 +1,979 @@
+2009-04-16  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.*, Shower/ShowerHandler.*:
+	Removed throw specs.
+
+2008-09-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Config/Pythia7.h: No longer include config.h.
+
+2008-04-25  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/SimpleLHC.in, src/SimpleLEP.in, src/Pythia7Defaults.in: Use
+	LocalParticlesDir instead of LocalParticles in the Strategy
+	object.
+
+2008-03-30  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/SimpleLEP.in: Increased the MaxLoop to avoid warnings.
+
+2007-09-06  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Strategy/Pythia7Strategy.h: Include ParticleData.h to access
+	destructor.
+
+	* StringFrag/FragConfig.h: Math.h -> Maths.h
+
+	* Shower/Basics.cc: Put some function definitions inside the
+	proper namespace to avoid compilation problems with gcc-4.2.
+
+2007-07-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* StringFrag/FragConfig.h: Renamed CLHEPWrap to Vectors
+
+2007-07-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac: Removed CLHEP check.
+
+	* StringFrag/LundFlavourGenerator.cc: Minor bug introduced in
+	previous fix.
+
+2007-07-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.cc,
+	StringFrag/LundFlavourGenerator.*: Removed unnecessary and
+	ambiguous calls to pow(-1,int).
+
+2006-12-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Defaults.in: Now uses new remnant treatment.
+
+	* Shower/ShowerHandler.cc: Set the newly extracted partons as
+	parents to the originally extracted partons.
+
+2006-12-01  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.cc: Decay all remnant particles
+	before extracting singlet strings to fragment.
+
+2006-11-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: Cleaned up and fixed problem with using
+	parallel make.
+
+2006-11-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/ShowerHandler.cc: Correctly use and set the
+	SubProcess::decayed() function.
+
+2006-11-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Remove unnecessary -L options.
+
+2006-11-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Modified to use strict units checking.
+
+2006-10-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/String.*, StringFrag/LundFragHandler.*: Now uses the
+	new colourNeighbour and antiColourNeighbour a functions in
+	Particle.
+
+	* Shower/ShowerHandler.*: Limit the number of times we try to
+	shower a sub-process.
+
+2006-09-28  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFlavourGenerator.cc: Fixed bug in
+	generateHadron(tcPDPtr), where the remaining quark got the wrong
+	sign. This does not influence the string fragmentation which does
+	not use this function.
+
+2006-09-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, */Makefile.am, Config/Makefile.aminclude: The
+	libtool -version-info numbers are now controlled from the
+	configure.ac. Also added an include file with common targets for
+	the Makefiles.
+
+2006-09-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/SpaceShower.cc: Added an exit if caught in an infinite
+	loop.
+
+	* Shower/ShowerHandler.cc: Fixed bug where outgoing particles were
+	not showered properly if they were not in the right order.  Also
+	fixed bug where unshowered outgoing partons appeared twice in the
+	Event .
+
+2006-08-30  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Make sure the ../lib/Pythia7Defaults.rpo link
+	is touched so that other packaged are remade if needed.
+
+2006-08-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: Added CONFIGHEADERS to CLEANFILES.
+
+2006-07-25  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Config/Pythia7.h: Includes Pythia7/Config/config.h instead of
+	just config.h
+
+	* Config/Makefile.am: config.h is no longer included in the
+	distribution.
+
+	* include/Makefile.am: Config directory is no longer linked,
+	instead it is creates a proper directory and links the individual
+	header files. This is because config.h needs to be linked from the
+	build directory while the others are linked from the source
+	directory. This probably need a better solution.
+
+2006-07-22  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Now uses --exitonerror argument for
+	setupThePEG.
+
+2006-06-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: All needed subdirectory links are now
+	separate targets.
+
+2006-04-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/StringCollapser.cc, StringFrag/LundZGenerator.cc,
+	StringFrag/LundPtGenerator.cc, StringFrag/LundFragHandler.cc,
+	StringFrag/LundFlavourGenerator.h,
+	StringFrag/LundFlavourGenerator.cc, Shower/TimeShowerHandler.cc,
+	Shower/SpaceShowerHandler.cc, Shower/ShowerHandler.cc: Improved
+	documentation and ranked interfaces.
+
+2006-02-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Joined in changes from the cuts-devel branch.
+
+2005-12-21  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Added save target.
+
+2005-10-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Defaults.in: Changed to use the new cuts objects.
+
+2005-09-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Put all template specializations in conditional
+	doxygen section called TRAITSPECIALIZATIONS. Also put Exception
+	classes in the EXCEPTIONCLASSES section.
+
+2005-09-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac:  Now uses AC_SEARCH_CLHEP and AC_SEARCH_THEPEG
+	instead of AC_CHECK_CLHEP and AC_CHECK_THEPEG.
+
+2005-09-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundZGenerator.cc: Updated class documentation.
+
+2005-08-31  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Use proper proper path for the repository if
+	THEPEGPATH is set.
+
+	* lib/Makefile.am: Try to avoid linking non-existing shared
+	library files.
+
+2005-06-17  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, Doc/*: Changes to get make distcheck work properly.
+
+2005-06-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundZGenerator.h: Doxygen cosmetics.
+
+	* Doc/Makefile.am: After 'make html' and 'make pdf' the
+	corresponding documentation will now be installed correctly.
+
+2005-06-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Always run check-local.
+
+2005-06-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Fixes to make distcheck work
+	smoothly.
+
+2005-06-11  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Remove.in, src/Pythia7Defaults.in: Used by the
+	install and uninstall targets to manipulate the default ThePEG
+	repository
+
+	* src/Makefile.am: Fixed install, uninstall and installcheck
+	targets.
+
+	* include/Makefile.am: Fixed uninstall target. This should in
+	principle belong to the src/Makefile.am, but needs to be done
+	before.
+
+2005-06-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Defaults.in: Make sure the Pythia7 directory is
+	removed before creating it.
+
+	* src/SimpleLHC.in: Reduce the number of event generated to save
+	time.
+
+	* src/Makefile.am: Fixes to make distcheck work properly.
+
+	* lib/Makefile.am: Fix up sym-linking of shared libraries.
+
+	* StringFrag/FragConfig.h: Cosmetics.
+
+	* Config/Makefile.am: Make sure Pythia7.h is included in dist.
+
+2005-06-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* lib/Makefile.am: Link all the shared libraries including the
+	ones with version suffix and the ones ending with .la.
+
+	* */Makefile.am, configure.ac: Moved -version-info to the
+	individual _LDFLAGS variables in the Makefiles
+
+2005-06-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Merged with libtool-devel branch.
+
+2005-06-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Config/config.h.in: Removed. Automatically generated by
+	autoheader.
+
+2005-06-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* acinclude.m4: removed. using ../ThePEG/acinclude.m4 instead.
+
+2005-06-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, acinclude.m4: Added macros to clean up
+	configure.ac
+
+2005-06-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* */Makefile.am: Use $(LN_S) instead of ln -s.
+
+	* configure.ac, Makefile.am: Added Doc as subdirectory. Fixed
+	documentation of environment variables.
+
+	* Doc/*: Fixed up to use automake.
+
+2005-06-01  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: Make it quietly.
+
+	* configure.ac: Fixed bug. When THEPEGPATH was specified from the
+	outside, some variables was not set correctly.
+
+2005-05-31  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Change build procedure to use automake and
+	libtool. This affects all Makefiles etc.
+
+2005-05-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.cc: Changed to use new transfrom of
+	whole container in ThePEG::UtilityBase.
+
+	* Shower/ShowerHandler.*: Changed the handling of scales for
+	particles, as I seem to have misunderstood how they were handled
+	in the internal event record. Now, canShower() only allows a
+	particle to shower if its scale is above the relevant cutoff
+	scale. Also the createParticle sets the scale of the produced
+	particles to the relevant cutoff scales. (I'm not quite sure yet
+	what happens to the particles which were not changed by the
+	internal machinery.)
+
+	* Shower/Basics.cc: In operator<< of the internal particle class,
+	changed a new-line character to an endl to enforce flushing.
+
+2005-05-18  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Merged in branch with new EventHandler and
+	EventGenerator classes. Includes also the LesHouches classes.
+
+	* */*.h: Fixed some ancient spelling errors in comments
+
+	* src/Pythia7Defaults.in: THere are still some problems witht the
+	Upsilon decay into three gluons when trying to hadronize the
+	resulting gluon loop. Therefore this decay channel is switched off
+	for the time being.
+
+2005-04-27  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/ShowerHandler.*: Removed functions getBoost() and
+	transformRemnants(). The corresponding functionality is now
+	provided by by the PartonExtractor class.
+
+2005-04-25  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/ShowerHandler.*: Changed LorentzVector to LorentzMomentum
+	where appropriate.
+
+2005-04-07  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/String.h: Use ThePEG_DECLARE_MAP to declare
+	StringRegionMap.
+
+2004-09-19  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* */Makefile: Modified to fix installation procedures.
+
+2004-09-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile: Modified snapshot target to work with new documentation.
+
+2004-09-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* */*.h: Added doxygen reference to interfaces in documentation.
+
+	* Doc/Makefile: Added call to fixinterfaces.pl script to fix
+	references between interfaces in AllInterfaces.h
+
+2004-09-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag (directory): Modified comments to doxygen format.
+
+	* Shower (directory): Modified comments to doxygen format.
+
+	* Doc/Makefile: Added proper doc target.
+
+	* Doc/refman.h: Dummy main page for doxygen reference manual.
+
+	* Doc/refman.conf: Doxygen configuration file which includes the
+	ThePEG one.
+
+2004-09-07  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag (directory): Modified comments to doxygen format.
+
+2004-09-06  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Strategy/Pythia7Strategy.h: Modified comments to doxygen format.
+
+	* StringFrag/LundFragHandler.*: Removed variable for s-quark
+	suppression. Use the one from LundFlavourGenerator instead.
+
+2004-09-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag (directory): Modified comments to doxygen
+	format. Also removed local definitions of transverse momentum and
+	the sign function. Now uses ThePEG versions instead.
+
+	* StringFrag/FragInterface.h: Removed since no longer necessary.
+
+	* StringFrag/FragHelpers.h: Removed since no longer necessary.
+
+2004-09-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower (directory): Modified comments to doxygen format.
+
+	* Config/Pythia7.h: Modified comments to doxygen format.
+
+	* Makefile, src/Makefile: Introduce init target to just initialize
+	the repository. The doc target depends on init.
+
+2004-09-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile: Modified the doc target to prepare for doxygen.
+
+	* *** GLOBAL ***: Modified all descriptions in declarations of
+	interfaces to conform to doxygen format.
+
+2004-08-25  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Changed inheritance of BaseClassTrait
+	specializations for documentation purposes.
+
+2003-08-31  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/StringRegion.cc: Don't try to construnct transverse
+	directions of a zero-mass string region.
+
+2003-08-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.cc: Recombination of two gluons now
+	gives a massless gluon by energy shuffling. Still it is impossible
+	to hadronize a closed loop of two gluons.
+
+	* StringFrag/LundFragHandler.*: Increased the number of attempts
+	for each string by a factor 8, increasing the minimum mass and
+	angle for gluon recombination at most seven times.
+
+2003-08-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.cc: Changed the call to the
+	ClusterCollapser::collapse() function to the new signature.
+
+2003-08-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile: Removed -$(MAKEFLAGS) in recursive calls.
+
+2003-07-29  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/*.*: Various minor changes to allow the
+	LundFlavourGenerator class to implement the new FlavourGenerator
+	interface.
+
+2003-07-27  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Defaults.in: Changed the copying of particles since
+	the behavior of the "cp" command was changed for particles.  Also
+	changed the naming of classes from "/{namespace}/{class}" to
+	"{namespace}::{class}".
+
+2003-07-23  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/Beam.h: Fixed initialization of PDF class.
+
+2003-07-22  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile: Changed the version number to 1.0ab (between alpha and
+	beta).
+
+2003-07-21  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower/ShowerHandler.cc: Fixed the umlauts on Torbjörns
+	references.
+
+2003-07-16  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Pythia7Defaults.in, src/SimpleLEP.in, src/SimpleLHC.in: All
+	objects specific to Pythia seven are now copied into
+	subdirectories of the /Pythia7 directory. No change is made to the
+	default ThePEG repository.
+
+	* StringFrag/LundFragHandler.cc: Changed the names of the
+	LundPtGenerator, LundZGenerator and LundFlGenerator interfaces to
+	PtGenerator, ZGenerator and FlavourGenerator respectively.
+
+	* StringFrag/LundFlavourGenerator.cc: Changed the name of the
+	interface theBaryonMode to BaryonMode in Init().
+
+	* Shower/ShowerHandler.cc: Added References in the class
+	description in Init().
+
+	* Config/Makefile.common.in: Removed unneccessary variables.
+
+	* Makefile: install now depends on the check target.
+
+2003-07-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/Hadron.icc: Just cosmetics.
+
+2003-07-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* lib/Makefile: The .so files in the listed sub-directories are
+	explicitly soft-linked to the lib directory.
+
+2003-07-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/LundFragHandler.*: Added recombination of very nearby
+	partons to avoid infinite loops. Also boost all strings to cms
+	before fragmenting to avoid precision problems (possibly leading
+	to infinite loops).
+
+	* StringFrag/String.*: Changed the way the string is initialized
+	internaly.
+
+2003-07-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/*: Fixed up units on variables and literals. Removed
+	obsolete class LundFragHandlerBase.
+
+	* StringFrag/LundFragHandler.cc: Added rescaling of z for heavy
+	quarks (need to be checked with Torbjörn). Now use newStep()
+	method.
+
+2003-07-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile: Removed uneccessary cleaning of .exe files.
+
+	* Makefile: Hid unnecessary output with @.
+
+	* src/Pythia7Defaults.in: Added parton showers to the pre-defined
+	event handlers
+
+	* StringFrag/LundFragHandler.cc: Fixed (hopefully) a bug in the
+	creation of the two last hadrons (needs to be checked with
+	Torbjörn). Formerly ther longitudinal and transverse momenta were
+	set according to the reference frame of two different string
+	regions (current and final) now they are both set according to the
+	final.
+
+	* StringFrag/Hadron.icc: Changed the setting of hadron masses to
+	use ParticleData::generateMass(), rather than just using the
+	nominal mass.  Also changed the limits on the mass inconsistency
+	when hadrons are actualy created. This should no longer be
+	necessary after fixing the bug above in LundFragHandler.
+
+2003-07-07  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile (Module): Added dependency on libP7Shower.so
+
+2003-06-18  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Shower: Started to add the Pythia7 parton shower classes.
+
+2003-06-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringFrag/String.cc: Added extra check to avoid ending up in a
+	non-existent string region.
+
+2003-02-27  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* LundFragHandler.*: Removed old string finding functions. Instead
+	LundFragHandler now has a reference to a ClusterCollapser object
+	which extracts strings and also collapses ones which are too
+	small.
+
+2003-02-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringCollapser.icc: Added class for handling the collapsing of
+	strings which are too small to be fragmented. So far it does not
+	do anything besides what the ClusterCollapser base class does, but
+	it will soon.
+
+2002-09-21  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* LundFragHandler.cc: Fixed unPhysicalString() which was not
+	working properly before - also fixed LundFragHdlrUnphysicalString
+	exception to be a proper Pythia7 exception.
+
+2001-07-06  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* StringRegion.cc: In CLHEP-1.7 the behaviour of
+	LorentzVector::boostVector has changed to give an error message if
+	unphysical boost is produced. This caused a problem in the init()
+	function, which now calculates the (unphysical) boost vectors by
+	hand.
+
+2000-08-18  Leif Lönnblad  <leif@thep.lu.se>
+
+	* String.cc (getStringRegionPtr): Optimized by avoiding several
+	'map::find' where only one was needed.
+
+	* LundFlavourGenerator.cc: Optimized using 'push_back' random
+	numbers for some boolean choices.
+
+2000-08-02  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* EndPoint.icc: Destructor flag for speed test 
+
+	* LundZGenerator.cc: changed setShape() inlined/no-inlined 
+	for speed test
+
+2000-06-15  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* EndPoint.h, String.h, StringRegion.h, 
+	  Oriented.h, OrientedIndex.h : html Doc 
+
+	* EndPoint.h, String.h, StringRegion.h, Oriented.h,
+	OrientedIndex.h : html Doc
+
+2000-06-14  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* Hadron[.h, .icc]: theParticle member and storeMomentum()
+	function commented out
+
+2000-06-12  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h: touched for debugging 
+	unchanged!
+	html-link to LundFlavourHandler corrected
+
+2000-06-09  Leif Lönnblad  <leif@thep.lu.se>
+
+	* LundFragHandler.cc: Delete the String before each event. This
+	should be handled in a better way.
+
+2000-06-06  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.cc: some comments changed, 
+	
+	* LundFlavourGenerator.h: Documentation added, 
+	newHadron member suppressed, 
+	RandomFlavourMixing(...) made inline, 
+	PopSelectCurtainFlavour(long inDQ) inline canceled, 
+	argument name in isQuark, isDiquark added.
+	
+2000-06-04  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h: Documentation added
+	argument names, changed in Q2MesonQ, formMeson, selectMesonMultiplet,
+	
+2000-05-31  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFragHandler.h: Documentation added
+
+	* LundFlavourHandler.h: Documentation added
+
+	* EndPoint.[h, icc]: member thepT suppressed.
+	argument changed in SR(SRPtr) method
+	
+2000-05-30  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* EndPoint.h: Agument names added in EndPoint, Init, updatedFrom, PData 
+
+	* String.h: Add argument meaning in the update methods
+	( reset(..), updatePtotRem(..) -Xremf(..) -Xremb(..)) and the 
+	setXpolusRem(..),-XminusRem(..) methods
+
+	* Hadron.[h,icc]: Document added 
+
+	* LundZGenerator.[cc,icc]: minor changes + 
+	comments suppressed.
+
+2000-05-29  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundZGenerator.h: Documentation added
+
+	* String.h: Add indices in Pplus(int), Pminus(), Pfwd(), Pbwd()
+	Xremf() Xremb, XplusRem(), XminusRem() declarations. 
+	setLightConeVector() suppressed
+	
+2000-05-26  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h: documentation added
+
+	* EndPoint.[h, icc, cc]: documentation added
+
+	* String.[h, icc, cc]: documentation added
+
+	* ZGenerator.h: documentation added,
+	Units in generate function added (mT -> mT2)
+
+	* PtGenerator.[h, icc, cc]: documentation added
+
+	* LundPtGenerator.[h, icc, cc]: documentation added
+
+2000-05-23  Leif Lönnblad  <leif@thep.lu.se>
+
+	* LundFragHandler.cc: Added a call to 'useMe()' in the 'handle'
+	method to enable writing out of references.
+
+2000-05-19  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFragHandler.[cc, h]: 
+	modelDescription() and modelReferences() added 
+		
+
+2000-05-14  Lenita Lönnblad Ohlin  <lenita@localhost>
+
+	* LundFragHandler.[h, cc]: Added Stop exception specification for
+	handle() method.
+
+2000-03-24  Leif Lönnblad  <leif@thep.lu.se>
+
+	* LundZGenerator.cc, LundPtGenerator.cc, LundFragHandler.cc:
+	Added units to some parameter definitions.
+
+2000-03-23  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* EndPoint.icc: 
+	- mass() touched for debugging - 
+	  problem Diquark constituent mass != nominal mass
+	
+	* LundFragHandler.icc: 
+	- comment on the destructor suppressed
+
+2000-03-22  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* ZGenerator.[h, icc, cc]:
+	- generate() made const
+	- documentation added
+
+	* LundZGenerator.[h, icc, cc]: 
+	- New ZGenerator including Diquark, HeavyQuark (Bowler) implementation
+	- new parameter deltaDQ, rQc added and fully interfaced
+	- Coefficients for internal description added -> all mutable
+	- added af(), bf, cf() to return internal Coefficients
+	- a(), b(), become aSym(), bSym() 
+	- cc becomes theCf; no more in the constructor list
+	- new methods setShape() and rQ() to set the form of the flavour dependent
+	  of the Lund Symmetric Fragmentation function
+	- smallZmax() and largeZmax() modified to take the Zmax value
+		
+2000-03-20  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* EndPoint.icc: 
+	- stepUp() and stepDown() forward stepping procedure to 
+	the String::nextUp(), String::nextDown(), methods 
+	
+	* String.h, String.cc: 
+	- nextUp(), nextDown() methods added to move 
+	  in the string region map - Avoid EndPoint class 
+	  ti use StringRegion::j(), k()  accessors.
+	
+2000-03-17  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* StringRegion.[h,icc,cc]: 
+	- minor changes in the constructor, Documentation added
+
+	* LundFragHandler.[h,icc,cc]: 
+	- Documentation added
+	
+	* LundFlavourHandler.[h,icc,cc]: 
+	- class for handling flavour (PopCorn) generation added
+	- compiles ** not yet tested **
+	
+	* Makefile: LundFlavourHandler added  
+
+	* LundFlavourGenerator.h, .icc:
+	- PopCorn interfaces  PopMesonN(tcPDPtr) and  
+          PopSelectCurtainFlavour(tcPDPtr) added
+
+	* EndPoint.h: 
+	- comments added
+
+2000-03-15  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFragHandler.cc: 
+	- Typos in infinit Loop exception corrected
+
+	* EndPoint.icc: 
+	- mass() returns the constituantMass of the quark-diquark
+	  standing at the EndPoint -> no more infinite loop exception 
+	  due to use of current quark.  
+	
+2000-03-14  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h, .cc: 
+	- virtual splitHadron() added ** not yet implemented **
+		
+	* LundPtGenerator.h, .cc: 
+	- generate made const
+	- member pT not used any more
+
+	* PtGenerator.h: 
+	- virtual generate() made const
+	- return pair<,> instead of pair<,> &
+	
+2000-03-13  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFragHandler.xh, .cc: 
+	- LundFragLoopException(), LundFragInitException()  implemented 
+	  to be catched by previous event handlers.  
+	
+	* FragHelpers.h: Touched for debugging - No changes
+
+	* Hadron.icc:
+	- In PData(newPDPtr) newPDPtr can be null, when the joining is rejected 
+	  by the flavour generator.
+	    Particularly for the final configuration (DQ1-DQ2)
+	  test of PData  added before calling the mass() function
+	
+	* LundFragHandler.cc: 
+	- default curtainQ=0 suppressed in generateHadron(...) definition
+
+2000-03-10  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.cc, icc: 
+	- Bug fixed : Diquark test in isDiquark(long) corrected
+	- Bug fixed : (Diquark-quark) test corrected in consistentJoin(long, long)
+
+	* LundFlavourGenerator.cc:
+	- Persistent-Input-Output() modified to read/write the different
+	  vectors (mixingAngles, DQWeight, SU6Tables ...) and the temporary 
+	  POPweight parameters. 
+
+2000-03-09  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.cc, .icc: 
+	- Copy cstor modified to allow copy of user-modified 
+	  flavour generator
+	- initialize() added in doupdate ()  
+	
+2000-03-08  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.cc, .h: 
+	- print() added for debuging
+
+	* FragHelpers.h: 
+	- Bug fixed in sign(long, long) 
+
+	* FragInterface.h: 
+	- fuctions rnd(), abd getParticleData(long) added
+	
+2000-03-07  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.cc, .h: 
+	- PersistentIO functions added
+	- Copy constructor changed
+	- Add initialize() method to init parameters depending on the 
+	  user changes
+
+	* LundFragHandler.cc, .h:
+	- virtual functions for flavour generation added 
+
+2000-03-03  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h, .icc, .cc:	
+	- PopCorn meson methods added 
+	- Interface getRandomFlavour() added to be used by the 
+	  pickFirstEPts() in LundFragHandler
+	- Compliles  - not tested -  
+
+	* LundFragHandler.cc: Fixed bug in the calculation of the 
+	  RndFlavourId in pickFirstEPts().
+	
+2000-03-02  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFlavourGenerator.h, .icc, .cc: 
+	- Baryon production methods added
+	- SU6 Weights not yet implemented
+
+2000-03-01  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* FragHelpers.h: 
+	- sign(long, long) added for Flavour Generator 
+
+	* LundFlavourGenerator.h, .icc, .cc: 
+	- Most of the meson production method added
+	- Corresponding parameter Interfaces added
+	- ** Problems with the Mixing Angles Parameters **
+	- ** and Parameter initialization **
+
+	* EndPoint.h, icc, .cc:
+	- Add first function descriptions 
+	- Change notation of accessors to set/get Pt component 
+	  to cancel the notation ambiguity with Pt()
+	
+2000-02-25  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* LundFragHandler.xh: Added to Pythia7
+
+	* LundFragHandlerBase.cc: Added to Pythia7
+
+	* LundFragHandler.icc: Added to Pythia7
+
+	* LundFragHandler.h: Added to Pythia7
+	- handle() method added
+	- ** LundFragHandler ** do not derive from LundFragHandlerBase 
+	- any more => all LundFragHandlerBase functionalities included 
+	  in LundFragHandler
+	- Use default constructor for RCPtr.
+	- Set Interfaced parameters  
+	- Set Units
+
+	* LundFragHandlerBase.cc: Added to Pythia7
+
+	* LundFragHandlerBase.icc: Added to Pythia7
+
+	* LundFragHandlerBase.h: Added to Pythia7
+
+	* LundFlavourGenerator.cc: 
+	- Access to PD as getParticleData(long)
+	- No local DBase
+	
+	* LundFlavourGenerator.icc: 
+	- Add Inteface methods 
+	
+	* LundFlavourGenerator.h: Add the trivial Flavour Generator
+	- Change input cPDPtr to tcPDPtr in virtual function
+	- Change Handlers/FlavourGenerator virtual functions
+	- Add Inteface methods 
+
+	* LundZGenerator.cc: Added to Pythia7
+	
+	* LundZGenerator.icc: Added to Pythia7
+
+	* LundZGenerator.h: Added to Pythia7
+	- Add Interface methods and Parameters
+	- Add copy constructor
+	- Set units
+	
+	* ZGenerator.cc: Added to Pythia7
+	- Add Standard Interface methods 
+
+	* ZGenerator.icc: Added to Pythia7
+	
+	* ZGenerator.h: Added to Pythia7
+	- Add Interface methods
+	- Add local rnd()
+	
+	* LundPtGenerator.cc: Added to Pythia7
+	- Add Interface methods and Parameters
+	
+	* LundPtGenerator.icc: Added to Pythia7
+
+	* LundPtGenerator.h: Added to Pythia7
+	- Add Copy Constructor for Clone method
+	- Add Interface methods and Parameters
+	- Inherit rnd() from PtGenerator()
+	- Set units
+
+	* PtGenerator.cc: Added to Pythia7
+	- Add Standard Interface methods 
+
+	* PtGenerator.icc: Added to Pythia7
+
+	* PtGenerator.h: Added to Pythia7
+        - Add Standard Interface methods 
+	- Add local rnd()  
+	
+	* Hadron.icc: Added to Pythia7
+
+	* Hadron.h: Added to Pythia7
+	- Use Pointer defaults constructor to initialize PDPtr
+	- Change createParticle() by PD::produceParticle()
+	- Set units
+
+	* EndPoint.cc: Added tp Pythia7
+	- Set units
+
+	* EndPoint.icc: Added to Pythia7
+	- Use Pointer defaults constructor to initialize PDPtr
+
+	* EndPoint.h: Added to Pythia7
+	- Set units
+
+	* StringRegion.cc: Added to Pythia7
+	- Set units
+	
+	* StringRegion.icc: Added to Pythia7
+	- Set units
+	
+	* StringRegion.h: Added to Pythia7 
+	- Change Threevector to Momentum3 
+	- Suppress Index() and W2totRem() 	    
+	- Set units 
+	
+	* FragConfig.h: Added to Pythia7
+	- Add pointer to Lund Generators and Lund Frag Handler
+	- Add FragHelpers for PTComp and LorentzVector 
+	- Add new unit InvEnergy4
+	
+	* OrientedIndex.h: Added to Pythia7
+	- No Change
+
+	* Oriented.h: Added Oriented to Pythia7
+	- No Change
+	
+	* String.cc: Added to Pythia7
+	- Set Units 
+	
+	* String.icc: Added to Pythia7
+	- Set units in constructors
+	
+	* String.h: Added  String to Pythia7
+	- Change PDT::gluon to  ParticleID::g
+	- Suppress member theInputSystem, theType, W2rem 
+	- Suppress firstPD(), lastPD(), ofqqbarSystem(), 
+	  checkStringRegionIndex(int,int), String(const PV &)  
+	- Set units 
+
+2000-01-17  Marc Bertini  <marc@odin.thep.lu.se>
+
+	* Here we go!
+

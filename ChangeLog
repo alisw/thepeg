@@ -1,0 +1,132 @@
+2008-05-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* *** GLOBAL ***: added libtool 2.2.4 scripts, updated autotools dependencies
+
+2007-10-23  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* quiet.pl: Adapted to work on later versions of automake.
+
+2007-07-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* *** GLOBAL ***: renamed CLHEPWrap to Vectors
+
+2006-10-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile.am: Added a check-local target which scans the log
+	files for possible exceptions.
+
+2006-07-28  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl: Some simple enhancements.
+
+2006-07-24  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile.am: Removed the F77ThePEG subdirectory since we do not
+	want to use the old PDFLIB anymore.
+
+2005-09-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* This is just a test to see if I can check into the new
+	repository.
+
+2005-09-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Put all template specializations in conditional
+	doxygen section called TRAITSPECIALIZATIONS. Also put Exception
+	classes in the EXCEPTIONCLASSES section.
+
+2005-09-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* test/configure.ac: Now uses AC_SEARCH_CLHEP and AC_SEARCH_THEPEG
+	instead of AC_CHECK_CLHEP and AC_CHECK_THEPEG.
+
+	* auto.pl: Now copies acinclude.m4 to the relevant subdirectories
+	if necessary.
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Various changes related to changes in the LorentzRotation 
+
+2005-06-21  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl: Added timing of make check and distcheck.
+
+2005-06-18  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl: Included options to make check and distcheck in one
+	go. Also added possibility to tee to a file.
+
+2005-06-17  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* test/configure.ac: Change name of FTNPDF to F77ThePEG.
+
+	* test/*/Makefile.am: Make sure make all fixes links from srcdir.
+
+2005-06-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, Makefile.am: Changed the name of the FTNPDF
+	directory to F77ThePEG.
+
+2005-06-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* */*/Makefile.am: Always run check-local.
+
+2005-06-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl, quiet.pl: Cosmetics.
+
+2005-06-11  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* test/*/Makefile.am: Fixed installcheck target.
+
+	* auto.pl: Quiet is now the default. Use -v to get standard
+	verbose makefiles. Use -c to also run configure without arguments
+	after autoconf. If additional arguments are given, only do
+	autoconf in those subdirectories (otherwise use the SUBDIRS
+	variable in the Makefile.am).
+
+2005-06-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* */*/Makefile.am: Fixes to make distcheck work properly.
+
+	* quiet.pl: Cosmetics.
+
+2005-06-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, Makefile.am: Added Ariande subdirectory.
+
+	* *** GLOBAL ***: Merged with libtool-devel branch.
+
+2005-06-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl: Changed order of auto-configurations.
+
+2005-06-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* test/acinclude.m4: removed. using ThePEG/acinclude.m4 instead.
+	
+	* auto.pl: Included autoheader for directories where it is neded.
+
+2005-06-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* configure.ac, Makefile.am: Added test subdirectory.
+
+	* auto.pl: Added --foreign option to automake.
+
+2005-06-01  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Makefile.am: Added FTNPDF subdir.
+
+	* auto.pl: if called with -q, the Makefile.in files will be made
+	quiet with quiet.pl
+
+	* quiet.pl: Added script to automatically edit the Makefile.in
+	files to make them quiet by default (unless SHOWCOMMAND is
+	defined). This is to avoid the huge amount of (usually
+	unnecessary) information produced by the libtool compilation.
+
+2005-05-31  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* auto.pl: Added script to go through subdirectories and run
+	aclocal, autoconf, libtoolize and automake.
+

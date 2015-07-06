@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// PartonExtractor.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_PartonExtractor_XH
+#define ThePEG_PartonExtractor_XH
+//
+// This is the declarations of the exception classes used by the
+// PartonExtractor class.
+//
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by PartonExtractor if the colour connections
+    to the remnants fails. */
+struct RemColException: public Exception {
+  /** Standard constructor. */
+  RemColException(const PartonExtractor &);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_PartonExtractor_XH */
+

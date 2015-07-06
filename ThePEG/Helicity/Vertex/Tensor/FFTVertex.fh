@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FFTVertex class.
+//
+#ifndef ThePEG_FFTVertex_FH
+#define ThePEG_FFTVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class FFTVertex;
+ThePEG_DECLARE_POINTERS(FFTVertex,FFTVertexPtr);
+
+}
+}
+#endif

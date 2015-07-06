@@ -1,0 +1,16 @@
+// -*- C++ -*-
+#ifndef ThePEG_UseRandom_FH
+#define ThePEG_UseRandom_FH
+//
+// This is the forward declaration of the UseRandom class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class UseRandom;
+
+}
+
+#endif /* ThePEG_UseRandom_FH */

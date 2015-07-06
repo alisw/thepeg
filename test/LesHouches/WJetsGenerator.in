@@ -1,0 +1,93 @@
+mkdir /LesHouchesTest
+cd /LesHouchesTest
+library LesHouches.so
+library MadGraphReader.so
+
+cp /Defaults/Generators/DefaultStrategy DefaultStrategy
+cp /Defaults/Particles/p+ p+
+cp /Defaults/Partons/GRV94L GRV94L
+cp /Defaults/Partons/GRV94M GRV94M
+set p+:PDF GRV94M
+set pbar-:PDF GRV94M
+insert DefaultStrategy:LocalParticles[0] p+
+insert DefaultStrategy:LocalParticles[0] pbar-
+
+create ThePEG::Cuts QCDCuts
+# set QCDCuts:X1Max 0.9
+# set QCDCuts:X2Max 0.9
+# set QCDCuts:YHatMin 0
+set QCDCuts:MHatMin 50
+# set QCDCuts:YHatMin 0
+
+# create ThePEG::ReweightConstant Bias ReweightConstant.so
+# set Bias:C 2.0
+
+create ThePEG::MadGraphReader W3jets
+set W3jets:FileName W3jets.dat.gz
+# set W3jets:CacheFileName W3cache.dat.gz
+set W3jets:BeamA 2212
+set W3jets:BeamB -2212
+set W3jets:EBeamA 980
+set W3jets:EBeamB 980
+set W3jets:PDFA GRV94L
+set W3jets:PDFB GRV94L
+set W3jets:Cuts QCDCuts
+set W3jets:FixedScale 10
+# set W3jets:ReweightPDF 1
+# set W3jets:CutEarly false
+# set W3jets:CutCached Yes
+# insert W3jets:Preweights[0] Bias
+
+cp W3jets W2jets
+set W2jets:FileName W2jets.dat.gz
+# set W2jets:CacheFileName W2cache.dat.gz
+
+cp W3jets W1jets
+set W1jets:FileName W1jets.dat.gz
+# set W1jets:CacheFileName W1cache.dat.gz
+
+cp W3jets W0jets
+set W0jets:FileName W0jets.dat.gz
+# set W0jets:CacheFileName W0cache.dat.gz
+
+create ThePEG::LesHouchesEventHandler WJetEvents
+# insert WJetEvents:LesHouchesReaders[0] W0jets
+# insert WJetEvents:LesHouchesReaders[0] W1jets
+# insert WJetEvents:LesHouchesReaders[0] W2jets
+insert WJetEvents:LesHouchesReaders[0] W3jets
+cp /Defaults/Handlers/StandardExtractor QCDExtractor
+set WJetEvents:PartonExtractor QCDExtractor
+set WJetEvents:StatLevel 2
+set WJetEvents:Cuts QCDCuts
+set WJetEvents:CascadeHandler /Pythia7/Handlers/Shower/StdShower
+set WJetEvents:HadronizationHandler /Pythia7/Handlers/StringFrag/StdFragHandler
+set WJetEvents:DecayHandler /Pythia7/Handlers/Decay/StdDecay
+# set WJetEvents:StatLevel 3
+set WJetEvents:WarnPNum false
+
+create ThePEG::EventGenerator WJetsGenerator
+set WJetsGenerator:EventHandler WJetEvents
+cp /Defaults/Random StdRandom
+cp /Defaults/StandardModel StandardModel
+cp /Defaults/AlphaS O1AlphaS
+set StandardModel:QCD/RunningAlphaS O1AlphaS
+set O1AlphaS:LambdaFlav 4
+set O1AlphaS:LambdaQCD 0.2322
+cp /Defaults/AlphaEM AlphaEM
+set StandardModel:EW/RunningAlphaEM AlphaEM
+cp /Defaults/CKM CKM
+set StandardModel:EW/CKM CKM
+set WJetsGenerator:RandomNumberGenerator StdRandom
+set WJetsGenerator:StandardModelParameters StandardModel
+set WJetsGenerator:Strategy DefaultStrategy
+set WJetsGenerator:NumberOfEvents 1000
+set WJetsGenerator:DebugLevel 1
+set WJetsGenerator:PrintEvent 10
+saverun WJetsGenerator WJetsGenerator
+# set W3jets:CutCached Yes
+# makerun WJetsGenerator0 WJetsGenerator
+# set QCDCuts:YHatMin 0
+# makerun WJetsGenerator1 WJetsGenerator
+# set QCDCuts:YHatMin -100
+# set QCDCuts:YHatMax 0
+# makerun WJetsGenerator2 WJetsGenerator

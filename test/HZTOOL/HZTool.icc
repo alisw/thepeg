@@ -1,0 +1,29 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HZTool class.
+//
+
+namespace ThePEG {
+
+inline HZTool::HZTool()
+  : theFilename(""), sumweight(0.0) {}
+
+inline HZTool::HZTool(const HZTool & x)
+  : AnalysisHandler(x), theFilename(x.theFilename),
+    functionNames(x.functionNames), functions(x.functions),
+    sumweight(x.sumweight) {}
+
+inline IBPtr HZTool::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr HZTool::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline string HZTool::filename() const {
+  return theFilename;
+}
+
+}

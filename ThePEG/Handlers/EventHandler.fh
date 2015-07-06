@@ -1,0 +1,18 @@
+// -*- C++ -*-
+#ifndef ThePEG_EventHandler_FH
+#define ThePEG_EventHandler_FH
+//
+// This is the forward declaration of the EventHandler class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class EventHandler;
+
+ThePEG_DECLARE_CLASS_POINTERS(EventHandler,EHPtr);
+
+}
+
+#endif /* ThePEG_EventHandler_FH */

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EmitterBase class.
+//
+#ifndef Ariadne5_EmitterBase_FH
+#define Ariadne5_EmitterBase_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Ariadne5 {
+
+class EmitterBase;
+
+ThePEG_DECLARE_POINTERS(Ariadne5::EmitterBase,EmitterPtr);
+
+}
+
+#endif

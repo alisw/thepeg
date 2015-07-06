@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VVVVVertex class.
+//
+#ifndef ThePEG_VVVVVertex_FH
+#define ThePEG_VVVVVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class VVVVVertex;
+ThePEG_DECLARE_POINTERS(VVVVVertex,VVVVVertexPtr);
+
+}
+}
+
+#endif

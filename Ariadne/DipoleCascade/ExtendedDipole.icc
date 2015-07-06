@@ -1,0 +1,49 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ExtendedDipole class.
+//
+
+namespace Ariadne {
+
+inline ExtendedDipole::ExtendedDipole() {}
+
+inline ExtendedDipole::ExtendedDipole(const ExtendedDipole & x)
+  : Dipole(x), theISoftRem(x.theISoftRem), theOSoftRem(x.theOSoftRem), 
+  theIHardRem(x.theIHardRem), theOHardRem(x.theOHardRem) {}
+
+inline ExtendedDipole::~ExtendedDipole() {}
+
+inline tSoftRemPtr ExtendedDipole::oSoftRem() const {
+  return theOSoftRem;
+}
+
+inline void ExtendedDipole::oSoftRem(tSoftRemPtr x) {
+  theOSoftRem = x;
+}
+
+inline tSoftRemPtr ExtendedDipole::iSoftRem() const {
+  return theISoftRem;
+}
+
+inline void ExtendedDipole::iSoftRem(tSoftRemPtr x) {
+  theISoftRem = x;
+}
+
+inline tHardRemPtr ExtendedDipole::oHardRem() const {
+  return theOHardRem;
+}
+
+inline void ExtendedDipole::oHardRem(tHardRemPtr x) {
+  theOHardRem = x;
+}
+
+inline tHardRemPtr ExtendedDipole::iHardRem() const {
+  return theIHardRem;
+}
+
+inline void ExtendedDipole::iHardRem(tHardRemPtr x) {
+  theIHardRem = x;
+}
+
+}

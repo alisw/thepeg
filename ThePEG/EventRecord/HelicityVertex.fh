@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HelicityVertex class.
+//
+#ifndef ThePEG_HelicityVertex_FH
+#define ThePEG_HelicityVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+ThePEG_DECLARE_CLASS_POINTERS(HelicityVertex,VertexPtr);
+
+}
+
+#endif

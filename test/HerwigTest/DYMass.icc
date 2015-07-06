@@ -1,0 +1,57 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DYMass class.
+//
+
+namespace ThePEG {
+
+inline DYMass::DYMass()
+  : hist(0), vhist(0) {}
+
+inline DYMass::DYMass(const DYMass & x)
+  : AnalysisHandler(x), hist(0), vhist(0) {}
+
+inline IBPtr DYMass::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DYMass::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void DYMass::doupdate() throw(UpdateException) {
+  AnalysisHandler::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void DYMass::doinit() throw(InitException) {
+  AnalysisHandler::doinit();
+}
+
+inline void DYMass::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  AnalysisHandler::rebind(trans);
+}
+
+inline IVector DYMass::getReferences() {
+  IVector ret = AnalysisHandler::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

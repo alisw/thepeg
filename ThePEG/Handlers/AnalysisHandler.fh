@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_AnalysisHandler_FH
+#define ThePEG_AnalysisHandler_FH
+//
+// This is the forward declaration of the AnalysisHandler class.
+//
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class AnalysisHandler;
+ThePEG_DECLARE_POINTERS(AnalysisHandler,AnalysisHdlPtr);
+
+}
+
+#endif /* ThePEG_SubProcessHandler_FH */

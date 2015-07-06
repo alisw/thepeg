@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSTVertex class.
+//
+#ifndef ThePEG_SSTVertex_FH
+#define ThePEG_SSTVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class SSTVertex;
+ThePEG_DECLARE_POINTERS(SSTVertex,SSTVertexPtr);
+
+}
+}
+
+#endif

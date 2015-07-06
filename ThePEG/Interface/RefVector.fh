@@ -1,0 +1,18 @@
+// -*- C++ -*-
+#ifndef ThePEG_RefVector_FH
+#define ThePEG_RefVector_FH
+//
+// This is the forward declaration of the RefVector and RefVectorBase
+// classes.
+//
+
+namespace ThePEG {
+
+class RefVectorBase;
+
+template <class T, class R>
+class RefVector;
+
+}
+
+#endif /* ThePEG_RefVector_FH */

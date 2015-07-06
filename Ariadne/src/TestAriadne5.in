@@ -1,0 +1,13 @@
+mkdir /Ariadne5/SimpleLEP
+cd /Ariadne5/SimpleLEP
+cp /Ariadne5/Generators/LEP/LEPGenerator SimpleLEPGenerator
+set SimpleLEPGenerator:NumberOfEvents 10000
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+# saverun TestAriadne5 SimpleLEPGenerator
+# create ThePEG::Settings test
+# do test:set SimpleLEPGenerator:NumberOfEvents 100
+# cp /Ariadne5/Generators/LEP/LEPHandler testhandler
+# do test:set SimpleLEPGenerator:EventHandler testhandler
+# insert SimpleLEPGenerator:DefaultObjects[0] test
+saverun TestAriadne5 SimpleLEPGenerator

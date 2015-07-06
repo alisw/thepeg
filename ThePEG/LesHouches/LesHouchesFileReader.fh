@@ -1,0 +1,14 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LesHouchesFileReader class.
+//
+#ifndef ThePEG_LesHouchesFileReader_FH
+#define ThePEG_LesHouchesFileReader_FH
+
+namespace ThePEG {
+
+class LesHouchesFileReader;
+
+}
+
+#endif

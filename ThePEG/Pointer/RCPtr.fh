@@ -1,0 +1,29 @@
+// -*- C++ -*-
+#ifndef ThePEG_RCPtr_FH
+#define ThePEG_RCPtr_FH
+//
+// This is the forward declaration of the RCPtrBase, RCPtr,
+// ConstRCPtr, TransientRCPtr and TransientConstRCPtr classes.
+//
+
+namespace ThePEG {
+namespace Pointer {
+
+class RCPtrBase;
+
+template <typename T>
+class RCPtr;
+
+template <typename T>
+class ConstRCPtr;
+
+template <typename T>
+class TransientRCPtr;
+
+template <typename T>
+class TransientConstRCPtr;
+
+}
+}
+
+#endif /* ThePEG_RCPtr_FH */

@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the AbstractVVSVertex class.
+//
+#ifndef HELICITY_AbstractVVSVertex_FH
+#define HELICITY_AbstractVVSVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class AbstractVVSVertex;
+
+namespace VertexType {
+  typedef unsigned T;
+  /**
+   *  Enum for this Lorentz structure
+   */
+  const T VVS = 331;
+}
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Helicity::AbstractVVSVertex,AbstractVVSVertexPtr);
+
+}
+
+#endif

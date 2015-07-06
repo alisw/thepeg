@@ -1,0 +1,18 @@
+// -*- C++ -*-
+#ifndef ThePEG_Reference_FH
+#define ThePEG_Reference_FH
+//
+// This is the forward declaration of the Reference and ReferenceBase
+// classes.
+//
+
+namespace ThePEG {
+
+class ReferenceBase;
+
+template <class T, class R>
+class Reference;
+
+}
+
+#endif /* ThePEG_Reference_FH */

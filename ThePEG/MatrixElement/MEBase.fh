@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEBase class.
+//
+#ifndef ThePEG_MEBase_FH
+#define ThePEG_MEBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class MEBase;
+ThePEG_DECLARE_POINTERS(MEBase,MEPtr);
+
+/** A vector of pointers to MEBase objects. */
+typedef vector<MEPtr> MEVector;
+
+}
+
+#endif

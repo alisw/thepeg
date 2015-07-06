@@ -1,0 +1,18 @@
+cd /Defaults/Generators
+set SimpleLEPGenerator:NumberOfEvents 100
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set SimpleLEPGenerator:EventHandler:DecayHandler NULL
+set SimpleLEPGenerator:DumpPeriod 7000
+set SimpleLEPGenerator:EventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/StringFragmenter
+set SimpleLEPGenerator:EventHandler:DecayHandler NULL
+set /TheP8I/Particles/e+:PDF /Defaults/Partons/SimpleLeptonPDF
+set /TheP8I/Particles/e-:PDF /Defaults/Partons/SimpleLeptonPDF
+set SimpleLEPGenerator:Strategy /TheP8I/StdStrategy
+cp /TheP8I/Handlers/StringFrag/StringFragmenter dummy
+insert /TheP8I/StdStrategy:DefaultObjects[0] dummy
+set dummy:StringZ_epsilonC 0.051
+set /TheP8I/Handlers/StringFrag/StringFragmenter:StringZ_epsilonC 0.049
+
+saverun TestJunctions SimpleLEPGenerator

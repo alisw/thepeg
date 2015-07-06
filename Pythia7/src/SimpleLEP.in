@@ -1,0 +1,11 @@
+cd /Pythia7/Generators
+set StdLEP:NumberOfEvents 10000
+set StdLEP:DebugLevel 1
+set StdLEP:PrintEvent 10
+cp /Defaults/Particles/Z0 /Pythia7/Particles/Z0
+set /Pythia7/Particles/Z0:NominalMass 92
+cp /Defaults/Particles/pi0 /Pythia7/Particles/pi0
+set /Pythia7/Particles/pi0:Stable Stable
+set /Pythia7/StdStrategy:LocalParticlesDir /Pythia7/Particles
+set /Pythia7/Handlers/StringFrag/StdFragHandler:maxLoop 1000
+saverun SimpleLEP StdLEP

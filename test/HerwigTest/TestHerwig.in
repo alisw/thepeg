@@ -1,0 +1,33 @@
+cd /Pythia7/Generators
+set StdLHC:NumberOfEvents 20000
+set StdLHC:DebugLevel 1
+set StdLHC:PrintEvent 10
+cp /Defaults/Particles/pi0 /Pythia7/Particles/pi0
+set /Pythia7/Particles/pi0:Stable 1
+insert /Pythia7/StdStrategy:LocalParticles[0] /Pythia7/Particles/pi0
+cd /Pythia7/Handlers/SubProcesses
+create Herwig++::MEqq2gZ2ll MEqq2gZ2ll MEqq2gZ2ll.so
+erase StdQCD:MatrixElements[7]
+erase StdQCD:MatrixElements[6]
+erase StdQCD:MatrixElements[5]
+erase StdQCD:MatrixElements[4]
+erase StdQCD:MatrixElements[3]
+erase StdQCD:MatrixElements[2]
+erase StdQCD:MatrixElements[1]
+erase StdQCD:MatrixElements[0]
+insert StdQCD:MatrixElements[0] MEqq2gZ2ll
+mkdir /Analysis
+cd /Analysis
+create ThePEG::DYMass DYMass DYMass.so
+cd /Pythia7/Generators
+set /Pythia7/Handlers/Cuts/QCDCuts:MHatMin 1000
+set /Pythia7/Handlers/Event/StdLHC:CascadeHandler NULL
+set /Pythia7/Handlers/Event/StdLHC:HadronizationHandler NULL
+set /Pythia7/Handlers/Event/StdLHC:DecayHandler NULL
+set /Pythia7/Handlers/Sampler/ACDC:Ntry 1000
+insert StdLHC:AnalysisHandlers[0] /Analysis/DYMass
+create ThePEG::LWHFactory LWHFactory LWHFactory.so
+set StdLHC:HistogramFactory LWHFactory
+# set LWHFactory:StoreType flat
+# set LWHFactory:Suffix dat
+saverun TestHerwig StdLHC

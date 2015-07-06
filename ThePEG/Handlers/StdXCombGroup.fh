@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the StdXCombGroup class.
+//
+#ifndef ThePEG_StdXCombGroup_FH
+#define ThePEG_StdXCombGroup_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class StdXCombGroup;
+ThePEG_DECLARE_POINTERS(StdXCombGroup,StdXCombGroupPtr);
+
+}
+
+#endif

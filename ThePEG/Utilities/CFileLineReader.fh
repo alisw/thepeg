@@ -1,0 +1,14 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CFileLineReader class.
+//
+#ifndef ThePEG_CFileLineReader_FH
+#define ThePEG_CFileLineReader_FH
+
+namespace ThePEG {
+
+class CFileLineReader;
+
+}
+
+#endif

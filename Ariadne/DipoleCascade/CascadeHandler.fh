@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CascadeHandler class.
+//
+#ifndef ThePEG_CascadeHandler_FH
+#define ThePEG_CascadeHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class CascadeHandler;
+ThePEG_DECLARE_POINTERS(Ariadne::CascadeHandler,HandlerPtr);
+
+}
+
+#endif

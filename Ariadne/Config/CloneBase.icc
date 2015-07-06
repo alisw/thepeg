@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CloneBase class.
+//
+
+namespace Ariadne {
+
+inline CloneBase::CloneBase() {}
+
+inline CloneBase::CloneBase(const CloneBase & x)
+  : Base(x) {}
+
+inline CloneBase::~CloneBase() {}
+
+inline void CloneBase::fillReferences(CloneSet &) const {}
+
+inline void CloneBase::rebind(const TranslationMap & trans) {}
+
+}

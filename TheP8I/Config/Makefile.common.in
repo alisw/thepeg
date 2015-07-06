@@ -1,0 +1,8 @@
+
+include ../../ThePEG/Config/Makefile.common
+
+INSTALLINCLUDE = $(PREFIX)/include/TheP8I
+
+# Local Variables:
+# mode: makefile
+# End:

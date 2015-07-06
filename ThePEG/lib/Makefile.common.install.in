@@ -1,0 +1,67 @@
+THEPEGLIB = @THEPEGLIB@
+
+ifdef SHOWCOMMAND
+THEPEGLIBTOOL = $(THEPEGLIB)/libtool
+else
+THEPEGLIBTOOL = $(THEPEGLIB)/libtool --quiet
+endif
+
+THEPEGINCLUDE = @THEPEGINCLUDE@
+
+AM_CXXFLAGS = @AM_CXXFLAGS@
+
+CXX = @CXX@
+
+CXXFLAGS = @CXXFLAGS@
+
+LN_S = @LN_S@
+
+CXXCOMPILE = $(THEPEGLIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CXXFLAGS) $(AM_CXXFLAGS) $(THEPEGINCLUDE) $(CLHEPINCLUDE) $(INCLUDES)
+
+CUR = 0
+REV = 0
+AGE = 0
+VERS = $(CUR):$(REV):$(AGE)
+
+CXXLINK = $(THEPEGLIBTOOL) --tag=CXX --mode=link $(CXX) -rpath `pwd`
+
+all: $(OBJECTS)
+
+%.lo: %.cc
+ifdef SHOWCOMMAND
+	$(CXXCOMPILE) -o $*.lo $<
+else
+	@echo "compiling $@ ..."
+	@$(CXXCOMPILE) -o $*.lo $<
+endif
+
+
+%.so: %.lo
+ifdef SHOWCOMMAND
+	$(CXXLINK) -module -version-info $(VERS) -o $*.la $<
+	for f in $@ $@.$(CUR) $@.$(CUR).$(REV).$(AGE); do \
+	  rm -f $$f; if test -f .libs/$$f; then $(LN_S) .libs/$$f $$f; fi; done
+else
+	@echo "linking $@ ..."
+	@$(CXXLINK) -module -version-info $(VERS) -o $*.la $<
+	@for f in $@ $@.$(CUR) $@.$(CUR).$(REV).$(AGE); do \
+	  rm -f $$f; if test -f .libs/$$f; then $(LN_S) .libs/$$f $$f; fi; done
+endif
+
+lib%.so:
+ifdef SHOWCOMMAND
+	$(CXXLINK) -module -version-info $(VERS) -o lib$*.la $^
+	for f in $@ $@.$(CUR) $@.$(CUR).$(REV).$(AGE); do \
+	  rm -f $$f; if test -f .libs/$$f; then $(LN_S) .libs/$$f $$f; fi; done
+else
+	@echo "linking $@ ..."
+	@$(CXXLINK) -module -version-info $(VERS) -o lib$*.la $^
+	@for f in $@ $@.$(CUR) $@.$(CUR).$(REV).$(AGE); do \
+	  rm -f $$f; if test -f .libs/$$f; then $(LN_S) .libs/$$f $$f; fi; done
+endif
+
+clean:
+	rm -f *.lo *.la *.so* $(CLEANFILES)
+	rm -rf .libs
+
+

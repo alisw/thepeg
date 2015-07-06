@@ -1,0 +1,5 @@
+DOCFILES = ACDCGenConfig.h ACDCGen.h ACDCGenCell.h ACDCTraits.h
+
+INCLUDEFILES = $(DOCFILES) ACDCGen.icc ACDCGenCell.icc
+
+noinst_HEADERS= $(INCLUDEFILES)

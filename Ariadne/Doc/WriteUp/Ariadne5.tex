@@ -1,0 +1,139 @@
+% Template article for preprint document class `elsart'
+% SP 2006/04/26
+
+\documentclass{elsart}
+
+% Use the option doublespacing or reviewcopy to obtain double line spacing
+% \documentclass[doublespacing]{elsart}
+
+% if you use PostScript figures in your article
+% use the graphics package for simple commands
+% \usepackage{graphics}
+% or use the graphicx package for more complicated commands
+% \usepackage{graphicx}
+% or use the epsfig package if you prefer to use the old commands
+% \usepackage{epsfig}
+
+% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+
+% The lineno packages adds line numbers. Start line numbering with
+% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+% for the whole article with \linenumbers.
+% \usepackage{lineno}
+
+% \linenumbers
+
+\input mydefs.tex
+
+\begin{document}
+
+\begin{frontmatter}
+
+% Title, authors and addresses
+
+% use the thanksref command within \title, \author or \address for footnotes;
+% use the corauthref command within \author for corresponding author footnotes;
+% use the ead command for the email address,
+% and the form \ead[url] for the home page:
+% \title{Title\thanksref{label1}}
+% \thanks[label1]{}
+% \author{Name\corauthref{cor1}\thanksref{label2}}
+% \ead{email address}
+% \ead[url]{home page}
+% \thanks[label2]{}
+% \corauth[cor1]{}
+% \address{Address\thanksref{label3}}
+% \thanks[label3]{}
+
+\title{Ariadne version 5}
+
+% use optional labels to link authors explicitly to addresses:
+% \author[label1,label2]{}
+% \address[label1]{}
+% \address[label2]{}
+
+\author{Nils Lavesson and Leif Lönnblad}
+
+\address{Department of Theoretical Physics, Lund University,\\
+  Sölvegatan 14A, S-223 62 Lund, Sweden\\
+  Nils.Lavesson@thep.lu.se and Leif.Lonnblad@thep.lu.se }
+
+\begin{abstract}
+  We present the fifth version of the Ariadne program for generating
+  QCD cascades according to the Colour Dipole Cascade Model.
+
+  This version is a complete re-write of the program in C++ using the
+  framework of ThePEG.
+
+  The main new features of this version is a reformulation of the
+  initial-state gluon radiation and the inclusion of CKKW-matching to
+  fixed order matrix elements both for \tee-annihilation
+  lepton--hadron deeply inelastic scattering and hadron--hadron
+  collisions.
+
+\end{abstract}
+
+\begin{keyword}
+% keywords here, in the form: keyword \sep keyword
+QCD Cascades \sep Event Generators
+% PACS codes here, in the form: \PACS code \sep code
+\PACS 
+\end{keyword}
+\end{frontmatter}
+
+% main text
+\section{Introduction}
+\label{sec:intro}
+
+
+
+\section{The Colour Dipole Cascade Model}
+\label{sec:colo-dipole-casc}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% The Appendices part is started with the command \appendix;
+% appendix sections are then done as normal sections
+% \appendix
+
+% \section{}
+% \label{}
+
+\begin{thebibliography}{00}
+
+% \bibitem{label}
+% Text of bibliographic item
+
+% notes:
+% \bibitem{label} \note
+
+% subbibitems:
+% \begin{subbibitems}{label}
+% \bibitem{label1}
+% \bibitem{label2}
+% If there is a note, it should come last:
+% \bibitem{label3} \note
+% \end{subbibitems}
+
+\bibitem{}
+
+\end{thebibliography}
+
+\end{document}
+

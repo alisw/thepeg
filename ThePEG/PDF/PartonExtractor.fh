@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_PartonExtractor_FH
+#define ThePEG_PartonExtractor_FH
+//
+// This is the forward declaration of the PartonExtractor class.
+//
+
+namespace ThePEG {
+
+class PartonExtractor;
+
+}
+
+#endif /* ThePEG_PartonExtractor_FH */

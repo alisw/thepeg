@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FermionSpinInfo class.
+//
+#ifndef ThePEG_LorentzSpinorBar_FH
+#define ThePEG_LorentzSpinorBar_FH
+
+namespace ThePEG {
+namespace Helicity {
+
+template<typename>
+class LorentzSpinorBar;
+
+}
+}
+
+#endif

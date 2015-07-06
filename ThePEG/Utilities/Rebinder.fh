@@ -1,0 +1,12 @@
+// -*- C++ -*-
+#ifndef ThePEG_Rebinder_FH
+#define ThePEG_Rebinder_FH
+
+namespace ThePEG {
+
+template <typename T>
+class Rebinder;
+
+}
+
+#endif /* ThePEG_Rebinder_FH */

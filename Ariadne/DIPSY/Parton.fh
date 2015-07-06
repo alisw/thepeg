@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Parton class.
+//
+#ifndef DIPSY_Parton_FH
+#define DIPSY_Parton_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace DIPSY {
+
+class Parton;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(DIPSY::Parton,PartonPtr);
+
+}
+
+#endif

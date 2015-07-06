@@ -1,0 +1,18 @@
+// -*- C++ -*-
+#ifndef ThePEG_MassGenerator_FH
+#define ThePEG_MassGenerator_FH
+//
+// This is the forward declaration of the MassGenerator class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class MassGenerator;
+
+ThePEG_DECLARE_POINTERS(MassGenerator,MassGenPtr);
+
+}
+
+#endif /* ThePEG_MassGenerator_FH */

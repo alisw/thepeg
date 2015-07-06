@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Exception class.
+//
+
+#ifndef ThePEG_Exception_FH
+#define ThePEG_Exception_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class Exception;
+
+}
+
+#endif /* ThePEG_Exception_FH */
+

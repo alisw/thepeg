@@ -1,0 +1,51 @@
+mkdir /TheP8I/Handlers/StringFrag
+pushd /TheP8I/Handlers/StringFrag
+create TheP8I::StringFragmentation Overlap6StringFragmenter  libTheP8I.so
+#set Overlap6StringFragmenter:OverlapN 6
+#insert Overlap6StringFragmenter:OverlapSigma[0] 0.23723
+#insert Overlap6StringFragmenter:OverlapA[0] 0.3
+#insert Overlap6StringFragmenter:OverlapB[0] 0.8
+#insert Overlap6StringFragmenter:OverlapProbStoUD[0] 0.19
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[0] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[0] 0.027
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[0] 0.09
+#insert Overlap6StringFragmenter:OverlapSigma[1] 0.26523
+#insert Overlap6StringFragmenter:OverlapA[1] 0.2699
+#insert Overlap6StringFragmenter:OverlapB[1] 0.827344
+#insert Overlap6StringFragmenter:OverlapProbStoUD[1] 0.264852
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[1] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[1] 0.0446341
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[1] 0.176991
+#insert Overlap6StringFragmenter:OverlapSigma[2] 0.30643
+#insert Overlap6StringFragmenter:OverlapA[2] 0.2307
+#insert Overlap6StringFragmenter:OverlapB[2] 0.865727
+#insert Overlap6StringFragmenter:OverlapProbStoUD[2] 0.3699
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[2] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[2] 0.0740077
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[2] 0.354951
+#insert Overlap6StringFragmenter:OverlapSigma[3] 0.34595
+#insert Overlap6StringFragmenter:OverlapA[3] 0.2008
+#insert Overlap6StringFragmenter:OverlapB[3] 0.897486
+#insert Overlap6StringFragmenter:OverlapProbStoUD[3] 0.4569
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[3] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[3] 0.101862
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[3] 0.55723
+#insert Overlap6StringFragmenter:OverlapSigma[4] 0.38265
+#insert Overlap6StringFragmenter:OverlapA[4] 0.1777
+#insert Overlap6StringFragmenter:OverlapB[4] 0.923455
+#insert Overlap6StringFragmenter:OverlapProbStoUD[4] 0.528
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[4] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[4] 0.126784
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[4] 0.763948
+#insert Overlap6StringFragmenter:OverlapSigma[5] 0.41651
+#insert Overlap6StringFragmenter:OverlapA[5] 0.1606
+#insert Overlap6StringFragmenter:OverlapB[5] 0.943641
+#insert Overlap6StringFragmenter:OverlapProbStoUD[5] 0.5832
+#insert Overlap6StringFragmenter:OverlapProbSQtoQQ[5] 1.0
+#insert Overlap6StringFragmenter:OverlapProbQQ1toQQ0[5] 0.147398
+#insert Overlap6StringFragmenter:OverlapProbQQtoQ[5] 0.952614
+cp Overlap6StringFragmenter Overlap2StringFragmenter
+#set Overlap2StringFragmenter:OverlapN 2
+cp Overlap6StringFragmenter Overlap1StringFragmenter
+#set Overlap1StringFragmenter:OverlapN 1
+popd

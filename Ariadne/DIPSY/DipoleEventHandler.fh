@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DipoleEventHandler class.
+//
+#ifndef DIPSY_DipoleEventHandler_FH
+#define DIPSY_DipoleEventHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace DIPSY {
+
+class DipoleEventHandler;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(DIPSY::DipoleEventHandler,DipoleEventHandlerPtr);
+
+}
+
+#endif

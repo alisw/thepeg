@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// SimplePhaseSpace.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_SimplePhaseSpace_XH
+#define ThePEG_SimplePhaseSpace_XH
+
+// #include "SimplePhaseSpace.fh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by SimplePhaseSpace. */
+struct ImpossibleKinematics: public std::runtime_error {
+  /** Constructor. */
+  ImpossibleKinematics()
+    : runtime_error("Impossible kinematics in SimplePhaseSpace.") {
+    breakThePEG();
+  }
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_SimplePhaseSpace_XH */
+

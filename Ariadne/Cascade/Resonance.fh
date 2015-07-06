@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Resonance class.
+//
+#ifndef Ariadne5_Resonance_FH
+#define Ariadne5_Resonance_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Ariadne5 {
+
+class Resonance;
+
+ThePEG_DECLARE_POINTERS(Ariadne5::Resonance,ResPtr);
+
+}
+
+#endif

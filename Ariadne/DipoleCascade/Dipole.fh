@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Dipole class.
+//
+#ifndef ThePEG_Dipole_FH
+#define ThePEG_Dipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class Dipole;
+ThePEG_DECLARE_POINTERS(Dipole,DipPtr);
+
+}
+
+#endif

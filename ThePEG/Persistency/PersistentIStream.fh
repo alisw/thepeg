@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_PersistentIStream_FH
+#define ThePEG_PersistentIStream_FH
+//
+// This is the forward declaration of the PersistentIStream class.
+//
+
+namespace ThePEG {
+
+class PersistentIStream;
+
+/** Defines a manipulator function type */
+typedef PersistentIStream & (* PersistentIManip) (PersistentIStream &);
+
+}
+
+#endif /* ThePEG_PersistentIStream_FH */

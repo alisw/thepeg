@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HardRemnant class.
+//
+#ifndef ARIADNE_HardRemnant_FH
+#define ARIADNE_HardRemnant_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class HardRemnant;
+ThePEG_DECLARE_POINTERS(HardRemnant,HardRemPtr);
+
+}
+
+#endif

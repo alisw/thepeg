@@ -1,0 +1,16 @@
+// -*- C++ -*-
+#ifndef ThePEG_RandomGenerator_FH
+#define ThePEG_RandomGenerator_FH
+//
+// This is the forward declaration of the RandomGenerator class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class RandomGenerator;
+
+}
+
+#endif /* ThePEG_RandomGenerator_FH */

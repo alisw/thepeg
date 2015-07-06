@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the WaveFunction class.
+//
+
+namespace DIPSY {
+
+inline WaveFunction::WaveFunction()
+  : theEventHandler(tcDipoleEventHandlerPtr()), theParticle(PDPtr()) {}
+
+inline WaveFunction::WaveFunction(const WaveFunction & x)
+  : HandlerBase(x), theEventHandler(x.theEventHandler),
+    theParticle(x.theParticle) {}
+
+inline tcDipoleEventHandlerPtr WaveFunction::eventHandler() const {
+  return theEventHandler;
+}
+
+inline tcPDPtr WaveFunction::particle() const {
+  return theParticle;
+}
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+}

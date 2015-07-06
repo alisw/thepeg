@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VertexBase class.
+//
+#ifndef ThePEG_VertexBase_FH
+#define ThePEG_VertexBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class VertexBase;
+ThePEG_DECLARE_POINTERS(VertexBase,VertexBasePtr);
+
+}
+}
+
+#endif

@@ -1,0 +1,92 @@
+cd /DIPSY
+
+read Tune30.in
+set stdEmitter:MinusOrderingMode EffectiveParton
+set stdEmitter:PMinusOrdering 1.5
+set stdProton:R0 2.7
+set stdAntiProton:R0 2.7
+mset . DIPSY::DipoleEventHandler LambdaQCD 0.22
+
+set /Defaults/Particles/u:NominalMass 0.33
+set /Defaults/Particles/d:NominalMass 0.33
+set /Defaults/Particles/s:NominalMass 0.5
+set /Defaults/Particles/c:NominalMass 1.5
+set /Defaults/Particles/b:NominalMass 4.8
+
+read RivetAnalyses.in
+
+create DIPSY::HIAnalysis HIAna HIAnalysis.so
+create ThePEG::ProgressLog Logger ProgressLog.so
+set Logger:Interval 600
+set LHCPbPbGenerator:NumberOfEvents 25
+set LHCPbPbEventHandler:PreSamples 0
+set LHCPbPbEventHandler:ConsistencyLevel 0
+set LHCPbPbEventHandler:DecayHandler:MaxLifeTime 10
+set LHCPbPbEventHandler:BGen:Width 20
+set LHCPbPbEventHandler:XSecFn:CheckOffShell false
+insert LHCPbPbGenerator:AnalysisHandlers[0] Logger
+insert LHCPbPbGenerator:AnalysisHandlers[0] HIAna
+set LHCGenerator:EventHandler:EventFiller:PTCut 0.6
+
+# This is the plain run
+saverun LHCPbPb0 LHCPbPbGenerator
+
+create DIPSY::FixedImpactGenerator FixedB FixedImpactGenerator.so
+set FixedB:MaxB = 0.0
+set FixedB:MinB = 0.0
+set LHCPbPbGenerator:EventHandler:BGen FixedB
+
+cp stdFiller SwingFiller
+set SwingFiller:FSSwingTime 1.0
+set SwingFiller:FSSwingTimeStep 0.1
+set LHCPbPbGenerator:EventHandler:EventFiller SwingFiller
+saverun LHCPbPbCC LHCPbPbGenerator
+
+set FixedB:MaxB 3.3
+saverun LHCPbPbC LHCPbPbGenerator
+set SwingFiller:FSSwingTime 0.0
+saverun LHCPbPbC0 LHCPbPbGenerator
+
+create Ariadne5::DipoleSwinger Swinger
+insert RHICGenerator:EventHandler:CascadeHandler:Emitters[0] Swinger
+set Swinger:SizeOpt 1
+do Swinger:SetRmax -2.7
+set Swinger:Lambda 1
+saverun LHCPbPbCNs1r LHCPbPbGenerator
+set Swinger:Lambda 10
+saverun LHCPbPbCNs10r LHCPbPbGenerator
+set Swinger:Lambda 5
+saverun LHCPbPbCNs5r LHCPbPbGenerator
+set Swinger:StringMassCut 2
+saverun LHCPbPbCNs5rC LHCPbPbGenerator
+set Swinger:StringMassCut 0
+set FSOrdering:HardSuppression SoftParameters
+saverun LHCPbPbCNs5rH LHCPbPbGenerator
+do Swinger:SetRmax 2.7
+saverun LHCPbPbCNs5RH LHCPbPbGenerator
+set FSOrdering:HardSuppression Off
+saverun LHCPbPbCNs5R LHCPbPbGenerator
+set Swinger:StringMassCut 2
+saverun LHCPbPbCNs5RC LHCPbPbGenerator
+set Swinger:StringMassCut 0
+set Swinger:RhoCut 100
+saverun LHCPbPbCNs5Rc LHCPbPbGenerator
+set Swinger:RhoCut -1
+do Swinger:SetRmax 6.1
+saverun LHCPbPbCNs5Rr LHCPbPbGenerator
+erase RHICGenerator:EventHandler:CascadeHandler:Emitters[0]
+
+set FixedB:MinB = 0.0
+set SwingFiller:FSSwingTime 8
+set SwingFiller:FSSwingTimeStep 0.4
+
+cp stdEmitter UnorderedEmitter
+set UnorderedEmitter:BothOrderedEvo False
+set UnorderedEmitter:BothOrderedInt False
+set UnorderedEmitter:BothOrderedFS False
+
+set LHCPbPbGenerator:EventHandler:Emitter UnorderedEmitter
+
+# This is the b=0 unordered emissions with final-state swing
+saverun LHCPbPbA LHCPbPbGenerator
+

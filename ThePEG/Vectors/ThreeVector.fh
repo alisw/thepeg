@@ -1,0 +1,10 @@
+// -*- C++ -*-
+#ifndef ThePEG_ThreeVector_FH
+#define ThePEG_ThreeVector_FH
+
+namespace ThePEG {
+  template <typename Value>
+  class ThreeVector; 
+}
+
+#endif /* ThePEG_ThreeVector_FH */

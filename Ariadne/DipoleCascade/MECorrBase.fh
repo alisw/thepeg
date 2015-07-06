@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MECorrBase class.
+//
+#ifndef ARIADNE_MECorrBase_FH
+#define ARIADNE_MECorrBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class MECorrBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Ariadne::MECorrBase,MECPtr);
+
+}
+
+#endif

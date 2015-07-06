@@ -1,0 +1,20 @@
+// -*- C++ -*-
+#ifndef ThePEG_Switch_FH
+#define ThePEG_Switch_FH
+//
+// This is the forward declaration of the Switch, SwitchBase and
+// SwitchOption classes.
+//
+
+namespace ThePEG {
+
+class SwitchOption;
+
+class SwitchBase;
+
+template <typename T, typename Int = long>
+class Switch;
+
+}
+
+#endif /* ThePEG_Switch_FH */

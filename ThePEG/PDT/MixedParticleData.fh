@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MixedParticleData class.
+//
+#ifndef THEPEG_MixedParticleData_FH
+#define THEPEG_MixedParticleData_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class MixedParticleData;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(ThePEG::MixedParticleData,MixedParticleDataPtr);
+
+}
+
+#endif

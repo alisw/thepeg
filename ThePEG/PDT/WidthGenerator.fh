@@ -1,0 +1,18 @@
+// -*- C++ -*-
+#ifndef ThePEG_WidthGenerator_FH
+#define ThePEG_WidthGenerator_FH
+//
+// This is the forward declaration of the WidthGenerator class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class WidthGenerator;
+
+ThePEG_DECLARE_POINTERS(WidthGenerator,WidthGeneratorPtr);
+
+}
+
+#endif /* ThePEG_WidthGenerator_FH */

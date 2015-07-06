@@ -1,0 +1,90 @@
+rrmdir /TheP8I
+mkdir /TheP8I
+mkdir /TheP8I/Decayers/
+cd /TheP8I/Decayers/
+cp /Defaults/Decayers/Flat FlatDecayer
+cp /Defaults/Decayers/OmegaPhi3Pi DecayMECode1
+# 22: weak decay; if there is a quark spectator system it collapses to one
+# hadron; for leptonic/semileptonic decays the V-A matrix element is used,
+# for hadronic decays simple phase space
+cp /Defaults/Decayers/WeakToHadrons DecayMECode22
+# 23 : as 22, but require at least three particles in decay
+cp /Defaults/Decayers/WeakToHadrons DecayMECode23
+# 21: decay to phase space, but weight up neutrino_tau spectrum in tau decay
+cp /Defaults/Decayers/Flat DecayMECode21
+# 102: reserved for the description of partial widths of resonances
+cp /Defaults/Decayers/Flat DecayMECode102
+# 103: reserved for the description of partial widths of resonances
+cp /Defaults/Decayers/Flat DecayMECode103
+# 11: Dalitz decay into one particle, in addition to the lepton pair
+# (also allowed to specify a quark-antiquark pair that should collapse
+# to a single hadron)
+cp /Defaults/Decayers/Flat DecayMECode11
+# 13: double Dalitz decay into two lepton pairs
+cp /Defaults/Decayers/Flat DecayMECode13
+#  2: polarization in V -> PS + PS (V = vector, PS = pseudoscalar),
+# when V is produced by PS -> PS + V or PS -> gamma + V
+cp /Defaults/Decayers/V2PP DecayMECode2
+# 12: Dalitz decay into two or more particles in addition to the lepton pair
+cp /Defaults/Decayers/Flat DecayMECode12
+# 31 : decays of type B -> gamma X, very primitive simulation where X
+# is given in terms of its flavour content, the X multiplicity is picked
+# according to a geometrical distribution with average number 2, and the
+# photon energy spectrum is weighted up relative to pure phase space
+cp /Defaults/Decayers/Flat DecayMECode31
+# 42 - 50 : turn partons into a random number of hadrons, picked
+# according to a Poissonian with average value as described above,
+# but at least code - 40 and at most 10, and then distribute then in
+# pure phase space; make a new try with another multiplicity if the
+# sum of daughter masses exceed the mother one
+cp /Defaults/Decayers/OniumToHadrons DecayMECode43GG
+cp /Defaults/Decayers/QsToHadrons DecayMECode42GG
+cp /Defaults/Decayers/Flat DecayMECode42
+cp /Defaults/Decayers/Flat DecayMECode43
+# 52 - 60: as 42 - 50, with multiplicity between code - 50 and 10, but avoid
+# already explicitly listed non-partonic channels
+cp /Defaults/Decayers/OniumToHadrons DecayMECode52GG
+cp /Defaults/Decayers/OniumToHadrons DecayMECode53GG
+cp /Defaults/Decayers/Flat DecayMECode55
+# 62 - 70 : as 42 - 50, but fixed multiplicity code - 60
+cp /Defaults/Decayers/Flat DecayMECode63
+# 91 : decay to q qbar or g g, which should shower and hadronize
+cp /Defaults/Decayers/ColourPairs DecayMECode91
+# 92 : decay onium to g g g or g g gamma, which should shower and hadronize
+cp /Defaults/Decayers/Onium3G DecayMECode92
+# 15?? : New tau decayer with spin correlations replaced by old default
+cp FlatDecayer DecayMECode1521
+cp DecayMECode22 DecayMECode1531
+cp DecayMECode21 DecayMECode1532
+cp DecayMECode21 DecayMECode1533
+cp DecayMECode21 DecayMECode1541
+cp DecayMECode21 DecayMECode1542
+cp DecayMECode21 DecayMECode1543
+cp DecayMECode21 DecayMECode1544
+cp DecayMECode21 DecayMECode1551
+cp DecayMECode21 DecayMECode1561
+
+mkdir /TheP8I/Particles
+cd /TheP8I/Particles
+read TheP8IParticles.in
+set /TheP8I/Particles/pi+:Stable Stable
+set /TheP8I/Particles/pi-:Stable Stable
+set /TheP8I/Particles/K+:Stable Stable
+set /TheP8I/Particles/K-:Stable Stable
+set /TheP8I/Particles/K_L0:Stable Stable
+set /TheP8I/Particles/mu+:Stable Stable
+set /TheP8I/Particles/mu-:Stable Stable
+set /TheP8I/Particles/n0:Stable Stable
+set /TheP8I/Particles/nbar0:Stable Stable
+
+cd /TheP8I
+create TheP8I::TheP8IStrategy StdStrategy libTheP8I.so
+insert StdStrategy:DefaultParticlesDirs[0] /TheP8I/Particles
+mkdir /TheP8I/Handlers
+mkdir /TheP8I/Handlers/StringFrag
+cd /TheP8I/Handlers/StringFrag
+create TheP8I::StringFragmentation StringFragmenter
+read OverlapStringFragmenter.in
+
+cd /
+doxygendump TheP8I:: ../Doc/AllInterfaces.h

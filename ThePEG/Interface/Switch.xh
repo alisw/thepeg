@@ -1,0 +1,48 @@
+// -*- C++ -*-
+//
+// Switch.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Switch_XH
+#define ThePEG_Switch_XH
+//
+// This is the declarations of the exception classes used by the
+// Switch class.
+//
+
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by Switch if variable is set to a value which
+ *  is not a listed option. */
+struct SwExSetOpt: public InterfaceException {
+  /** Standard constructor. */
+  SwExSetOpt(const InterfaceBase & i, const InterfacedBase & o, long v);
+};
+
+/** Exception class used by Switch if an unkown error
+ *  occurs. */
+struct SwExSetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  SwExSetUnknown(const InterfaceBase & i, const InterfacedBase & o, long v);
+};
+
+/** Exception class used by Switch if an unkown error
+ *  occurs. */
+struct SwExGetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  SwExGetUnknown(const InterfaceBase & i, const InterfacedBase & o,
+		 const char * s);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Switch_XH */
+

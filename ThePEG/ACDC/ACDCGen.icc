@@ -1,0 +1,822 @@
+// -*- C++ -*-
+//
+// ACDCGen.icc is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+
+namespace ACDCGenerator {
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGen<Rnd,FncPtr>::ACDCGen(Rnd * r)
+  : theRnd(r), theNAcc(0), theN(0), theNI(1, 0),
+    theSumW(1, 0.0), theSumW2(1, 0.0),
+    theEps(100*std::numeric_limits<double>::epsilon()), theMargin(1.1),
+    theNTry(100), theMaxTry(10000), useCheapRandom(false), theFunctions(1),
+    theDimensions(1, 0), thePrimaryCells(1), theSumMaxInts(1, 0.0), theLast(0),
+    theLastCell(0), theLastF(0.0) {
+  maxsize = 0;
+}
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGen<Rnd,FncPtr>::ACDCGen()
+  : theRnd(0), theNAcc(0), theN(0), theNI(1, 0),
+    theSumW(1, 0.0), theSumW2(1, 0.0),
+    theEps(100*std::numeric_limits<double>::epsilon()), theMargin(1.1),
+    theNTry(100), theMaxTry(10000), useCheapRandom(false), theFunctions(1),
+    theDimensions(1, 0), thePrimaryCells(1), theSumMaxInts(1, 0.0), theLast(0),
+    theLastCell(0), theLastF(0.0) {
+  maxsize = 0;
+}
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGen<Rnd,FncPtr>::~ACDCGen() {
+  clear();
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::setRnd(Rnd * r) {
+  theRnd = r;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::clear() {
+  theNAcc = 0;
+  theN = 0;
+  theNI = vector<long>(1, 0);
+  theSumW = DVector(1, 0.0);
+  theSumW2 = DVector(1, 0.0);
+  theFunctions = FncVector(1);
+  theDimensions = DimVector(1, 0);
+  for ( int i = 0, N = thePrimaryCells.size(); i < N; ++i )
+    if ( thePrimaryCells[i] ) delete thePrimaryCells[i];
+  thePrimaryCells = CellVector(1);
+  theSumMaxInts = DVector(1, 0.0);
+  theLast = 0;
+  theLastCell = 0;
+  theLastPoint.clear();
+  theLastF = 0.0;
+  levels.clear();
+}
+
+template <typename Rnd, typename FncPtr>
+inline bool ACDCGen<Rnd,FncPtr>::
+addFunction(DimType dim, FncPtrType fnc, double maxrat) {
+  if ( maxrat < 0.0 ) maxrat = 1.0/nTry();
+  typedef multimap<double,DVector> PointMap;
+  theLast = theFunctions.size();
+  theFunctions.push_back(fnc);
+  theNI.push_back(0);
+  theSumW.push_back(0.0);
+  theSumW2.push_back(0.0);
+  theDimensions.push_back(dim);
+
+  // Generate nTry() points with non-zero function value
+  DVector x(dim);
+  PointMap pmap;
+  long itry = 0;
+  while ( pmap.size() < nTry() ) {
+    if ( ++itry > maxTry() ) {
+      thePrimaryCells.push_back(new ACDCGenCell(0.0));
+      theSumMaxInts.push_back(theSumMaxInts.back() + cells().back()->doMaxInt());
+      return false;
+    }
+    rnd(dim, x);
+    double val = FncTraits::value(fnc, x);
+    if ( val > 0.0 ) {
+      pmap.insert(make_pair(val, x));
+      itry = 0;
+    }
+  }
+
+  // Create the root cell and set its overestimated function value to
+  // the smallest non-zero value found
+  double minf = pmap.begin()->first;
+  double maxf = (--pmap.end())->first;
+  minf = max(minf, maxrat*maxf);
+  //  thePrimaryCells.push_back(new ACDCGenCell(pmap.begin()->first));
+  thePrimaryCells.push_back(new ACDCGenCell(minf));
+  theLastF = pmap.begin()->first;
+  pmap.erase(pmap.begin());
+  theSumMaxInts.push_back(theSumMaxInts.back() + cells().back()->doMaxInt());
+
+  // Start the divide-and-conquer procedure using the point with the
+  // highest function value found.
+  theLastF = (--pmap.end())->first;
+  theLastPoint =  (--pmap.end())->second;
+  pmap.erase(--pmap.end());
+  DVector up(dim, 1.0);
+  DVector lo(dim, 0.0);
+  theLastCell = cells().back()->getCell(lo, lastPoint(), up);
+  if ( lastF() > lastCell()->g() ) {
+    compensate(lo, up);
+    levels.clear();
+  }
+
+  // For each other generated point check that it's below the
+  // overestimated value of the corresponding cell. If not start the
+  // divide-and-conquer using that point.
+  while ( !pmap.empty() ) {
+    theLastPoint = pmap.begin()->second;
+    theLastF = pmap.begin()->first;
+    pmap.erase(pmap.begin());
+    DVector up(dim, 1.0);
+    DVector lo(dim, 0.0);
+    theLastCell = cells().back()->getCell(lo, lastPoint(), up);
+    if ( lastF() > lastCell()->g() ) {
+      compensate(lo, up);
+      levels.clear();
+    }
+  }
+  //  cells().back()->smooth(1.0/nTry());
+  return true;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::chooseCell(DVector & lo, DVector & up) {
+  if ( compensating() ) {
+    // If we are compensating, we must choose the cell to be compensated.
+    up = levels.back().up;
+    lo = levels.back().lo;
+    theLastCell = levels.back().cell;
+    theLast = levels.back().index;
+  } else {
+    // Otherwise, first choose the function to be used and choose the
+    // corresponding root cell.
+    theLast = upper_bound(sumMaxInts().begin(), sumMaxInts().end(),
+			  rnd()*sumMaxInts().back())
+      - sumMaxInts().begin();
+    if(theLast>=sumMaxInts().size()) {
+      throw ThePEG::Exception() << "Selected a function outside the allowed range"
+				<< " in ACDCGen::chooseCell(). This is usually due"
+				<< " to a floating point error (nan or inf) in the"
+				<< " calculation of the weight"
+				<< ThePEG::Exception::abortnow;
+    }
+    up = DVector(lastDimension(), 1.0);
+    lo = DVector(lastDimension(), 0.0);
+    theLastCell = lastPrimary();
+  }
+
+  // Now select randomly a sub-cell of the chosen cell
+  if ( cheapRandom() ) {
+    theLastCell = lastCell()->generate(lo, up, theRnd);
+  } else {
+    DVector rndv(lastDimension());
+    rnd(lastDimension(), rndv);
+    theLastCell = lastCell()->generate(lo, up, rndv);
+  }
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::FncPtrType
+ACDCGen<Rnd,FncPtr>::generate() {
+  long itry = 0;
+  while ( true ) {
+    if ( ++itry > maxTry() ) return FncPtrType();
+    ++theN;
+
+    // First choose a function and a cell to generate in.
+    DVector up;
+    DVector lo;
+    chooseCell(lo, up);
+
+    // Now choose a point in that cell according to a flat distribution.
+    DimType D = lastDimension();
+    theLastPoint.resize(D);
+    for ( DimType d = 0; d < D; ++d ) theLastPoint[d] = rnd(lo[d], up[d]);
+
+    // Calculate the function value in this point
+    theLastF = FncTraits::value(lastFunction(), theLastPoint);
+    if ( theLastF <= 0.0 ) continue;
+
+    // If we are compensating we require the function value to be
+    // above the previous overestimate of the function.
+    if ( compensating() && lastF() < levels.back().g ) theLastF = 0.0;
+
+    double w = lastF()/lastCell()->g();
+    if ( w > 1.0 ) {
+      // If the value was above the overestimate then we must start
+      // the compensation procedure and the curren point is disregarded.
+      --theN;
+      compensate(lo, up);
+      continue;
+    }
+
+    // Accept the point according to the ratio of the true and
+    // overestimated function value.
+    theSumW[last()] += w;
+    theSumW2[last()] += w*w;
+    ++theNI[last()];
+    if ( w > rnd() ) {
+      ++theNAcc;
+      return lastFunction();
+    }
+  }
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::reject() {
+  theSumW[last()] -= 1.0;
+  theSumW2[last()] -= 1.0;
+  --theNAcc;
+}
+
+template <typename Rnd, typename FncPtr>
+inline bool ACDCGen<Rnd,FncPtr>::compensating() {
+  while ( levels.size() && levels.back().lastN < N() ) levels.pop_back();
+  // Leave all levels which has reached there 'expiry date'.
+
+  return !levels.empty();
+}
+
+template <typename Rnd, typename FncPtr>
+inline long ACDCGen<Rnd,FncPtr>::compleft() const {
+  if ( levels.empty() ) return 0;
+  long left = 1;
+  for ( int i = 0, Ni = levels.size(); i < Ni; ++i )
+    left = max(left, levels[i].lastN - N());
+
+  return left;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::
+compensate(const DVector & lo, const DVector & up) {
+  //Save the previous overestimated integral and create a new
+  //compensation level.
+  double i0 = maxInt();
+  Level level;
+  level.g = lastCell()->g();
+
+  // Start the divide-and-conquer algorithm slicing up the selected
+  // cell and specify it as the cell to compensate.
+  Slicer slicer(lastDimension(), *this, lo, up);
+  level.cell = slicer.first;
+  level.index = last();
+  level.up = slicer.firstup;
+  level.lo = slicer.firstlo;
+
+  // Now calculate the the new overestimated total integral and
+  // calculate the number of attempted points needed to compensate.
+  double rat = (doMaxInt())/i0;
+  level.lastN = long(N()*rat);
+
+  // If we are already compensating increase also the previous
+  // compensation levels.
+  for ( size_type i = 0; i < levels.size(); ++i )
+    levels[i].lastN = long(levels[i].lastN*rat);
+  levels.insert(levels.end(), level);
+  maxsize = std::max(maxsize, levels.size());
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::eps(double newEps) {
+  theEps = newEps;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::margin(double newMargin) {
+  theMargin = newMargin;
+}
+
+template <typename Rnd, typename FncPtr>
+inline long ACDCGen<Rnd,FncPtr>::N() const {
+  return theN;
+}
+
+template <typename Rnd, typename FncPtr>
+inline long ACDCGen<Rnd,FncPtr>::n() const {
+  return theNAcc;
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::size_type
+ACDCGen<Rnd,FncPtr>::nTry() const {
+  return theNTry;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::nTry(size_type newNTry) {
+  theNTry = newNTry;
+}
+
+template <typename Rnd, typename FncPtr>
+inline long ACDCGen<Rnd,FncPtr>::maxTry() const {
+  return theMaxTry;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::maxTry(long newMaxTry) {
+  theMaxTry = newMaxTry;
+}
+
+template <typename Rnd, typename FncPtr>
+inline bool ACDCGen<Rnd,FncPtr>::cheapRandom() const {
+  return useCheapRandom;
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::cheapRandom(bool b) {
+  useCheapRandom = b;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::maxInt() const {
+  return theSumMaxInts.back();
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::doMaxInt() {
+  for ( size_type i = 1, imax = functions().size(); i < imax; ++i )
+    theSumMaxInts[i] = sumMaxInts()[i - 1] + cells()[i]->doMaxInt();
+  return maxInt();
+}
+
+template <typename Rnd, typename FncPtr>
+inline int ACDCGen<Rnd,FncPtr>::nBins() const {
+  int sum = 0;
+  for ( size_type i = 1; i < functions().size(); ++i )
+    sum += cell(i)->nBins();
+  return sum;
+}
+
+template <typename Rnd, typename FncPtr>
+inline int ACDCGen<Rnd,FncPtr>::depth() const {
+  int mx = 0;
+  for ( size_type i = 1; i < functions().size(); ++i )
+    mx = max(mx, cell(i)->depth());
+  return mx;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::efficiency() const {
+  return N() > 0? double(n())/double(N()): 0.0;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::integral(FncPtrType f) const {
+  if ( N() <= 0 ) return maxInt();
+  double sumw = 0.0;
+  for ( size_type i = 1; i < functions().size(); ++i )
+    if ( functions()[i] == f || !f ) sumw += theSumW[i];
+  return maxInt()*sumw/N();
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::integralErr(FncPtrType f) const {
+  if ( N() <= 0 ) return maxInt();
+  double sumw2 = 0.0;
+  double sumw = 0.0;
+  for ( size_type i = 1; i < functions().size(); ++i )
+    if ( functions()[i] == f || !f ) {
+      sumw2 += theSumW2[i];
+      sumw += theSumW[i];
+    }
+  if ( f ) return maxInt()*sqrt(sumw2)/N();
+  return maxInt()*sqrt(max(0.,sumw2 - sumw*sumw/N()))/N();
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::eps() const {
+  return theEps;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::margin() const {
+  return theMargin;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::rnd() const {
+  return RndTraits::rnd(theRnd);
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::rnd(double lo, double up) const {
+  return RndTraits::rnd(theRnd, lo, up);
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::
+rnd(const DVector & lo, const DVector & up, DVector & r) const {
+  RndTraits::rnd(theRnd, lo.begin(), lo.end(), up.begin(), r.begin());
+}
+
+template <typename Rnd, typename FncPtr>
+inline void ACDCGen<Rnd,FncPtr>::
+rnd(DimType D, DVector & r) const {
+  RndTraits::rnd(theRnd, D, r.begin());
+}
+
+template <typename Rnd, typename FncPtr>
+inline long ACDCGen<Rnd,FncPtr>::rndInt(long x) const {
+  return RndTraits::rndInt(theRnd, x);
+}
+
+template <typename Rnd, typename FncPtr>
+inline const typename ACDCGen<Rnd,FncPtr>::FncVector &
+ACDCGen<Rnd,FncPtr>::functions() const {
+  return theFunctions;
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::FncPtrType
+ACDCGen<Rnd,FncPtr>::function(size_type i) const {
+  return functions()[i];
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::FncPtrType
+ACDCGen<Rnd,FncPtr>::lastFunction() const {
+  return function(last());
+}
+
+template <typename Rnd, typename FncPtr>
+inline const typename ACDCGen<Rnd,FncPtr>::DimVector &
+ACDCGen<Rnd,FncPtr>::dimensions() const {
+  return theDimensions;
+}
+
+template <typename Rnd, typename FncPtr>
+inline DimType ACDCGen<Rnd,FncPtr>::dimension(size_type i) const {
+  return dimensions()[i];
+}
+
+template <typename Rnd, typename FncPtr>
+inline DimType ACDCGen<Rnd,FncPtr>::lastDimension() const {
+  return dimension(last());
+}
+
+template <typename Rnd, typename FncPtr>
+inline const typename ACDCGen<Rnd,FncPtr>::CellVector &
+ACDCGen<Rnd,FncPtr>::cells() const {
+  return thePrimaryCells;
+}
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGenCell * ACDCGen<Rnd,FncPtr>::cell(size_type i) const {
+  return cells()[i];
+}
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGenCell * ACDCGen<Rnd,FncPtr>::lastPrimary() const {
+  return cell(last());
+}
+
+template <typename Rnd, typename FncPtr>
+inline const DVector & ACDCGen<Rnd,FncPtr>::sumMaxInts() const {
+  return theSumMaxInts;
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::size_type
+ACDCGen<Rnd,FncPtr>::last() const {
+  return theLast;
+}
+
+template <typename Rnd, typename FncPtr>
+inline typename ACDCGen<Rnd,FncPtr>::size_type
+ACDCGen<Rnd,FncPtr>::size() const {
+  return cells().size() - 1;
+}
+
+template <typename Rnd, typename FncPtr>
+inline ACDCGenCell * ACDCGen<Rnd,FncPtr>::lastCell() const {
+  return theLastCell;
+}
+
+template <typename Rnd, typename FncPtr>
+inline const DVector & ACDCGen<Rnd,FncPtr>::lastPoint() const {
+  return theLastPoint;
+}
+
+template <typename Rnd, typename FncPtr>
+inline double ACDCGen<Rnd,FncPtr>::lastF() const {
+  return theLastF;
+}
+
+template <typename Rnd, typename FncPtr>
+typename ACDCGen<Rnd,FncPtr>::size_type ACDCGen<Rnd,FncPtr>::maxsize = 0;
+
+template <typename Rnd, typename FncPtr>
+vector<ACDCGenCellInfo> ACDCGen<Rnd,FncPtr>::extractCellInfo() const {
+  vector<ACDCGenCellInfo> ret;
+  for ( size_type i = 1; i < cells().size(); ++i ) {
+    DVector lo(dimension(i), 0.0);
+    DVector up(dimension(i), 1.0);
+    cell(i)->extract(lo, up, ret);
+  }
+  return ret;
+}
+
+template <typename Rnd, typename FncPtr>
+ACDCGen<Rnd,FncPtr>::Slicer::
+Slicer(DimType Din, ACDCGen & gen, const DVector & loin, const DVector & upin)
+  : D(Din), lo(loin), up(upin), xcl(loin), xcu(upin), xhl(loin), xhu(upin),
+    fhl(Din, 0.0), fhu(Din, 0.0), xsel(gen.lastPoint()), fsel(gen.lastF()),
+    current(gen.lastCell()), first(gen.lastCell()),
+    firstlo(loin), firstup(upin),f(gen.lastFunction()),
+    epsilon(gen.eps()), margin(gen.margin()), minf(0.0), wholecomp(false) {
+  divideandconquer();
+}
+
+template <typename Rnd, typename FncPtr>
+ACDCGen<Rnd,FncPtr>::Slicer::~Slicer() {
+  // Added for debugging purposes.
+}
+
+template <typename Rnd, typename FncPtr>
+void ACDCGen<Rnd,FncPtr>::Slicer::divideandconquer() {
+  // If the current function value was just a little above the
+  // overestimate, just increase the overestimate of this cell and
+  // we're done.
+  if ( fsel < current->g()*margin ) {
+    current->g(current->g()*margin);
+    return;
+  }
+
+  // First initialize and slice up the current cell and save the
+  // resulting for the compensation procedure.
+  init();
+  slice();
+  if ( !wholecomp ) {
+    first = current;
+    firstlo = lo;
+    firstup = up;
+  }
+
+  // Find the largest function value in the current cell and as long
+  // as it is above the current overestimate, increase the
+  // overestimate and repeat the slicing.
+  while ( shiftmaxmin() > current->g() ) {
+    current->g(minf*margin);
+    if ( current->g() > fsel ) return;
+    init();
+    slice();
+  }   
+}
+
+template <typename Rnd, typename FncPtr>
+double ACDCGen<Rnd,FncPtr>::Slicer::shiftmaxmin() {
+  // Find the largest diagonal
+  DVector test = xsel;
+  double scale = 0.0;
+  for ( DimType d = 0; d < D; ++d )
+    if ( fhl[d] > fsel || fhu[d] > fsel ) scale += 1.0;
+  scale = sqrt(scale);
+  for ( DimType d = 0; d < D; ++d ) {
+    if ( fhl[d] > fsel && fhl[d] > fhu[d] )
+      test[d] = test[d] + (xhl[d] - test[d])/scale;
+    if ( fhu[d] > fsel && fhu[d] > fhl[d] )
+      test[d] = test[d] + (xhu[d] - test[d])/scale;
+  }
+
+  // Find the largest value above overestimate
+  DimType dsel = -1;
+  double x = 0;
+  minf = fsel;
+  for ( DimType d = 0; d < D; ++d ) {
+
+    // Find the point with the function minimum value above the
+    // current overestimate.
+    minf = std::min(minf, fhl[d]);
+    minf = std::min(minf, fhu[d]);
+
+    // Find points with the maximum function value and shift the
+    // current point to it.
+    if ( fhu[d] > fsel ) {
+      fsel = fhu[d];
+      dsel = d;
+      x = xhu[d];
+    }
+    if ( fhl[d] > fsel ) {
+      fsel = fhl[d];
+      dsel = d;
+      x = xhl[d];
+    }
+  }
+
+  // Check also the largest diagonal
+  //  double ftest = (*f)(test);
+//   if ( ftest > fsel ) {
+//     xsel = test;
+//     fsel = ftest;
+//     dsel = -1;
+//   }
+
+  if ( dsel >= 0 ) xsel[dsel] = x;
+  minf = std::max(minf, current->g());
+  return fsel;
+}
+
+template <typename Rnd, typename FncPtr>
+void ACDCGen<Rnd,FncPtr>::Slicer::dohalf(DimType d) {
+  xcl[d] = lo[d];
+
+  // Find the point closest below the current point in the given
+  // dimension with a function value below the current overestimate,
+  // also find the one furthest away from the current point with a
+  // function value above the current overestimate. Use a crude
+  // iterative mid-point selection.
+  while ( true ) {
+    xhl[d] = (xsel[d] + xcl[d])*0.5;
+
+    std::swap(xsel[d], xhl[d]);
+    fhl[d] = FncTraits::value(f, xsel);
+    std::swap(xsel[d], xhl[d]);
+
+    if ( fhl[d] > current->g() ) break;
+    if ( xsel[d] - xcl[d] < epsilon ) break;
+
+    xcl[d] = xhl[d];
+  }
+
+  // Check if the current slicing is worth doing...
+  double cut = ( up[d] - xcl[d] )/( up[d] - lo[d] );
+  if ( cut < 1.0 - current->g()/fsel && cut > 0.0 )
+    rateslice.insert(std::make_pair(cut, -1-d));
+
+  // Find the point closest above the current point in the given
+  // dimension with a function value below the current overestimate,
+  // also find the one furthest away from the current point with a
+  // function value above the current overestimate. Use a crude
+  // iterative mid-point selection.
+  xcu[d] = up[d];
+  while ( true ) {
+    xhu[d] = (xsel[d] + xcu[d])*0.5;
+
+    std::swap(xsel[d], xhu[d]);
+    fhu[d] = FncTraits::value(f, xsel);
+    std::swap(xsel[d], xhu[d]);
+
+    if ( fhu[d] > current->g() ) break;
+    if ( xcu[d] - xsel[d] < epsilon ) break;
+
+    xcu[d] = xhu[d];
+  }
+
+  // Check if the current slicing is worth doing...
+  cut = ( xcu[d] - lo[d] )/( up[d] - lo[d] );
+  if ( cut < 1.0 - current->g()/fsel && cut > 0.0 )
+    rateslice.insert(std::make_pair(cut, 1+d));
+
+}
+
+template <typename Rnd, typename FncPtr>
+void ACDCGen<Rnd,FncPtr>::Slicer::init() {
+  for ( DimType d = 0; d < D; ++d ) dohalf(d);
+}
+
+template <typename Rnd, typename FncPtr>
+void ACDCGen<Rnd,FncPtr>::Slicer::slice() {
+  while ( !rateslice.empty() ) {
+    // Perform the slicing which reduces the volume of the cell the
+    // most first.
+    DimType d = rateslice.begin()->second;
+    rateslice.erase(rateslice.begin());
+    if ( d > 0 ) {
+      // Slice from above.
+      d = d - 1;
+      current->splitme(lo[d], xcu[d], up[d], d);
+      checkdiag(current->upper(), d, xcu[d], up[d]);
+      current = current->lower();
+      up[d] = xcu[d];
+    } else {
+      // Slice from below..
+      d = -d - 1;
+      current->splitme(lo[d], xcl[d], up[d], d);
+      checkdiag(current->lower(), d, lo[d], xcl[d]);
+      current = current->upper();
+      lo[d] = xcl[d];
+    }
+    dohalf(d);
+  }
+}
+
+template <typename Rnd, typename FncPtr>
+void ACDCGen<Rnd,FncPtr>::Slicer::
+checkdiag(ACDCGenCell * cell, DimType dc, double lod, double upd) {
+  return;
+  // Look at the midpoint in the dc direction in which a cell has been
+  // chopped off.
+  if ( upd - lod <= epsilon ) return;
+  DVector newlo = lo;
+  DVector newup = up;
+  newlo[dc] = lod;
+  newup[dc] = upd;
+  DVector newsel = xsel;
+  newsel[dc] = 0.5*(lod + upd);
+  double newfsel = FncTraits::value(f, newsel);
+  double newfh = newfsel;
+  DVector newxsel = newsel;
+  vector<int> dir(D, 0);
+
+  // For each other direction look at the mid point between the point
+  // chosen above and the borders of the cell. Save the point which
+  // gives the highest function value.
+  for ( DimType d = 0; d < D; ++d ) {
+    if ( d == dc ) continue;
+    double xdum = 0.5*(newlo[d] + newsel[d]);
+    swap(xdum, newsel[d]);
+    double fh1 = FncTraits::value(f, newsel);
+    if ( fh1 > newfsel ) {
+      newfsel = fh1;
+      newxsel = newsel;
+    }
+    if ( fh1 > newfh ) dir[d] = -1;
+    swap(xdum, newsel[d]);
+    xdum = 0.5*(newsel[d] + newup[d]);
+    swap(xdum, newsel[d]);
+    double fh2 = FncTraits::value(f, newsel);
+    if ( fh2 > newfsel ) {
+      newfsel = fh2;
+      newxsel = newsel;
+    }
+    if ( fh2 > newfh && fh2 > fh1 ) dir[d] = 1;
+    swap(xdum, newsel[d]);
+  }
+
+  // Now check along the diagonal where we found the highest values.
+  for ( DimType d = 0; d < D; ++d ) {
+    if ( dir[d] == 0 ) continue;
+    if ( dir[d] > 0 ) newsel[d] = 0.5*(newsel[d] + newup[d]);
+    else newsel[d] = 0.5*(newlo[d] + newsel[d]);
+  }
+  newfh = FncTraits::value(f, newsel);
+  if ( newfh > newfsel ) {
+    newfsel = newfh;
+    newxsel = newsel;
+  }
+
+  if ( newfsel < cell->g() ) return;
+
+  // If this the highest value is above the overestimate, also this
+  // cell needs to be divided up and conquered.
+  wholecomp = true;
+  Slicer dummy(D, *this, cell, newlo, newxsel, newup, newfsel);
+}
+
+template <typename Rnd, typename FncPtr>
+ACDCGen<Rnd,FncPtr>::Slicer::
+Slicer(DimType Din, const Slicer & s, ACDCGenCell * cellin,
+       const DVector & loin, const DVector & xselin, const DVector & upin,
+       double fselin)
+  : D(Din), lo(loin), up(upin), xcl(loin), xcu(upin), xhl(loin), xhu(upin),
+    fhl(Din, 0.0), fhu(Din, 0.0), xsel(xselin), fsel(fselin),
+    current(cellin), first(cellin),
+    firstlo(loin), firstup(upin),f(s.f),
+    epsilon(s.epsilon), margin(s.margin), minf(0.0), wholecomp(false) {
+  divideandconquer();
+}
+
+template <typename Rnd, typename FncPtr>
+template <typename POStream>
+void ACDCGen<Rnd,FncPtr>::output(POStream & os) const {
+  os << theNAcc << theN << theEps << theMargin << theNTry << theMaxTry
+     << useCheapRandom << theLast << theLastPoint << theLastF
+     << theFunctions.size() << levels.size();
+  for ( int i = 1, N = theFunctions.size(); i < N; ++i )
+    os << theFunctions[i] << theDimensions [i] << theSumMaxInts[i]
+       << *thePrimaryCells[i] << theNI[i] << theSumW[i] << theSumW2[i];
+  os << thePrimaryCells[theLast]->getIndex(theLastCell);
+  for ( int i = 0, N = levels.size(); i < N; ++i )
+    os << levels[i].lastN << levels[i].g << levels[i].index
+       << levels[i].up << levels[i].lo
+       << thePrimaryCells[levels[i].index]->getIndex(levels[i].cell);
+}
+
+template <typename Rnd, typename FncPtr>
+template <typename PIStream>
+void ACDCGen<Rnd,FncPtr>::input(PIStream & is) {
+  clear();
+  long fsize = 0;
+  long lsize = 0;
+  is >> theNAcc >> theN >> theEps >> theMargin >> theNTry >> theMaxTry
+     >> useCheapRandom >> theLast >> theLastPoint >> theLastF >> fsize >> lsize;
+  while ( --fsize ) {
+    theFunctions.push_back(FncPtrType());
+    theDimensions.push_back(DimType());
+    theSumMaxInts.push_back(0.0);
+    theNI.push_back(0);
+    theSumW.push_back(0.0);
+    theSumW2.push_back(0.0);
+    thePrimaryCells.push_back(new ACDCGenCell(0.0));
+    is >> theFunctions.back() >> theDimensions.back() >> theSumMaxInts.back()
+       >> *thePrimaryCells.back() >> theNI.back()
+       >> theSumW.back() >> theSumW2.back();
+  }
+  long index = -1;
+  is >> index;
+  theLastCell = thePrimaryCells[theLast]->getCell(index);
+  while ( lsize-- ) {
+    levels.push_back(Level());
+    is >> levels.back().lastN >> levels.back().g >> levels.back().index
+       >> levels.back().up >> levels.back().lo >> index;
+    levels.back().cell = thePrimaryCells[levels.back().index]->getCell(index);
+  }
+}
+
+}

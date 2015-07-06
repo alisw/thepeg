@@ -1,0 +1,21 @@
+// -*- C++ -*-
+#ifndef ThePEG_Parameter_FH
+#define ThePEG_Parameter_FH
+//
+// This is the forward declaration of the Parameter, ParameterTBase
+// and ParameterBase classes.
+//
+
+namespace ThePEG {
+
+class ParameterBase;
+
+template <typename Type>
+class ParameterTBase;
+
+template <typename T, typename Type = double>
+class Parameter;
+
+}
+
+#endif /* ThePEG_Parameter_FH */

@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_SubProcessHandler_FH
+#define ThePEG_SubProcessHandler_FH
+//
+// This is the forward declaration of the SubProcessHandler class.
+//
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class SubProcessHandler;
+ThePEG_DECLARE_POINTERS(SubProcessHandler,SubHdlPtr);
+
+}
+
+#endif /* ThePEG_SubProcessHandler_FH */

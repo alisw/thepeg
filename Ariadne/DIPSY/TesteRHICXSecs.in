@@ -1,0 +1,42 @@
+cd /DIPSY
+
+read CurrentTune.in
+
+#the number of final state events
+set eRHICGenerator:NumberOfEvents 0
+
+#the number of events to calculate cross section
+set eRHICEventHandler:PreSamples 100
+
+#Default will run with gold-photon at W = 100 per nucleon, Q2 = 14
+#copy-paste and change parameters to create several executables
+#energy is total invariant mass sqrt(A)*W_nucleon
+#YFrameTest sets the interaction frame. 0 is with photon at rest (slowest),
+#1.0 is with nucleus at rest (fastest), 0.5 is default.
+#Width is the typical radius of the sampling area. For fast convergence, it should
+#be set to around 5*A^(1/3)
+
+#Default run
+
+set eRHICEventHandler:WFR Gold
+set eRHICLumi:Energy 1404.0
+set virtualPhoton:Q2 14.0
+mset . DIPSY::DipoleEventHandler YFrametest 0.5
+set stdBGenerator:Width 30.0
+saverun eRHICW100Q14 eRHICGenerator
+
+#runs with oxygen rather than gold: (note the energy change for sqrt(A)*W)
+
+set eRHICEventHandler:WFR Oxygen
+set eRHICLumi:Energy 400.0
+set virtualPhoton:Q2 14.0
+mset . DIPSY::DipoleEventHandler YFrametest 0.5
+set stdBGenerator:Width 13.0
+saverun eRHICOxW100Q14 eRHICGenerator
+
+set eRHICEventHandler:WFR Oxygen
+set eRHICLumi:Energy 400.0
+set virtualPhoton:Q2 40.0
+mset . DIPSY::DipoleEventHandler YFrametest 0.5
+set stdBGenerator:Width 13.0
+saverun eRHICOxW100Q40 eRHICGenerator

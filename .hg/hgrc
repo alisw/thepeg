@@ -1,0 +1,2 @@
+[paths]
+default = ssh://login.hepforge.org//hepforge/hg/thepeg/public/all

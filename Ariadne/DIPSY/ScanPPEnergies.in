@@ -1,0 +1,29 @@
+mkdir /DIPSY
+cd /DIPSY
+create DIPSY::DipoleEventHandler PPEventHandler libDIPSY.so
+create DIPSY::ImpactParameterGenerator stdBGenerator
+set PPEventHandler:BGen stdBGenerator
+create DIPSY::SimpleProton stdProton
+set stdProton:Particle /Defaults/Particles/p+
+set PPEventHandler:WFL stdProton
+set PPEventHandler:WFR stdProton
+set PPEventHandler:PreSamples 1000
+create DIPSY::TotalXSecAnalysis TotXSec
+insert PPEventHandler:AnalysisHandlers[0] TotXSec
+create DIPSY::Emitter stdEmitter
+set PPEventHandler:Emitter stdEmitter
+create DIPSY::Swinger stdSwinger
+set PPEventHandler:Swinger stdSwinger
+create DIPSY::EventFiller stdFiller
+set LHCEventHandler:EventFiller stdFiller
+create DIPSY::DipoleXSec stdXSec
+set PPEventHandler:XSecFn stdXSec
+create ThePEG::FixedCMSLuminosity CMSLumi
+set CMSLumi:Energy 1960.0
+set PPEventHandler:LuminosityFunction CMSLumi
+create ThePEG::MultiEventGenerator ScanPPGenerator MultiEventGenerator.so
+set ScanPPGenerator:RandomNumberGenerator /Defaults/Random
+set ScanPPGenerator:StandardModelParameters /Defaults/StandardModel
+set ScanPPGenerator:EventHandler PPEventHandler
+do ScanPPGenerator:AddInterface /DIPSY/CMSLumi:Energy 630.0, 1960, 10000.0, 14000.0
+saverun ScanPPEnergies ScanPPGenerator

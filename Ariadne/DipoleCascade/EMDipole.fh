@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EMDipole class.
+//
+#ifndef ARIADNE_EMDipole_FH
+#define ARIADNE_EMDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class EMDipole;
+ThePEG_DECLARE_POINTERS(EMDipole,EMDipPtr);
+
+}
+
+#endif

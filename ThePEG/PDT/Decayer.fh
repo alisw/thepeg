@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_Decayer_FH
+#define ThePEG_Decayer_FH
+//
+// This is the forward declaration of the Decayer class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class Decayer;
+ThePEG_DECLARE_POINTERS(Decayer,DecayerPtr);
+
+}
+
+#endif /* ThePEG_Decayer_FH */

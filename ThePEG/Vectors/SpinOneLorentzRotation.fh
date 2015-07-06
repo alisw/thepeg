@@ -1,0 +1,9 @@
+// -*- C++ -*-
+#ifndef ThePEG_SpinOneLorentzRotation_FH
+#define ThePEG_SpinOneLorentzRotation_FH
+
+namespace ThePEG {
+  class SpinOneLorentzRotation;
+}
+
+#endif /* ThePEG_SpinOneLorentzRotation_FH */

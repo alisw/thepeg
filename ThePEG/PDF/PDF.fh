@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_PDF_FH
+#define ThePEG_PDF_FH
+//
+// This is the forward declaration of the PDF class.
+//
+
+namespace ThePEG {
+
+class PDF;
+
+}
+
+#endif /* ThePEG_PDF_FH */

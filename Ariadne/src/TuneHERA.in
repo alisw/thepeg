@@ -1,0 +1,21 @@
+mkdir /Ariadne5/SimpleHERA
+cd /Ariadne5/SimpleHERA
+cp /Ariadne5/Generators/HERA/HERAGenerator SimpleHERAGenerator
+set SimpleHERAGenerator:NumberOfEvents 10000
+set SimpleHERAGenerator:DebugLevel 1
+set SimpleHERAGenerator:PrintEvent 10
+create ThePEG::RivetAnalysis RivetHERA RivetAnalysis.so
+insert RivetHERA:Analyses[0] H1_1994_S2919893
+insert SimpleHERAGenerator:AnalysisHandlers[0] RivetHERA
+create ThePEG::ETFlow ETFlow ETFlow.so
+create ThePEG::LWHFactory HFac LWHFactory.so
+insert SimpleHERAGenerator:AnalysisHandlers[0] ETFlow
+set HFac:StoreType flat
+set HFac:Suffix dat
+set SimpleHERAGenerator:HistogramFactory HFac
+
+set SimpleHERAGenerator:EventHandler:CascadeHandler:HardAlpha 1.0
+set SimpleHERAGenerator:EventHandler:CascadeHandler:SoftMu 0.6
+set SimpleHERAGenerator:EventHandler:CascadeHandler:MaxEmissions 0
+
+saverun TuneHERA SimpleHERAGenerator

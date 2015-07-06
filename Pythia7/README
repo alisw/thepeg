@@ -1,0 +1,51 @@
+This is Pythia7 version 1
+
+When unpacked from the distribution 'Pythia7-<version>.tgz' a
+directory ThePEG-<version> was created with a Pythia7 subdirectory
+where this README file is located. To successfully build and install
+Pythia7 you must first unpack and build the corresponding ThePEG
+distribution 'ThePEG-<version>.tgz' available from the same place
+where you found the Pytia7 distribution. If not done already,
+'ThePEG-<version>.tgz' should be unpacked in the same directory as
+'Pythia7-<version>.tgz' was so that this Pythia7 directory is in the
+same ThePEG-<version> directory as the ThePEG distribution.
+
+To compile and install Pythia7, first compile and install ThePEG and
+then do 'make' and 'make install' in the Pythia7 directory.
+
+'make' will compile the Pythia7 shared libraries and run two test
+programs.
+
+'make install' will put all the shared libraries in the
+lib/ThePEG/<version> directory under the install path of the
+previously installed ThePEG. There will also be placed the default
+repository file 'Pythia7Defaults.rpo'. In addition All header files
+will be installed in the 'include/ThePEG' directory under the install
+path.
+
+Note that this version is not of production quality and results
+produced with it should not be used for serious scientific
+studies. This release is mainly intended to make public the basic
+structure of the program.
+
+There is currently no up-to-date manual avaliable. However, the
+general structure is described in "PYTHIA version 7-0.0 - a
+proof-of-concept version" Comput. Phys. Commun. 134 (2001) 365. (see
+also http://www.thep.lu.se/Pythia7/Doc/Proof/). This describes the
+Pythia7 program before it was broken up into the basic event generator
+platform - ThePEG - and the Pythia-specific parts in Pythia7
+
+Briefly, the running of ThePEG with Pythia7 is divided into two steps:
+
+1: The program 'setupThePEG' is used to set up an event generator and
+   saving it to a file. Here you collect together the components
+   needed for a specific event generation run, and parameters and
+   switches of the components can be set to prefered values. See the
+   files SimpleLEP.in and SimpleLHC.in in the src subdirectory for two
+   examples. To use the default Pythia7 repository, the setupThePEG
+   program should be given the argument '-r Pythia7Defaults.rpo'.
+
+2: The program 'runThePEG' is used to run the generator saved to a
+   file. 
+
+

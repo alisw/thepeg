@@ -1,0 +1,57 @@
+Syntax:
+
+cd <path> // Set current directory
+mkdir <path> // create new directory
+
+pushd <path> // Set current directory but keep old one on stack
+popd // Quit current directory and cd to the one on the top of the stack
+
+pwd // Print current direcrory
+dirs // Print directory stack
+
+rmdir <path> // remove the given (empty) directory
+rrmdir <path> // recursively delete the given directory and all objects in it.
+
+rcp <path> <path> // recursively copy the given directory and all objects in it.
+
+cp <object> <object> // clone a given object giving the clone a new name.
+mv <object> <object> // rename a given object
+rm <object> // remove a given object.
+
+ls {<path>} // Print the object names in the current {given} directory
+
+library <dyn-lib-file-name> // load a given dynamic library
+create <class-name> <object> {<dyn-lib-file-name>} // create a new object
+
+setup <object> <any-string>
+	 // Let an object read a given string to set itself up.
+
+set <object>:<interface> <value> // set a given interface
+get <object>:<interface> // print a given interface interface
+setdef <object>:<interface> // Set given interface to its default value
+
+insert <object>:<vec-interface-indx> <value>
+	// insert new value/object in vector interface
+erase <object>:<vec-interface-indx> // erase from vector interface
+
+saverun <run-name> <event-generator-object>
+	// Initialize an event generator and save it to a file.
+
+rebind <object> <object-name>
+	// For each object in the repository replce all references to
+	// the given object with references to the object corresponding
+	// to the given object-name (if no such object is found one will
+	// be created as a copy of the given object).
+
+<object> = <object-name>|<object>:<ref-interface>
+<object-name> = <path>/<local-object-name>|<local-object-name>
+<path> = <full-path>|<local-directory-name>
+<full-path> = /<local-directory-name>|<full-path>/<local-directory-name>
+<interface> = <ref-interface>|<par-interface>|<sw-interface-name>|
+              <cmd-interface-name>
+<ref-intefrace> = <ref-interface-name>|<ref-vec-interface-name>[<index>]
+<par-interface> = <par-interface-name>|<par-vec-interface-name>[<index>]
+<vec-interface> = <ref-vec-interface-name>|<par-vec-interface-name>
+<vec-interface-indx> = <vec-interface>[<index>]
+<index> = integer
+<value> = <object>|<integer>|<double>|<any-string>

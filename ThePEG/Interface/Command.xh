@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// Command.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Command_XH
+#define ThePEG_Command_XH
+//
+// This is the declarations of the exception classes used by the
+// Command class.
+//
+
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by the Command class if something unexpected
+ *  happens. */
+struct CmdExUnknown: public InterfaceException {
+  /** Standard constructor. */
+  CmdExUnknown(const InterfaceBase & i, const InterfacedBase & o, string);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Command_XH */
+

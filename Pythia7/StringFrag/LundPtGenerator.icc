@@ -1,0 +1,62 @@
+// -*- C++ -*-
+// This is the implementation of the inlined member functions of
+// the LundPtGenerator class.
+//
+
+namespace Pythia7 {
+
+inline  LundPtGenerator::LundPtGenerator():
+  sigma(0.36*GeV), nGaussfraction(0.01), nGaussfactor(2.){}
+
+inline LundPtGenerator::LundPtGenerator(const LundPtGenerator & x)
+  : PtGenerator(x), sigma(x.sigma), nGaussfraction(x.nGaussfraction),
+    nGaussfactor(x.nGaussfactor) {}
+
+// Accessors 
+inline Energy  LundPtGenerator::Sigma() const {
+  return sigma;
+}
+
+inline double LundPtGenerator::NGaussFraction() const {
+  return  nGaussfraction;
+}
+
+inline double LundPtGenerator::NGaussFactor() const {
+  return nGaussfactor;
+}
+
+
+
+// *** Standard Interfaced functions ***
+inline IBPtr LundPtGenerator::clone() const{
+  return new_ptr(*this);
+}
+
+inline IBPtr LundPtGenerator::fullclone() const{
+  return new_ptr(*this);
+}
+
+
+inline void LundPtGenerator::doupdate() throw(UpdateException) {}
+
+inline void LundPtGenerator::doinit() throw(InitException) {}
+
+inline void LundPtGenerator::dofinish() { }
+
+
+/*
+  inline void LundPtGenerator::
+  rebind(const TranslationMap & trans) throw(RebindException) { 
+  // dummy = trans.translate(dummy);
+  PtGenerator::rebind(trans);
+  }
+    
+  inline IVector LundPtGenerator::getReferences() {
+  IVector ret = PtGenerator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+  }
+*/
+
+}
+

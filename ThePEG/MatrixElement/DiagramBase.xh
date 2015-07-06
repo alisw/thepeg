@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// DiagramBase.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_DiagramBase_XH
+#define ThePEG_DiagramBase_XH//
+// This is the declarations of the exception classes used by the
+// DiagramBase class.
+//
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by DiagramBase if an object was not correctly
+ *  set up. */
+struct DiagramBaseSetupException: public Exception {
+  /** Standard constructor. */
+  DiagramBaseSetupException(const DiagramBase &);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_DiagramBase_XH */
+

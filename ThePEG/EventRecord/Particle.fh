@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the Forward declaration of the Particle class.
+//
+
+#ifndef ThePEG_Particle_FH
+#define ThePEG_Particle_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class Particle;
+
+}
+
+#endif /* ThePEG_Particle_FH */

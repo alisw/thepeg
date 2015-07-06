@@ -1,0 +1,29 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PartonBin class.
+//
+#ifndef ThePEG_PartonBin_FH
+#define ThePEG_PartonBin_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class PartonBin;
+ThePEG_DECLARE_POINTERS(PartonBin,PBPtr);
+
+/** A vector of pointers to PartonBin objects. */
+typedef vector<PBPtr> PartonVector;
+
+/** A pair of pointers to ParicleBin objects. */
+typedef pair<PBPtr, PBPtr> PBPair;
+
+/** A pair of pointers to ParicleBin objects. */
+typedef pair<tcPBPtr, tcPBPtr> tcPBPair;
+
+/** A vector of pairs of pointers to PartonBins. */
+typedef vector<PBPair> PartonPairVec;
+
+}
+
+#endif

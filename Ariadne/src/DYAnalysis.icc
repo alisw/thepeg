@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DYAnalysis class.
+//
+
+namespace Ariadne {
+
+inline DYAnalysis::DYAnalysis()
+  : histPt(0), histEta(0), histMass(0), histCPt(0) {}
+
+inline DYAnalysis::DYAnalysis(const DYAnalysis & x)
+  : AnalysisHandler(x), histPt(0), histEta(0), histMass(0), histCPt(0) {}
+
+inline IBPtr DYAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DYAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

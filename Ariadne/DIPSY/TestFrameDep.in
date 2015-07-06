@@ -1,0 +1,73 @@
+cd /DIPSY
+
+read CurrentTune.in
+
+#read RivetAnalyses.in
+
+set LHCGenerator:NumberOfEvents 0
+set LHCEventHandler:PreSamples 50000
+set LHCLumi:Energy 200.0
+
+set LHCEventHandler:YFrametest 0.0
+saverun TestLHCXSec02Frame0 LHCGenerator
+set LHCEventHandler:YFrametest 0.1
+saverun TestLHCXSec02Frame1 LHCGenerator
+set LHCEventHandler:YFrametest 0.2
+saverun TestLHCXSec02Frame2 LHCGenerator
+set LHCEventHandler:YFrametest 0.3
+saverun TestLHCXSec02Frame3 LHCGenerator
+set LHCEventHandler:YFrametest 0.4
+saverun TestLHCXSec02Frame4 LHCGenerator
+set LHCEventHandler:YFrametest 0.5
+saverun TestLHCXSec02Frame5 LHCGenerator
+set LHCEventHandler:YFrametest 0.6
+saverun TestLHCXSec02Frame6 LHCGenerator
+set LHCEventHandler:YFrametest 0.7
+saverun TestLHCXSec02Frame7 LHCGenerator
+set LHCEventHandler:YFrametest 0.8
+saverun TestLHCXSec02Frame8 LHCGenerator
+set LHCEventHandler:YFrametest 0.9
+saverun TestLHCXSec02Frame9 LHCGenerator
+set LHCEventHandler:YFrametest 1.0
+saverun TestLHCXSec02Frame10 LHCGenerator
+
+do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:YFrametest 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+saverun TestLHCXSec02Frames LHCGenerator
+
+
+
+set HeraGenerator:NumberOfEvents 0
+set HeraEventHandler:PreSamples 50000
+set HeraLumi:Energy 220.0
+
+set HeraEventHandler:YFrametest 0.0
+saverun TestHeraXSec220Frame0 HeraGenerator
+set HeraEventHandler:YFrametest 0.1
+saverun TestHeraXSec220Frame1 HeraGenerator
+set HeraEventHandler:YFrametest 0.2
+saverun TestHeraXSec220Frame2 HeraGenerator
+set HeraEventHandler:YFrametest 0.3
+saverun TestHeraXSec220Frame3 HeraGenerator
+set HeraEventHandler:YFrametest 0.4
+saverun TestHeraXSec220Frame4 HeraGenerator
+set HeraEventHandler:YFrametest 0.5
+saverun TestHeraXSec220Frame5 HeraGenerator
+set HeraEventHandler:YFrametest 0.6
+saverun TestHeraXSec220Frame6 HeraGenerator
+set HeraEventHandler:YFrametest 0.7
+saverun TestHeraXSec220Frame7 HeraGenerator
+set HeraEventHandler:YFrametest 0.8
+saverun TestHeraXSec220Frame8 HeraGenerator
+set HeraEventHandler:YFrametest 0.9
+saverun TestHeraXSec220Frame9 HeraGenerator
+set HeraEventHandler:YFrametest 1.0
+saverun TestHeraXSec220Frame10 HeraGenerator
+
+do HeraGenerator:AddInterface /DIPSY/HeraEventHandler:YFrametest 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0
+saverun TestHeraXSec220Frames HeraGenerator
+
+
+
+
+
+

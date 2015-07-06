@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_Command_FH
+#define ThePEG_Command_FH
+//
+// This is the forward declaration of the Command and CommandBase classes.
+//
+
+namespace ThePEG {
+
+class CommandBase;
+
+template <class T>
+class Command;
+
+}
+
+#endif /* ThePEG_Command_FH */

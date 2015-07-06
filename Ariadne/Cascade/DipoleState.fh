@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DipoleState class.
+//
+#ifndef Ariadne5_DipoleState_FH
+#define Ariadne5_DipoleState_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Ariadne5 {
+
+class DipoleState;
+
+ThePEG_DECLARE_POINTERS(Ariadne5::DipoleState,DipoleStatePtr);
+
+}
+
+#endif

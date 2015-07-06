@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CascadeBase class.
+//
+#ifndef ThePEG_CascadeBase_FH
+#define ThePEG_CascadeBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class CascadeBase;
+ThePEG_DECLARE_POINTERS(CascadeBase,CascadeBasePtr);
+
+}
+
+#endif

@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// ParticleData.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_ParticleData_XH
+#define ThePEG_ParticleData_XH
+//
+// This is the declarations of the exception classes used by the
+// ParticleData class.
+//
+
+#include "ThePEG/Interface/InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by ParticleData if the setting of the charge fails. */
+struct ParticleChargeCommand: public InterfaceException {
+  /** Standard constructor. */
+  ParticleChargeCommand(const ParticleData &, string);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_ParticleData_XH */
+

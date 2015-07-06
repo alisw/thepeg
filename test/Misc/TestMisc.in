@@ -1,0 +1,8 @@
+cd /Pythia7/Generators
+set StdLEP:NumberOfEvents 10000
+set StdLEP:DebugLevel 1
+set StdLEP:PrintEvent 10
+cp /Defaults/Particles/Z0 /Pythia7/Particles/Z0
+set /Pythia7/Particles/Z0:NominalMass 92
+insert /Pythia7/StdStrategy:LocalParticles[0] /Pythia7/Particles/Z0
+saverun TestMisc StdLEP

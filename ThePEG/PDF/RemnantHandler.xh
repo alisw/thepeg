@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// RemnantHandler.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_RemnantHandler_XH
+#define ThePEG_RemnantHandler_XH
+//
+// This is the declarations of the exception classes used by the
+// RemnantHandler class.
+//
+
+// #include "RemnantHandler.fh"
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by RemnantHandler if something goes wrong. */
+struct RemnantHandlerException: public Exception {
+  /** Standard constructor. */
+  RemnantHandlerException(string p0, string p, string r, string mess);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_RemnantHandler_XH */
+

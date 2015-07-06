@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// BeamParticleData.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_BeamParticleData_XH
+#define ThePEG_BeamParticleData_XH
+//
+// This is the declarations of the exception classes used by the
+// BeamParticleData class.
+//
+
+// #include "BeamParticleData.fh"
+#include "ThePEG/Interface/InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by BeamParticleData if a specified PDF cannot
+ *  handle the particle. */
+struct BeamParticleWrongPDF: public InterfaceException {
+  /** Standard constructor. */
+  BeamParticleWrongPDF(string p, string pdf);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_BeamParticleData_XH */
+

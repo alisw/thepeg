@@ -1,0 +1,135 @@
+echo "Welcome to DIPSY data merger, let's roll!! :)"
+
+
+# Naming convention of files must be filenameX.dat with filename the first argument, and X number from 0 up to any number. These files must contain
+#
+# # /observableNorm
+# x y e n
+# x y e n
+# x y e n
+#
+# and 
+# # /observableWeights
+# x y e n
+# x y e n
+# x y e n
+#
+#
+# with "observable" the second argument, x the x value, y the y value, e the error, and n can be anything (but it needs to be there).
+
+
+echo "I will look for data files of the form $1#.dat, with # being a number from 0 and up."
+
+numberOfFiles=0
+
+n=0
+found=1
+while [ $found -eq 1 ]
+do
+   if [ -e $1$n.dat ]
+      	then
+		let numberOfFiles=$numberOfFiles+1
+		let n=$n+1
+	 else
+		found=0
+   fi
+done
+
+if [ $numberOfFiles -gt 1 ]
+   then
+	echo "Found $numberOfFiles files to merge!! :D"
+   else
+	if [ $numberOfFiles -gt 0 ]
+	   then
+		echo "Found only 1 file, no point in merging. :/"
+	   else
+		echo "Found no files with that naming convention. :o"
+	fi
+	exit
+fi
+
+
+echo "Analysing files:"
+echo "First collecting weights."
+
+# isolate the weighted sums
+n=0
+observable="/"$2"Norm"
+awkscript='BEGIN { RS = "#"} {if ($1 == "'$observable'") print "#",$0;}'
+while [ $numberOfFiles -gt $n ]
+do
+	awk "$awkscript" $1$n.dat > temp$n
+	let n=n+1
+done
+
+# isolate the weights of the bins
+observable="/"$2"Weights"
+awkscript='BEGIN { RS = "#"} {if ($1 == "'$observable'") print "#",$0;}'
+n=0
+while [ $numberOfFiles -gt $n ]
+do
+	awk "$awkscript" $1$n.dat > tempW$n
+	let n=n+1
+done
+
+# add the weights as an extra column
+n=0
+while [ $numberOfFiles -gt $n ]
+do
+	paste temp$n tempW$n > tempMerged$n
+	let n=n+1
+done
+
+echo "Now merging weights with data."
+
+# paste all the data in columns
+paste tempMerged0 tempMerged1 > tempMerged
+n=2
+while [ $numberOfFiles -gt $n ]
+do
+	paste tempMerged tempMerged$n > temp
+	paste temp > tempMerged
+	let n=n+1
+done
+
+observable="/"$2"Norm"
+# do the weighted sums bin by bin
+awkscript='{if ($1 == "#") {
+	       print "#","'$observable'";
+	    }
+	    else {
+	       x = 0;
+	       y = 0;
+	       error2 = 0;
+	       weight = 0;
+	       for (i = 0; i < 8*'$numberOfFiles';i += 8) {
+	       	   x += $(i+1)*$(i+6);
+	       	   y += $(i+2)*$(i+6);
+	       	   error2 += $(i+3)*$(i+6)*$(i+3)*$(i+6);
+	       	   weight += $(i+6);
+	       }
+	       if ( weight > 0 ) print x/weight,y/weight,sqrt(error2)/weight,weight;
+	       else print $1,0,0,0
+	    } }'
+observable=$2
+awk "$awkscript" tempMerged > $1_$observable.dat
+
+observable="/"$2"Weights"
+# do the weighted sums bin by bin
+awkscript='{if ($1 == "#") {
+	       print "#","'$observable'";
+	    }
+	    else {
+	       x = 0;
+	       weight = 0;
+	       for (i = 0; i < 8*'$numberOfFiles';i += 8) {
+	       	   x += $(i+1)*$(i+6);
+	       	   weight += $(i+6);
+	       }
+	       if ( weight > 0 ) print x/weight,weight,weight,weight;
+	       else print $1,0,0,0;
+	    } }'
+observable=$2
+awk "$awkscript" tempMerged >> $1_$observable.dat
+
+echo "done! printed data to $1_$observable.dat"

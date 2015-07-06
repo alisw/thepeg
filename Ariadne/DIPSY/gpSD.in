@@ -1,0 +1,120 @@
+cd /DIPSY
+
+set /Defaults/Particles/u:NominalMass 0.33
+set /Defaults/Particles/d:NominalMass 0.33
+set /Defaults/Particles/s:NominalMass 0.5
+set /Defaults/Particles/c:NominalMass 1.5
+set /Defaults/Particles/b:NominalMass 4.8
+
+create DIPSY::DiffractiveEventFiller DiffractiveFiller
+set DiffractiveFiller:DipoleAbsorber stdAbsorber
+set HeraEventHandler:EventFiller DiffractiveFiller
+set HeraEventHandler:CollisionType SingleDiffractive
+
+set DiffractiveFiller:RecoilScheme PreservePlus
+set DiffractiveFiller:Mode SingleSweep
+set DiffractiveFiller:EffectiveWeights PlusWeighted
+set DiffractiveFiller:SingleMother 0
+set DiffractiveFiller:FSSwingTime 0.6
+set DiffractiveFiller:ValenceChargeNormalisation None
+
+#set stdSwinger:Lambda 0.000000000001
+set stdBGenerator:Width 3.0
+
+read Tune27.in
+#read RivetAnalyses.in
+
+create ThePEG::ProgressLog Logger ProgressLog.so
+set Logger:Interval 600
+set HeraGenerator:NumberOfEvents 100000
+set HeraEventHandler:PreSamples 0
+set HeraEventHandler:ConsistencyLevel Never
+set HeraEventHandler:DecayHandler:MaxLifeTime 10
+insert HeraGenerator:AnalysisHandlers[0] Logger
+set HeraGenerator:MaxErrors 10000
+
+set HeraGenerator:EventHandler:EventFiller:PTCut 0.6
+
+#set HeraGenerator:EventHandler:CascadeHandler NULL
+
+set HeraLumi:Energy 120.0
+set virtualPhoton:Q2 24.0
+set DiffractiveFiller:NElasticCascades 1000
+set DiffractiveFiller:MinRapGap 1.0
+set DiffractiveFiller:MaxRapGap 10.0
+set virtualPhoton:Polarisation Both
+#set virtualPhoton:Polarisation Transverse
+#set virtualPhoton:Polarisation Longitudinal
+
+set DiffractiveFiller:NInteractions 0
+
+saverun HeraSDEldebug HeraGenerator
+saverun HeraSDEl HeraGenerator
+
+set DiffractiveFiller:NInteractions 1
+
+saverun HeraSD1debug HeraGenerator
+saverun HeraSD1 HeraGenerator
+
+#set virtualPhoton:VMDLightA 0
+#set virtualPhoton:VMDCharmA 0
+
+set DiffractiveFiller:NInteractions 0
+set HeraGenerator:RandomNumberGenerator:Seed 0
+saverun HeraW120Q24SDEl0 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 1
+saverun HeraW120Q24SDEl1 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 2
+saverun HeraW120Q24SDEl2 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 3
+saverun HeraW120Q24SDEl3 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 4
+saverun HeraW120Q24SDEl4 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 5
+saverun HeraW120Q24SDEl5 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 6
+saverun HeraW120Q24SDEl6 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 7
+saverun HeraW120Q24SDEl7 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 8
+saverun HeraW120Q24SDEl8 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 9
+saverun HeraW120Q24SDEl9 HeraGenerator
+
+set DiffractiveFiller:NInteractions 1
+set HeraGenerator:RandomNumberGenerator:Seed 0
+saverun HeraW120Q24SDsingle0 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 1
+saverun HeraW120Q24SDsingle1 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 2
+saverun HeraW120Q24SDsingle2 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 3
+saverun HeraW120Q24SDsingle3 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 4
+saverun HeraW120Q24SDsingle4 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 5
+saverun HeraW120Q24SDsingle5 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 6
+saverun HeraW120Q24SDsingle6 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 7
+saverun HeraW120Q24SDsingle7 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 8
+saverun HeraW120Q24SDsingle8 HeraGenerator
+set HeraGenerator:RandomNumberGenerator:Seed 9
+saverun HeraW120Q24SDsingle9 HeraGenerator
+
+set HeraGenerator:NumberOfEvents 0
+set HeraEventHandler:PreSamples 5000
+
+#set HeraEventHandler:YFrametest 0.2
+#saverun HeraSD02inclusive HeraGenerator
+#set HeraEventHandler:YFrametest 0.4
+#saverun HeraSD04inclusive HeraGenerator
+#set HeraEventHandler:YFrametest 0.6
+#saverun HeraSD06inclusive HeraGenerator
+set HeraEventHandler:PreSamples 5000
+#set HeraEventHandler:YFrametest 0.8
+#saverun HeraSD08inclusive HeraGenerator
+set HeraEventHandler:YFrametest 0.9
+saverun HeraSD09inclusive HeraGenerator
+

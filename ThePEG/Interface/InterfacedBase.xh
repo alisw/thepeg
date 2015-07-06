@@ -1,0 +1,51 @@
+// -*- C++ -*-
+//
+// InterfacedBase.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_InterfacedBase_XH
+#define ThePEG_InterfacedBase_XH
+//
+// This is the declarations of the exception classes used by the
+// InterfacedBase class.
+//
+
+// #include "InterfacedBase.fh"
+#include "InterfaceBase.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception base class used if something goes wrong in the setup phase. */
+struct SetupException: public InterfaceException {
+  /** Constructor. */
+  SetupException() {};
+};
+
+/** Exception base class used if something goes wrong in the setup phase. */
+struct UpdateException: public InterfaceException {
+  /** Constructor. */
+  UpdateException() {};
+};
+
+/** Exception base class used if something goes wrong with rebinding
+    pointers in the setup phase. */
+struct RebindException: public InterfaceException {
+  /** Constructor. */
+  RebindException() {};
+};
+
+/** Exception base class used if something goes wrong in the setup phase. */
+struct InitException: public InterfaceException {
+  /** Constructor. */
+  InitException() {};
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_InterfacedBase_XH */
+

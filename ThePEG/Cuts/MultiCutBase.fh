@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MultiCutBase class.
+//
+#ifndef ThePEG_MultiCutBase_FH
+#define ThePEG_MultiCutBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class MultiCutBase;
+ThePEG_DECLARE_POINTERS(MultiCutBase,MultiCutPtr);
+
+}
+
+#endif

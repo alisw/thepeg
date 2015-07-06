@@ -1,0 +1,19 @@
+// -*- C++ -*-
+#ifndef ThePEG_InterfaceBase_FH
+#define ThePEG_InterfaceBase_FH
+//
+// This is the forward declaration of the InterfaceBase and
+// RefInterfaceBase classes.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class InterfaceBase;
+
+class RefInterfaceBase;
+
+}
+
+#endif /* ThePEG_InterfaceBase_FH */

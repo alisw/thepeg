@@ -1,0 +1,16 @@
+// -*- C++ -*-
+#ifndef ThePEG_SamplerBase_FH
+#define ThePEG_SamplerBase_FH
+//
+// This is the forward declaration of the SamplerBase class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+ThePEG_DECLARE_CLASS_POINTERS(SamplerBase,SamplerPtr);
+
+}
+
+#endif /* ThePEG_SamplerBase_FH */

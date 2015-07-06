@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Emitter class.
+//
+#ifndef ThePEG_Emitter_FH
+#define ThePEG_Emitter_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class Emitter;
+ThePEG_DECLARE_POINTERS(Emitter,EmiPtr);
+
+}
+
+#endif

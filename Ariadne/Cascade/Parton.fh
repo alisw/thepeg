@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Parton class.
+//
+#ifndef Ariadne5_Parton_FH
+#define Ariadne5_Parton_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne5 {
+
+class Parton;
+ThePEG_DECLARE_POINTERS(Parton,ParPtr);
+
+}
+
+#endif

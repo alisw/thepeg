@@ -1,0 +1,10 @@
+cd /Defaults/Generators
+set SimpleLEPGenerator:NumberOfEvents 10000
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set SimpleLEPGenerator:EventHandler:DecayHandler NULL
+set SimpleLEPGenerator:DumpPeriod 7000
+set /Defaults/Particles/Z0:NominalMass 92
+saverun SimpleLEP SimpleLEPGenerator
+run SimpleLEP

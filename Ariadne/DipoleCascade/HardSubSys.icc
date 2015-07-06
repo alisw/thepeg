@@ -1,0 +1,77 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HardSubSys class.
+//
+
+#include "Ariadne/DipoleCascade/Parton.h"
+
+namespace Ariadne {
+
+inline HardSubSys::HardSubSys()
+  : isModified(false), isRotated(false) {}
+
+inline HardSubSys::HardSubSys(const HardSubSys & x)
+  : theActivePartons(x.theActivePartons),
+    theProducedParticles(x.theProducedParticles),
+    theInitialParticles(x.theInitialParticles),
+    theIntermediateParticles(x.theIntermediateParticles),
+    theHardRemnants(x.theHardRemnants), theMomentum(x.theMomentum),
+    isModified(x.isModified), theInitMomentum(x.theInitMomentum),
+    theRotation(x.theRotation), isRotated(x.isRotated) {}
+
+inline void HardSubSys::add(tParPtr p) {
+  if ( p->coloured() ) theActivePartons.insert(p);
+  else theProducedParticles.insert(p);
+  isModified = true;
+}
+
+inline void HardSubSys::addIntermediate(tPPtr p) {
+  theIntermediateParticles.push_back(p);
+}
+
+inline bool HardSubSys::remove(tParPtr p) {
+  isModified = true;
+  if ( p->coloured() ) return theActivePartons.erase(p) > 0;
+  else return theProducedParticles.erase(p) > 0;
+}
+
+inline const Lorentz5Momentum & HardSubSys::momentum() const {
+  if ( isModified ) sumMomentum();
+  return theMomentum;
+}
+
+inline const HardSubSys::PartonSet & HardSubSys::active() const {
+  return theActivePartons;
+}
+
+inline const HardSubSys::PartonSet & HardSubSys::produced() const {
+  return theProducedParticles;
+}
+
+inline const tPVector & HardSubSys::initial() const {
+  return theInitialParticles;
+}
+
+inline const tPVector & HardSubSys::intermediates() const {
+  return theIntermediateParticles;
+}
+
+inline const LorentzRotation & HardSubSys::totalRotation() const {
+  return theRotation;
+}
+
+inline bool HardSubSys::rotated() {
+  return isRotated;
+}
+
+inline const HardSubSys::tHardRemPair & HardSubSys::hardRemnants() const {
+  return theHardRemnants;
+}
+
+inline void HardSubSys::hardRemnant(const tHardRemPtr & hard, bool first) {
+  if ( first ) theHardRemnants.first = hard;
+  else theHardRemnants.second = hard;
+}
+
+}

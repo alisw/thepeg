@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the RFVVertex class.
+//
+#ifndef ThePEG_RFVVertex_FH
+#define ThePEG_RFVVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class RFVVertex;
+ThePEG_DECLARE_POINTERS(RFVVertex,RFVVertexPtr);
+
+}
+}
+
+#endif

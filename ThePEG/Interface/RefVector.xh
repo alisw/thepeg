@@ -1,0 +1,94 @@
+// -*- C++ -*-
+//
+// RefVector.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_RefVector_XH
+#define ThePEG_RefVector_XH
+//
+// This is the declarations of the exception classes used by the
+// RefVector class.
+//
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by RefVector if trying to set a pointer of
+ *  the wrong type.  */
+struct RefVExRefClass: public InterfaceException {
+  /** Standard constructor. */
+  RefVExRefClass(const RefInterfaceBase & i, const InterfacedBase & o,
+		 cIBPtr r, const char *);
+};
+
+/** Exception class used by RefVector if an unknown error occurs.  */
+struct RefVExSetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  RefVExSetUnknown(const RefInterfaceBase & i, const InterfacedBase & o,
+		   cIBPtr r, int j, const char *);
+};
+
+/** Exception class used by RefVector of a specified object was not
+ *  found.  */
+struct RefVExSetUnfound: public InterfaceException {
+  /** Standard constructor. */
+  RefVExSetUnfound(const InterfaceBase & i, const InterfacedBase & o, string);
+};
+
+/** Exception class used by RefVector if a given index was out of
+ *  bounds.  */
+struct RefVExIndex: public InterfaceException {
+  /** Standard constructor. */
+  RefVExIndex(const InterfaceBase & i, const InterfacedBase & o, int j);
+};
+
+/** Exception class used by RefVector if trying to change the size of
+ *  a fixed size container.  */
+struct RefVExFixed: public InterfaceException {
+  /** Standard constructor. */
+  RefVExFixed(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used by RefVector if an unknown error occurs.  */
+struct RefVExDelUnknown: public InterfaceException {
+  /** Standard constructor. */
+  RefVExDelUnknown(const InterfaceBase & i, const InterfacedBase & o, int j);
+};
+
+/** Exception class used by RefVector if an unknown error occurs.  */
+struct RefVExGetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  RefVExGetUnknown(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used by RefVector if manipulating through a null
+ *  member function  */
+struct RefVExNoSet: public InterfaceException {
+  /** Standard constructor. */
+  RefVExNoSet(const InterfaceBase & i,  const InterfacedBase & o);
+};
+
+/** Exception class used by RefVector if manipulating through a null
+ *  member function  */
+struct RefVExNoIns: public InterfaceException {
+  /** Standard constructor. */
+  RefVExNoIns(const InterfaceBase & i,  const InterfacedBase & o);
+};
+
+/** Exception class used by RefVector if manipulating through a null
+ *  member function  */
+struct RefVExNoDel: public InterfaceException {
+  /** Standard constructor. */
+  RefVExNoDel(const InterfaceBase & i,  const InterfacedBase & o);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_RefVector_XH */
+

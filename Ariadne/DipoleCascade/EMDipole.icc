@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EMDipole class.
+//
+
+namespace Ariadne {
+
+inline EMDipole::EMDipole() {}
+
+inline EMDipole::EMDipole(const EMDipole & x)
+  : Emitter(x), theIPart(x.theIPart), theOPart(x.theOPart) {}
+
+inline EMDipole::~EMDipole() {}
+
+inline tParPtr EMDipole::oPart() const {
+  return theOPart;
+}
+
+inline tParPtr EMDipole::iPart() const {
+  return theIPart;
+}
+
+inline void EMDipole::oPart(tParPtr x) {
+  theOPart = x;
+}
+
+inline void EMDipole::iPart(tParPtr x) {
+  theIPart = x;
+}
+
+}

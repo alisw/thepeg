@@ -1,0 +1,51 @@
+// -*- C++ -*-
+//
+// Parameter.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Parameter_XH
+#define ThePEG_Parameter_XH
+//
+// This is the declarations of the exception classes used by the
+// Parameter class.
+//
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by Parameter if variable is set outside the
+ *  specified limits. */
+struct ParExSetLimit: public InterfaceException {
+  /** Standard constructor. */
+  template <typename T>
+  ParExSetLimit(const InterfaceBase & i, 
+		const InterfacedBase & o, T v);
+};
+
+/** Exception class used by Parameter if an unkown error
+ *  occurs. */
+struct ParExSetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  template <typename T>
+  ParExSetUnknown(const InterfaceBase & i,
+		  const InterfacedBase & o, T val);
+};
+
+/** Exception class used by Parameter if an unkown error
+ *  occurs. */
+struct ParExGetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  ParExGetUnknown(const InterfaceBase & i,
+		  const InterfacedBase & o, const char *);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Parameter_XH */
+

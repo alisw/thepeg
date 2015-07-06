@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_DiagramBase_FH
+#define ThePEG_DiagramBase_FH
+//
+// This is the forward declaration of the DiagramBase class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class DiagramBase;
+ThePEG_DECLARE_CLASS_POINTERS(DiagramBase,DiagPtr);
+
+}
+
+#endif /* ThePEG_DiagramBase_FH */

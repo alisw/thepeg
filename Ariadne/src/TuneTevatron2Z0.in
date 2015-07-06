@@ -1,0 +1,29 @@
+mkdir /Ariadne5/SimpleTevatron
+cd /Ariadne5/SimpleTevatron
+cp /Ariadne5/Generators/Tevatron/Tevatron2Z0Generator SimpleTevatronGenerator
+set SimpleTevatronGenerator:NumberOfEvents 1000000
+set SimpleTevatronGenerator:DebugLevel 1
+set SimpleTevatronGenerator:PrintEvent 10
+create ThePEG::RivetAnalysis RivetTeV2 RivetAnalysis.so
+insert RivetTeV2:Analyses[0] D0_2007_S7075677
+insert RivetTeV2:Analyses[0] D0_2008_S6879055
+insert RivetTeV2:Analyses[0] D0_2008_S7554427
+insert RivetTeV2:Analyses[0] D0_2008_S7863608
+insert RivetTeV2:Analyses[0] D0_2009_S8202443
+insert RivetTeV2:Analyses[0] D0_2009_S8349509
+insert RivetTeV2:Analyses[0] D0_2010_S8671338
+insert RivetTeV2:Analyses[0] D0_2010_S8821313
+insert RivetTeV2:Analyses[0] CDF_2006_S6653332
+insert RivetTeV2:Analyses[0] CDF_2008_S7540469
+insert RivetTeV2:Analyses[0] CDF_2008_S8095620
+insert RivetTeV2:Analyses[0] CDF_2009_S8383952
+insert RivetTeV2:Analyses[0] CDF_2010_S8591881_DY
+insert SimpleTevatronGenerator:AnalysisHandlers[0] RivetTeV2
+create ThePEG::ProgressLog Logger ProgressLog.so
+set Logger:Interval 600
+insert SimpleTevatronGenerator:AnalysisHandlers[0] Logger
+set SimpleTevatronGenerator:EventHandler:Cuts:MHatMin 35
+set SimpleTevatronGenerator:EventHandler:Cuts:X1Max 0.99
+set SimpleTevatronGenerator:EventHandler:Cuts:X2Max 0.99
+set SimpleTevatronGenerator:EventHandler:DecayHandler:MaxLifeTime 10
+saverun TuneTevatron2Z0 SimpleTevatronGenerator

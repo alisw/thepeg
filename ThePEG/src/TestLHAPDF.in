@@ -1,0 +1,39 @@
+mkdir /LHAPDF
+cd /LHAPDF
+
+create ThePEG::LHAPDF CTEQ6ll ThePEGLHAPDF.so
+set CTEQ6ll:RemnantHandler /Defaults/Partons/SoftRemnants
+set CTEQ6ll:PDFName cteq6ll.LHpdf
+
+cp /Defaults/Partons/SoftRemnants SoftRemnants
+set CTEQ6ll:RemnantHandler SoftRemnants
+cp /Defaults/Particles/p+ p+
+set p+:PDF CTEQ6ll
+cp /Defaults/Particles/n0 n0
+set n0:PDF CTEQ6ll
+set nbar0:PDF CTEQ6ll
+set pbar-:PDF CTEQ6ll
+
+cp CTEQ6ll MRST2007
+set MRST2007:PDFName MRST2007lomod.LHgrid
+
+cp CTEQ6ll CT09MC1
+set CT09MC1:PDFName CT09MC1.LHgrid
+
+cp CTEQ6ll CTEQ6ll4
+set CTEQ6ll4:MaxFlav 4
+
+set p+:PDF CTEQ6ll
+insert /Defaults/Generators/SimpleLEPGenerator:LocalParticles[0] p+
+
+set n0:PDF MRST2007
+insert /Defaults/Generators/SimpleLEPGenerator:LocalParticles[0] n0
+
+set nbar0:PDF CT09MC1
+insert /Defaults/Generators/SimpleLEPGenerator:LocalParticles[0] nbar0
+
+set pbar-:PDF CTEQ6ll4
+insert /Defaults/Generators/SimpleLEPGenerator:LocalParticles[0] pbar-
+
+cd /Defaults/Generators
+saverun TestLHAPDF SimpleLEPGenerator

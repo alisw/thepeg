@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_ClassDocumentation_FH
+#define ThePEG_ClassDocumentation_FH
+//
+// This is the forward declaration of the ClassDocumentation class.
+//
+
+namespace ThePEG {
+
+class ClassDocumentationBase;
+
+}
+
+#endif /* ThePEG_ClassDocumentation_FH */

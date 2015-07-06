@@ -1,0 +1,30 @@
+mkdir SimpleLEP
+cd SimpleLEP
+cp /Defaults/Generators/SimpleLEPGenerator SimpleLEPGenerator
+cp /Defaults/Handlers/SimpleLEPHandler SimpleLEPHandler
+set SimpleLEPGenerator:EventHandler SimpleLEPHandler
+create Ariadne::CascadeHandler AriadneCascade
+set SimpleLEPHandler:CascadeHandler AriadneCascade
+
+create ThePEG::ClusterCollapser Collapser
+create ThePEG::SimpleFlavour FlavGen
+set Collapser:FlavourGenerator FlavGen
+
+# insert SimpleLEPHandler:PostCascadeHandlers[0] Collapser
+set SimpleLEPHandler:HadronizationHandler /Pythia7/Handlers/StringFrag/StdFragHandler
+set SimpleLEPHandler:DecayHandler /Pythia7/Handlers/Decay/StdDecay
+
+set AriadneCascade:NFlav 5
+
+set SimpleLEPGenerator:NumberOfEvents 10000
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+set SimpleLEPGenerator:EventHandler:HadronizationHandler Frag8
+
+set SimpleLEPGenerator:EventHandler:ConsistencyLevel PrintEveryStep
+
+set /Defaults/Particles/Z0:NominalMass 92
+saverun TestAriadne SimpleLEPGenerator

@@ -1,0 +1,165 @@
+mkdir /Dummy
+mkdir /Dummy/Decayers
+mkdir /Defaults
+mkdir /Defaults/Matchers
+mkdir /Defaults/Particles
+mkdir /Defaults/Decayers
+cd /Defaults/Decayers
+create ThePEG::FlatDecayer Flat
+create ThePEG::OmegaPhi3PiDecayer OmegaPhi3Pi OmegaPhi3PiDecayer.so
+create ThePEG::V2PPDecayer V2PP V2PPDecayer.so
+create ThePEG::DalitzDecayer Dalitz DalitzDecayer.so
+create ThePEG::Tau2HadronsDecayer Tau2Hadrons Tau2HadronsDecayer.so
+create ThePEG::Onium3GDecayer Onium3G Onium3GDecayer.so
+create ThePEG::QuarksToHadronsDecayer QsToHadrons QuarksToHadronsDecayer.so
+cp QsToHadrons QsTo3PlusHadrons
+set QsTo3PlusHadrons:MinN 3
+cp QsToHadrons OniumToHadrons
+create ThePEG::ColourPairDecayer ColourPairs ColourPairDecayer.so
+create ThePEG::WeakToHadronsDecayer WeakToHadrons WeakToHadronsDecayer.so
+cp WeakToHadrons WeakTo3PlusHadrons
+set WeakTo3PlusHadrons:MinN 3
+create ThePEG::DummyDecayer Dummy DummyDecayer.so
+cp Dummy ThresholdDummy
+cp Dummy NoThresholdDummy
+cd /
+create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
+create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
+create ThePEG::Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
+read ThePEGParticles.in
+mkdir /Defaults/MatrixElements
+mkdir /Defaults/Partons
+mkdir /Defaults/Handlers
+mkdir /Defaults/Generators
+mkdir /Defaults/Handlers/Hadronization
+
+create ThePEG::StandardRandom /Defaults/Random
+create ThePEG::StandardModelBase /Defaults/StandardModel
+create ThePEG::O1AlphaS /Defaults/AlphaS O1AlphaS.so
+set /Defaults/StandardModel:QCD/RunningAlphaS /Defaults/AlphaS
+create ThePEG::SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
+set /Defaults/StandardModel:EW/RunningAlphaEM /Defaults/AlphaEM
+create ThePEG::StandardCKM /Defaults/CKM StandardCKM.so
+set /Defaults/StandardModel:EW/CKM /Defaults/CKM
+
+cd /Defaults/MatrixElements
+create ThePEG::MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
+create ThePEG::MEGG2GG MEGG2GG MEQCD.so
+create ThePEG::MEQG2QG MEQG2QG
+create ThePEG::MEQQ2GG MEQQ2GG
+create ThePEG::MEQQ2QQ MEQQ2QQ
+create ThePEG::MEQq2Qq MEQq2Qq
+create ThePEG::MEGG2QQ MEGG2QQ
+create ThePEG::MEQQ2qq MEQQ2qq
+create ThePEG::MEqq2qq MEqq2qq
+
+cd /Defaults/Handlers/Hadronization
+create ThePEG::ClusterCollapser SimpleCollapser
+create ThePEG::SimpleFlavour SimpleFlavour SimpleFlavour.so
+create ThePEG::GaussianPtGenerator GaussianPt GaussianPtGenerator.so
+create ThePEG::SimpleZGenerator ZGenerator SimpleZGenerator.so
+set SimpleCollapser:FlavourGenerator SimpleFlavour
+set /Defaults/Decayers/QsToHadrons:FlavourGenerator SimpleFlavour
+set /Defaults/Decayers/QsTo3PlusHadrons:FlavourGenerator SimpleFlavour
+set /Defaults/Decayers/OniumToHadrons:FlavourGenerator SimpleFlavour
+set /Defaults/Decayers/WeakToHadrons:FlavourGenerator SimpleFlavour
+set /Defaults/Decayers/WeakTo3PlusHadrons:FlavourGenerator SimpleFlavour
+
+cd /Defaults/Partons
+create ThePEG::NoRemnants NoRemnants
+create ThePEG::NoPDF NoPDF
+set NoPDF:RemnantHandler NoRemnants
+create ThePEG::UnResolvedRemnant SimpleLeptonRemnants UnResolvedRemnant.so
+create ThePEG::LeptonLeptonPDF SimpleLeptonPDF LeptonLeptonPDF.so
+set SimpleLeptonPDF:RemnantHandler SimpleLeptonRemnants
+set /Defaults/Particles/e-:PDF SimpleLeptonPDF
+set /Defaults/Particles/e+:PDF SimpleLeptonPDF
+library GRVBase.so
+create ThePEG::GRV94L GRV94L GRV94L.so
+create ThePEG::GRV94M GRV94M GRV94M.so
+create ThePEG::SoftRemnantHandler SoftRemnants
+create ThePEG::SimpleBaryonRemnantDecayer BaryonRemnantDecayer
+set BaryonRemnantDecayer:FlavourGenerator /Defaults/Handlers/Hadronization/SimpleFlavour
+set BaryonRemnantDecayer:PTGenerator /Defaults/Handlers/Hadronization/GaussianPt
+set BaryonRemnantDecayer:ZGenerator /Defaults/Handlers/Hadronization/ZGenerator
+set SoftRemnants:RemnantDecayer BaryonRemnantDecayer
+set GRV94L:RemnantHandler SoftRemnants
+set GRV94M:RemnantHandler SoftRemnants
+
+set /Defaults/Particles/g:DefaultSpin 3
+set /Defaults/Particles/g:Spin 3
+set /Defaults/Particles/gamma:DefaultSpin 3
+set /Defaults/Particles/gamma:Spin 3
+set /Defaults/Particles/Z0:DefaultSpin 3
+set /Defaults/Particles/Z0:Spin 3
+set /Defaults/Particles/W+:DefaultSpin 3
+set /Defaults/Particles/W+:Spin 3
+set /Defaults/Particles/W-:DefaultSpin 3
+set /Defaults/Particles/W-:Spin 3
+set /Defaults/Particles/h0:DefaultSpin 1
+set /Defaults/Particles/h0:Spin 1
+
+cd /Defaults/Handlers
+create ThePEG::PartonExtractor StandardExtractor
+set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
+newdef StandardExtractor:FlatSHatY 1
+create ThePEG::PartonExtractor EEExtractor
+set EEExtractor:NoPDF /Defaults/Partons/NoPDF
+
+create ThePEG::DecayHandler StandardDecayHandler
+
+create ThePEG::ACDCSampler ACDCSampler ACDCSampler.so
+
+create ThePEG::StandardEventHandler SimpleLEPHandler
+create ThePEG::FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
+set FixedLEPLuminosity:Energy 91.2
+set SimpleLEPHandler:LuminosityFunction FixedLEPLuminosity
+set SimpleLEPHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+
+create ThePEG::SubProcessHandler SimpleEE2QQ
+insert SimpleEE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
+set SimpleEE2QQ:PartonExtractor EEExtractor
+insert SimpleLEPHandler:SubProcessHandlers[0] SimpleEE2QQ
+set SimpleLEPHandler:BeamA /Defaults/Particles/e-
+set SimpleLEPHandler:BeamB /Defaults/Particles/e+
+set SimpleLEPHandler:Sampler ACDCSampler
+library LesHouches.so
+library MadGraphReader.so
+library ReweightMinPT.so
+library KTClus.so
+library SimpleDISCut.so
+library SimpleKTCut.so
+library V2LeptonsCut.so
+library ReweightConstant.so
+
+cd /Defaults/Generators
+create ThePEG::EventGenerator SimpleLEPGenerator
+create ThePEG::Strategy DefaultStrategy
+insert DefaultStrategy:DefaultParticlesDirs[0] /Defaults/Particles
+set SimpleLEPGenerator:Strategy DefaultStrategy
+set SimpleLEPGenerator:RandomNumberGenerator /Defaults/Random
+set SimpleLEPGenerator:StandardModelParameters /Defaults/StandardModel
+set SimpleLEPGenerator:EventHandler /Defaults/Handlers/SimpleLEPHandler
+create ThePEG::Cuts EECuts
+set EECuts:MHatMin 22.36068
+set SimpleLEPGenerator:EventHandler:Cuts EECuts
+
+mkdir /LesHouches
+cd /LesHouches
+create ThePEG::EventGenerator LesHouchesGenerator
+cp /Defaults/Random StdRandom
+cp /Defaults/StandardModel StandardModel
+cp /Defaults/AlphaS O1AlphaS
+set StandardModel:QCD/RunningAlphaS O1AlphaS
+cp /Defaults/AlphaEM AlphaEM
+set StandardModel:EW/RunningAlphaEM AlphaEM
+cp /Defaults/CKM CKM
+set StandardModel:EW/CKM CKM
+set LesHouchesGenerator:RandomNumberGenerator StdRandom
+set LesHouchesGenerator:StandardModelParameters StandardModel
+cp /Defaults/Generators/DefaultStrategy DefaultStrategy
+set LesHouchesGenerator:Strategy DefaultStrategy
+create ThePEG::LesHouchesEventHandler LesHouchesHandler
+cp /Defaults/Handlers/StandardExtractor QCDExtractor
+set LesHouchesHandler:PartonExtractor QCDExtractor
+set LesHouchesGenerator:EventHandler LesHouchesHandler

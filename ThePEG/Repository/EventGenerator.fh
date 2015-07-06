@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef ThePEG_EventGenerator_FH
+#define ThePEG_EventGenerator_FH
+//
+// This is the forward declaration of the EventGenerator class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class EventGenerator;
+ThePEG_DECLARE_CLASS_POINTERS(EventGenerator,EGPtr);
+
+}
+
+#endif /* ThePEG_EventGenerator_FH */

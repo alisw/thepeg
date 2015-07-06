@@ -1,0 +1,42 @@
+cd /DIPSY
+
+read CurrentTune.in
+
+#read RivetAnalyses.in
+
+set LHCGenerator:NumberOfEvents 0
+set LHCEventHandler:PreSamples 50
+
+set LHCLumi:Energy 50.0
+saverun TestXSec00 LHCGenerator
+set LHCLumi:Energy 100.0
+saverun TestXSec01 LHCGenerator
+set LHCLumi:Energy 200.0
+saverun TestXSec02 LHCGenerator
+set LHCLumi:Energy 630.0
+saverun TestXSec06 LHCGenerator
+set LHCLumi:Energy 546.0
+saverun TestXSec05 LHCGenerator
+set LHCLumi:Energy 900.0
+saverun TestXSec09 LHCGenerator
+set LHCLumi:Energy 1800.0
+saverun TestXSec18 LHCGenerator
+set LHCLumi:Energy 5000.0
+saverun TestXSec50 LHCGenerator
+set LHCLumi:Energy 7000.0
+saverun TestXSec70 LHCGenerator
+set LHCLumi:Energy 10000.0
+saverun TestXSec100 LHCGenerator
+set LHCLumi:Energy 14000.0
+saverun TestXSec140 LHCGenerator
+set LHCLumi:Energy 20000.0
+saverun TestXSec200 LHCGenerator
+set LHCLumi:Energy 30000.0
+saverun TestXSec300 LHCGenerator
+
+set HeraGenerator:NumberOfEvents 0
+set HeraEventHandler:PreSamples 5000
+set HeraEventHandler:LuminosityFunction:Energy 100
+saverun TestXSecGammaP HeraGenerator
+
+

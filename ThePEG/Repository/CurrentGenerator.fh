@@ -1,0 +1,16 @@
+// -*- C++ -*-
+#ifndef ThePEG_CurrentGenerator_FH
+#define ThePEG_CurrentGenerator_FH
+//
+// This is the forward declaration of the CurrentGenerator class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class CurrentGenerator;
+
+}
+
+#endif /* ThePEG_CurrentGenerator_FH */

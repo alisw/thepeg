@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the StandardXComb class.
+//
+#ifndef ThePEG_StandardXComb_FH
+#define ThePEG_StandardXComb_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class StandardXComb;
+ThePEG_DECLARE_POINTERS(StandardXComb,StdXCombPtr);
+
+}
+
+#endif

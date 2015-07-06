@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SoftRemnant class.
+//
+#ifndef ThePEG_SoftRemnant_FH
+#define ThePEG_SoftRemnant_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class SoftRemnant;
+ThePEG_DECLARE_POINTERS(SoftRemnant,SoftRemPtr);
+
+}
+
+#endif

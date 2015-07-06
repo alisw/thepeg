@@ -1,0 +1,194 @@
+rrmdir /DIPSY
+mkdir /DIPSY
+cd /DIPSY
+
+create ThePEG::Cuts NoCuts
+create DIPSY::ImpactParameterGenerator stdBGenerator libDIPSY.so
+set stdBGenerator:Width 4.0
+create DIPSY::SimpleProton stdProton
+set stdProton:Particle /Defaults/Particles/p+
+create DIPSY::SimpleProton stdAntiProton
+set stdAntiProton:Particle /Defaults/Particles/pbar-
+set /Defaults/Particles/p+:PDF /Defaults/Partons/NoPDF
+set /Defaults/Particles/pbar-:PDF /Defaults/Partons/NoPDF
+create DIPSY::VirtualPhoton virtualPhoton VirtualPhoton.so
+set virtualPhoton:Q2 14.0
+set virtualPhoton:Particle /Defaults/Particles/gamma
+
+create DIPSY::SimpleNucleus Helium SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiHelium SimpleNucleus.so
+do Helium:SetNucleus He
+do AntiHelium:SetNucleus He
+set Helium:WF stdProton
+set AntiHelium:WF stdProton
+set Helium:Particle /Defaults/Particles/p+
+set AntiHelium:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Lithium SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiLithium SimpleNucleus.so
+do Lithium:SetNucleus Li
+do AntiLithium:SetNucleus Li
+set Lithium:WF stdProton
+set AntiLithium:WF stdProton
+set Lithium:Particle /Defaults/Particles/p+
+set AntiLithium:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Carbon SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiCarbon SimpleNucleus.so
+do Carbon:SetNucleus C
+do AntiCarbon:SetNucleus C
+set Carbon:WF stdProton
+set AntiCarbon:WF stdProton
+set Carbon:Particle /Defaults/Particles/p+
+set AntiCarbon:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Copper SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiCopper SimpleNucleus.so
+do Copper:SetNucleus Cu
+do AntiCopper:SetNucleus Cu
+set Copper:WF stdProton
+set AntiCopper:WF stdProton
+set Copper:Particle /Defaults/Particles/p+
+set AntiCopper:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Oxygen SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiOxygen SimpleNucleus.so
+do Oxygen:SetNucleus O
+do AntiOxygen:SetNucleus O
+set Oxygen:WF stdProton
+set AntiOxygen:WF stdProton
+set Oxygen:Particle /Defaults/Particles/p+
+set AntiOxygen:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Gold SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiGold SimpleNucleus.so
+do Gold:SetNucleus Au
+do AntiGold:SetNucleus Au
+set Gold:WF stdProton
+set AntiGold:WF stdProton
+set Gold:Particle /Defaults/Particles/p+
+set AntiGold:Particle /Defaults/Particles/pbar-
+create DIPSY::SimpleNucleus Lead SimpleNucleus.so
+create DIPSY::SimpleNucleus AntiLead SimpleNucleus.so
+do Lead:SetNucleus Pb
+do AntiLead:SetNucleus Pb
+set Lead:WF stdProton
+set AntiLead:WF stdProton
+set Lead:Particle /Defaults/Particles/p+
+set AntiLead:Particle /Defaults/Particles/pbar-
+create DIPSY::TotalXSecAnalysis TotXSec
+create DIPSY::ElasticXSecAnalysis ElXSec ElasticXSecAnalysis.so
+set ElXSec:NBins 100
+set ElXSec:DeltaB 0.5
+set ElXSec:NqBins 200
+set ElXSec:Deltaq 0.05
+#create DIPSY::PT1DEmitter pt1DEmitter PT1DEmitter.so
+#create DIPSY::OldStyleEmitter oldEmitter OldStyleEmitter.so
+create DIPSY::Emitter stdEmitter
+create DIPSY::Swinger stdSwinger
+#create DIPSY::RecoilSwinger recSwinger RecoilSwinger.so
+set stdSwinger:Lambda 1.0
+create DIPSY::SmallDipoleAbsorber stdAbsorber
+create DIPSY::EventFiller stdFiller
+set stdFiller:DipoleAbsorber stdAbsorber
+create DIPSY::DipoleXSec stdXSec
+create ThePEG::FixedCMSLuminosity Lumi
+set Lumi:Energy 7000.0
+create ThePEG::LWHFactory HFac LWHFactory.so
+set HFac:StoreType flat
+set HFac:Suffix dat
+cp /Defaults/Particles/pi0 pi0
+set pi0:Stable Stable
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+create DIPSY::FSDipole5Ordering FSOrdering FSDipole5Ordering.so
+cp /Ariadne5/Cascade/AriadneCascadePlain AriadneCascade
+insert AriadneCascade:Reweighters[0] FSOrdering
+create DIPSY::FSAnalysis FSAnalysis FSAnalysis.so
+
+create DIPSY::DipoleEventHandler EventHandler libDIPSY.so
+set EventHandler:WFL stdProton
+set EventHandler:WFR stdProton
+set EventHandler:PartonExtractor /Defaults/Handlers/StandardExtractor
+set EventHandler:Cuts NoCuts
+set EventHandler:BGen stdBGenerator
+set EventHandler:PreSamples 100
+insert EventHandler:AnalysisHandlers[0] TotXSec
+insert EventHandler:AnalysisHandlers[0] ElXSec
+set EventHandler:EventFiller stdFiller
+set EventHandler:XSecFn stdXSec
+set EventHandler:Emitter stdEmitter
+set EventHandler:Swinger stdSwinger
+create ThePEG::MultiEventGenerator Generator MultiEventGenerator.so
+set Generator:RandomNumberGenerator /Defaults/Random
+set Generator:StandardModelParameters /Defaults/StandardModel
+set Generator:EventHandler EventHandler
+set Generator:NumberOfEvents 10000
+set Generator:PrintEvent 0
+set Generator:DebugLevel 0
+set Generator:HistogramFactory HFac
+set Generator:DumpPeriod 1000
+insert Generator:LocalParticles[0] pi0
+set EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+set EventHandler:HadronizationHandler Frag8
+set EventHandler:CascadeHandler AriadneCascade
+insert Generator:AnalysisHandlers[0] FSAnalysis
+
+
+
+cp EventHandler LHCEventHandler
+set LHCEventHandler:WFL stdProton
+set LHCEventHandler:WFR stdProton
+cp Lumi LHCLumi
+set LHCEventHandler:LuminosityFunction LHCLumi
+cp Generator LHCGenerator
+set LHCGenerator:EventHandler LHCEventHandler
+set LHCLumi:Energy 7000.0
+
+
+cp EventHandler TevatronEventHandler
+set TevatronEventHandler:WFL stdAntiProton
+set TevatronEventHandler:WFR stdProton
+cp Lumi TevatronLumi
+set TevatronEventHandler:LuminosityFunction TevatronLumi
+cp Generator TevatronGenerator
+set TevatronGenerator:EventHandler TevatronEventHandler
+set TevatronLumi:Energy 1800.0
+
+
+cp EventHandler HeraEventHandler
+set HeraEventHandler:WFL virtualPhoton
+set HeraEventHandler:WFR stdProton
+cp Lumi HeraLumi
+set HeraEventHandler:LuminosityFunction HeraLumi
+cp Generator HeraGenerator
+set HeraGenerator:EventHandler HeraEventHandler
+set HeraLumi:Energy 220.0
+set virtualPhoton:Q2 14.0
+
+
+cp EventHandler RHICEventHandler
+set RHICEventHandler:WFL AntiGold
+set RHICEventHandler:WFR Gold
+cp Lumi RHICLumi
+set RHICEventHandler:LuminosityFunction RHICLumi
+cp Generator RHICGenerator
+set RHICGenerator:EventHandler RHICEventHandler
+set RHICLumi:Energy 39400.0
+
+
+cp EventHandler LHCPbPbEventHandler
+set LHCPbPbEventHandler:WFL AntiLead
+set LHCPbPbEventHandler:WFR Lead
+cp Lumi LHCPbPbLumi
+set LHCPbPbEventHandler:LuminosityFunction LHCPbPbLumi
+cp Generator LHCPbPbGenerator
+set LHCPbPbGenerator:EventHandler LHCPbPbEventHandler
+set LHCPbPbLumi:Energy 574000.0
+
+
+cp EventHandler eRHICEventHandler
+set eRHICEventHandler:WFL virtualPhoton
+set eRHICEventHandler:WFR Gold
+cp Lumi eRHICLumi
+set eRHICEventHandler:LuminosityFunction eRHICLumi
+cp Generator eRHICGenerator
+set eRHICGenerator:EventHandler eRHICEventHandler
+set eRHICLumi:Energy 1404.0
+
+cd /
+

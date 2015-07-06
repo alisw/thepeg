@@ -1,0 +1,10 @@
+
+debug:
+	$(MAKE) CXXFLAGS=-g SHOWCOMMAND=1
+
+libdebug: debug
+	cd ../lib; $(MAKE)
+
+liblib: all
+	cd ../lib; $(MAKE)
+

@@ -1,0 +1,21 @@
+// -*- C++ -*-
+#ifndef ThePEG_ParVector_FH
+#define ThePEG_ParVector_FH
+//
+// This is the forward declaration of the ParVector, ParVectorTBase
+// and ParVectorBase classes.
+//
+
+namespace ThePEG {
+
+class ParVectorBase;
+
+template <typename Type>
+class ParVectorTBase;
+
+template <typename T, typename Type = double>
+class ParVector;
+
+}
+
+#endif /* ThePEG_ParVector_FH */

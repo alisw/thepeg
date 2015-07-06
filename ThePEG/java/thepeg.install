@@ -1,0 +1,22 @@
+#!/bin/sh
+
+pkglibdir=@pkglibdir@
+bindir=@bindir@
+
+ThePEG_CMD="${bindir}/setupThePEG"
+if [ $# -gt 1 ]; then
+  if [ "$1" = "-v" ]; then
+    VERSION="-$2"
+    ThePEG_CMD="${pkglibdir}/setupThePEG${VERSION}"
+    shift 2
+  fi
+fi
+
+HEADLESS=""
+if [ "$1" = "--classcheck" ]; then
+    HEADLESS="-Djava.awt.headless=true"
+fi
+
+
+
+exec @java@ ${HEADLESS} -jar ${pkglibdir}/ThePEG.jar ${ThePEG_CMD} "$@"

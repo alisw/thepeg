@@ -1,0 +1,146 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EndPoint class.
+//
+
+#include "ThePEG/PDT/StandardMatchers.h"
+
+namespace Pythia7 {
+
+inline EndPoint::EndPoint() 
+  : theStrRg(0), thePTcomp(0.0*GeV, 0.0*GeV), theGamma(0.0*GeV2){
+}
+
+inline EndPoint::EndPoint(cPDPtr inPDPtr, cStringRegionPtr inSRPtr) 
+  :theParticle(inPDPtr), theStrRg(inSRPtr), thePTcomp(0.0*GeV,0.0*GeV), 
+  theGamma(0.0*GeV2){
+}
+
+inline EndPoint::EndPoint(const EndPoint & ep)
+  : theParticle(ep.theParticle), theStrRg(ep.theStrRg), 
+    thePTcomp(ep.thePTcomp), theGamma(ep.theGamma){
+}
+
+
+inline EndPoint::~EndPoint(){}
+
+//                      
+inline void EndPoint::Init() {
+  theParticle = cPDPtr(); 
+  theStrRg = 0;
+  thePTcomp = TransverseMomentum();
+  theGamma = 0.0*GeV2;
+}
+
+inline void EndPoint::Init(cPDPtr inPDPtr, cStringRegionPtr inSRPtr) {
+  theParticle = inPDPtr;
+  theStrRg = inSRPtr;
+  thePTcomp = TransverseMomentum();
+  theGamma = 0.0*GeV2;
+} 
+
+// ****************** Accessors *************************
+inline void EndPoint::PData(cPDPtr pd) {
+  theParticle = pd;
+}
+
+inline cPDPtr EndPoint::PData() const{ 
+  return theParticle;
+}
+
+inline void EndPoint::SR(cStringRegionPtr newSR){
+  theStrRg = newSR;
+}
+
+inline cStringRegionPtr EndPoint::SR() const{ 
+  return theStrRg;
+}
+
+inline void EndPoint::setPt(const TransverseMomentum & newpT) {
+  thePTcomp=newpT;  
+}
+
+inline void EndPoint::setPt(Energy newPx, Energy newPy) {
+  thePTcomp.first = newPx;
+  thePTcomp.second = newPy;  
+
+}
+
+inline LorentzMomentum EndPoint::pT() const {
+  LorentzMomentum p(thePTcomp.first  * theStrRg->ex() +
+		  thePTcomp.second * theStrRg->ey());
+  return p;
+}
+
+inline const TransverseMomentum &  EndPoint::pTcomp() const{ 
+  return thePTcomp;
+}
+
+inline Energy EndPoint::Px() const{ 
+  return thePTcomp.first;
+}
+
+inline Energy EndPoint::Py() const{
+  return thePTcomp.second;
+}
+
+inline void EndPoint::Gamma(Energy2 newGamma) { 
+  theGamma = newGamma; 
+}
+
+inline Energy2 EndPoint::Gamma() const { 
+  return theGamma; 
+}
+
+
+//  ************  forwarding Functions ****************
+
+inline Energy EndPoint::mass() const{   
+  return theParticle->constituentMass();
+}
+
+inline double EndPoint::Xremf() const{
+  return theStrRg->Xremf();
+}
+
+inline double EndPoint::Xremb() const{
+  return theStrRg->Xremb();
+}
+
+inline const LorentzMomentum & EndPoint::Pfwd() const {
+  return  theStrRg->Pfwd();
+}
+
+inline const LorentzMomentum & EndPoint::Pbwd() const {
+  return  theStrRg->Pbwd();
+}
+
+inline StringPtr EndPoint::theString() {
+  return theStrRg->getTheStringPtr();
+}
+
+//  ********************  Stepping Functions *****************
+
+inline void EndPoint::stepUp(){
+  theStrRg = theString()->nextUp(SR() ); 
+}
+
+inline void EndPoint::stepDown(){
+  theStrRg = theString()->nextDown(SR() ); 
+}
+
+
+// ***********************************************************************
+ 
+inline EndPoint& EndPoint::operator = (const EndPoint& ep){
+  theParticle = ep.PData();
+  theStrRg = ep.SR();
+  thePTcomp=ep.pTcomp();
+  theGamma=ep.Gamma();
+  return *this;
+}
+
+
+}
+

@@ -1,0 +1,28 @@
+create ThePEG::RivetAnalysis RivetLHC RivetAnalysis.so
+# insert RivetLHC:Analyses[0] ATLAS_2010_S8591806
+insert RivetLHC:Analyses[0] ATLAS_2010_S8894728
+insert RivetLHC:Analyses[0] ATLAS_2010_S8918562
+insert RivetLHC:Analyses[0] ATLAS_2011_S8924791
+insert RivetLHC:Analyses[0] ATLAS_2011_S8971293
+# insert RivetLHC:Analyses[0] ALICE_2010_S8624100
+# insert RivetLHC:Analyses[0] CMS_2011_S8957746
+# insert RivetLHC:Analyses[0] ATLAS_2010_CONF_2010_031
+# insert RivetLHC:Analyses[0] ATLAS_2010_CONF_2010_049
+# insert RivetLHC:Analyses[0] ATLAS_2010_CONF_2010_081
+insert RivetLHC:Analyses[0] ALICE_2010_S8625980
+# insert RivetLHC:Analyses[0] ALICE_2010_S8706239
+# insert RivetLHC:Analyses[0] CMS_FWD_10_011
+
+create ThePEG::RivetAnalysis RivetCDF RivetAnalysis.so
+insert RivetCDF:Analyses[0] CDF_1990_S2089246
+insert RivetCDF:Analyses[0] CDF_2001_S4751469
+insert RivetCDF:Analyses[0] CDF_1988_S1865951
+insert RivetCDF:Analyses[0] CDF_2001_S4517016
+insert RivetCDF:Analyses[0] CDF_2002_S4796047
+# insert RivetCDF:Analyses[0] CDF_2009_S8233977
+
+create ThePEG::RivetAnalysis RivetSTAR RivetAnalysis.so
+insert RivetSTAR:Analyses[0] STAR_2006_S6870392
+
+
+

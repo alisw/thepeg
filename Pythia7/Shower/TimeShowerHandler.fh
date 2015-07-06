@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef PYTHIA7_TimeShowerHandler_FH
+#define PYTHIA7_TimeShowerHandler_FH
+//
+// This is the forward declaration of the TimeShowerHandler class.
+//
+#include "ThePEG/Config/Pointers.h"
+
+namespace Pythia7 {
+
+class TimeShowerHandler;
+
+ThePEG_DECLARE_CLASS_POINTERS(TimeShowerHandler,TimeShowerPtr);
+
+}
+
+#endif /* PYTHIA7_TimeShowerHandler_FH */

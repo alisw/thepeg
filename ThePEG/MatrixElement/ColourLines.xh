@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// ColourLines.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_ColourLines_XH
+#define ThePEG_ColourLines_XH//
+// This is the declarations of the exception classes used by the
+// ColourLines class.
+//
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by ColourLines in case of inconsistent colour
+ *  flows. */
+struct ColourGeometryException: public Exception {
+  /** Standard constructor. */
+  ColourGeometryException(const tPVector &,
+                          const vector<pair<int,int> > & );
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_ColourLines_XH */
+

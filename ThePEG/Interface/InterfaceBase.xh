@@ -1,0 +1,67 @@
+// -*- C++ -*-
+//
+// InterfaceBase.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_InterfaceBase_XH
+#define ThePEG_InterfaceBase_XH
+//
+// This is the declarations of the exception classes used by the
+// InterfaceBase class.
+//
+
+#include "InterfaceBase.fh"
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used as base class for errors detected by
+ *  interface classes. */
+struct InterfaceException: public Exception {
+  /** Standard constructor. */
+  InterfaceException() {};
+};
+
+/** Exception class used when an interface is called for an object of
+ *  the wrong class. */
+struct InterExClass: public InterfaceException {
+  /** Standard constructor. */
+  InterExClass(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used in case an interface is not properly
+ *  setup. */
+struct InterExSetup: public InterfaceException {
+  /** Standard constructor. */
+  InterExSetup(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used in case of an unkown error whenn accessing an
+ *  object via an interface. */
+struct InterExUnknown: public InterfaceException {
+  /** Standard constructor. */
+  InterExUnknown(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used in case an a read-only interface is used to
+ *  try to change an object. */
+struct InterExReadOnly: public InterfaceException {
+  /** Standard constructor. */
+  InterExReadOnly(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used when a reference non-nullable interface tries
+    to set a reference to null. */
+struct InterExNoNull: public InterfaceException {
+  /** Standard constructor. */
+  InterExNoNull(const InterfaceBase & i, const InterfacedBase & o);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_InterfaceBase_XH */

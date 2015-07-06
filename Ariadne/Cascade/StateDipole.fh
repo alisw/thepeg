@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the StateDipole class.
+//
+#ifndef Ariadne5_StateDipole_FH
+#define Ariadne5_StateDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne5 {
+
+class StateDipole;
+ThePEG_DECLARE_POINTERS(StateDipole,StateDipPtr);
+
+}
+
+#endif

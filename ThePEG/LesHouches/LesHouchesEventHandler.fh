@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LesHouchesEventHandler class.
+//
+#ifndef ThePEG_LesHouchesEventHandler_FH
+#define ThePEG_LesHouchesEventHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class LesHouchesEventHandler;
+ThePEG_DECLARE_POINTERS(LesHouchesEventHandler,LesHouchesEventHandlerPtr);
+
+}
+
+#endif

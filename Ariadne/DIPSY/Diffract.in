@@ -1,0 +1,93 @@
+cd /DIPSY
+
+read ./Tune31.in
+
+## Now we set up an event generator.
+cp EventHandler LHCEventHandler
+set stdProton:R0 0.0
+set stdAntiProton:R0 0.0
+set Proton:R0 0.0
+set AntiProton:R0 0.0
+set LHCEventHandler:WFL stdProton
+set LHCEventHandler:WFR stdProton
+set LHCEventHandler:ConsistencyLevel 0
+set LHCEventHandler:XSecFn:CheckOffShell false
+set LHCEventHandler:CascadeHandler NULL
+set LHCEventHandler:HadronizationHandler NULL
+set LHCEventHandler:DecayHandler NULL
+create ThePEG::FixedCMSLuminosity LHCLumi
+set LHCEventHandler:LuminosityFunction LHCLumi
+cp Generator LHCGenerator
+set LHCGenerator:EventHandler LHCEventHandler
+set LHCEventHandler:BGen:Width 5
+set LHCEventHandler:EffectivePartonMode Colours
+
+erase LHCEventHandler:AnalysisHandlers[0]
+erase LHCEventHandler:AnalysisHandlers[0]
+
+create DIPSY::SemiInclusiveXSecAnalysis AnaSemi SemiInclusiveXSecAnalysis.so
+insert LHCEventHandler:AnalysisHandlers[0] AnaSemi
+
+create DIPSY::AnalysisProgress AnaLog AnalysisProgress.so
+set AnaLog:Interval 600
+insert LHCEventHandler:AnalysisHandlers[0] AnaLog
+
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+
+set LHCEventHandler:WFL Proton
+set LHCEventHandler:WFR Proton
+set LHCEventHandler:EventFiller:SoftRemove NoValence
+set /DIPSY/LHCEventHandler:BaryonSize 0.0
+set FSSwinger:SetRmax -2.7
+erase AriadneCascade:Emitters[0]
+set LHCEventHandler:CoherenceRange 3.9
+insert AriadneCascade:Emitters[0] FSSwinger
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:CascadeHandler AriadneCascade
+
+set LHCGenerator:EventHandler:FudgeME true
+
+set LHCEventHandler:EffectivePartonMode Colours
+set LHCEventHandler:CoherenceRange 2.5
+set LHCGenerator:EventHandler:PreSamples 1000
+set LHCGenerator:EventHandler:PreSampleB 100
+set LHCGenerator:EventHandler:PreSampleL 10
+set LHCGenerator:EventHandler:PreSampleR 10
+do LHCGenerator:AddInterface /DIPSY/LHCEventHandler:YFrametest 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90
+
+set LHCGenerator:DumpPeriod 0
+set LHCEventHandler:LambdaQCD 0.22
+set LHCEventHandler:Swinger:Lambda 1.0
+set LHCEventHandler:RMax 3.21
+set LHCEventHandler:Emitter:PMinusOrdering 0.92
+set LHCGenerator:EventHandler:Emitter:PTScale 1.18
+set stdFiller:PTCut 1
+
+set LHCGenerator:NumberOfEvents 0
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800
+saverun Diff1809l LHCGenerator
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000
+saverun Diff7009l LHCGenerator
+
+set LHCEventHandler:LambdaQCD 0.255
+set LHCEventHandler:RMax 2.9
+set LHCEventHandler:Emitter:PMinusOrdering 0.665
+set LHCEventHandler:Emitter:PTScale 1.3
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800
+saverun Diff1870l LHCGenerator
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000
+saverun Diff7070l LHCGenerator
+
+set LHCEventHandler:LambdaQCD 0.228
+set LHCEventHandler:RMax 3.0
+set LHCEventHandler:Emitter:PMinusOrdering 0.67
+set LHCEventHandler:Emitter:PTScale 1.25
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800
+saverun Diff1800l LHCGenerator
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 7000
+saverun Diff7000l LHCGenerator
+

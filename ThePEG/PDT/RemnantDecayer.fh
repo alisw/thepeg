@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the RemnantDecayer class.
+//
+#ifndef THEPEG_RemnantDecayer_FH
+#define THEPEG_RemnantDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class RemnantDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(ThePEG::RemnantDecayer,RemDecPtr);
+
+}
+
+#endif

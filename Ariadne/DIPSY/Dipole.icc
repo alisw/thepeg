@@ -1,0 +1,162 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Dipole class.
+//
+
+namespace DIPSY {
+
+inline Dipole::Dipole()
+  : theDipoleState(tDipoleStatePtr()), thePartons(PartonPair()),
+    theNeighbors(tDipolePair()),
+    theChildren(tDipolePair()), theGeneratedGluon(PartonPtr()),
+    theSwingDipole(tDipolePtr()), theGeneratedY(Constants::MaxRapidity),
+    theColour(-1),
+    theInteracted(tDipolePtr()), theGLAPsafe(false), isParticipating(true),
+    isRecoilSwing(false), isTouched(true), isOn(true), swingCache(-1.0/GeV2),
+    effmap(0) {}
+
+inline Dipole::Dipole(const Dipole & x)
+  : theDipoleState(x.theDipoleState), thePartons(x.thePartons),
+    theNeighbors(x.theNeighbors),
+    theChildren(x.theChildren), theGeneratedGluon(x.theGeneratedGluon),
+    theSwingDipole(x.theSwingDipole), theGeneratedY(x.theGeneratedY),
+    theColour(x.theColour), theInteracted(x.theInteracted),
+    theGLAPsafe(x.theGLAPsafe), isParticipating(x.isParticipating),
+    isRecoilSwing(x.isRecoilSwing), isTouched(true), isOn(x.isOn),
+    swingCache(x.swingCache), effmap(0) {}
+
+template <typename OutputIterator>
+void Dipole::extract(OutputIterator it) {
+  //an absorbed (dead end) dipole has only second child
+  if ( !children().first && children().second ) return;
+  if ( children().first ) children().first->extract(it);
+  if ( children().second ) children().second->extract(it);
+  if ( !children().first && !children().second ) *it++ = this;
+}
+
+inline DipoleState & Dipole::dipoleState() const {
+  return *theDipoleState;
+}
+
+//added by CF to access from emitter
+inline void Dipole::dipoleState(tDipoleStatePtr dipst) {
+	theDipoleState = dipst;
+}
+
+inline const Dipole::PartonPair & Dipole::partons() const {
+  return thePartons;
+}
+
+inline void Dipole::partons(PartonPair x) {
+  thePartons = x;
+}
+
+inline const bool Dipole::effectivePartonsChanged() const {
+  return (effectivePartons().first->changed() || effectivePartons().second->changed());
+}
+
+inline const pair< EffectivePartonPtr, EffectivePartonPtr > &
+Dipole::effectivePartons() const {
+  return theEffectivePartons;
+}
+
+inline void Dipole::
+effectivePartons( tEffectivePartonPtr g1, tEffectivePartonPtr g2 ) {
+  theEffectivePartons = make_pair( g1, g2 );
+}
+
+inline tDipolePtr Dipole::interacted() const {
+  return theInteracted;
+}
+
+inline const Dipole::tDipolePair & Dipole::children() const {
+  return theChildren;
+}
+
+inline Dipole::tDipolePair & Dipole::children() {
+	return theChildren;
+}
+
+inline const Dipole::tDipolePair & Dipole::neighbors() const {
+  return theNeighbors;
+}
+
+inline void Dipole::neighbors(tDipolePair x) {
+  theNeighbors = x;
+}
+
+inline void Dipole::firstNeighbor(tDipolePtr d) {
+  theNeighbors.first = d;
+}
+
+inline void Dipole::secondNeighbor(tDipolePtr d) {
+  theNeighbors.second = d;
+}
+
+inline tPartonPtr Dipole::generatedGluon() const {
+  return theGeneratedGluon;
+}
+
+//added by CF to get access from emitter class
+inline void Dipole::generatedGluon(tPartonPtr p) {
+  theGeneratedGluon = p;
+}
+
+inline tDipolePtr Dipole::swingDipole() const {
+  return theSwingDipole;
+}
+
+//aded by CF to access from swinger
+inline void Dipole::swingDipole(tDipolePtr d) {
+	theSwingDipole = d;
+}
+
+inline double Dipole::generatedY() const {
+  return theGeneratedY;
+}
+
+//added by CF to get access from emitter class
+inline void Dipole::generatedY(double y) {
+	theGeneratedY = y;
+}
+
+inline bool Dipole::DGLAPsafe() {
+  return theGLAPsafe;
+}
+
+inline void Dipole::DGLAPsafe(bool safe) {
+  theGLAPsafe = safe;
+}
+
+inline void Dipole::participating(bool b) {
+  isParticipating = b;
+}
+
+inline bool Dipole::participating() {
+  return isParticipating;
+}
+
+inline bool Dipole::hasGen() {
+	return (generatedGluon() || swingDipole()) &&
+		!(swingDipole() && swingDipole()->children().first);
+}
+
+inline InvEnergy2 Dipole::size2() const {
+  return partons().first->dist2(*partons().second);
+}
+
+inline InvEnergy Dipole::size() const {
+  return sqrt(size2());
+}
+
+inline int Dipole::colour() const {
+  return theColour;
+}
+
+inline void Dipole::colour(int c, int sys) {
+  theColour = c;
+  if ( sys > 0 ) colourSystem(sys);
+}
+
+}

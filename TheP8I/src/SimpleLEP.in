@@ -1,0 +1,15 @@
+cd /Defaults/Generators
+set SimpleLEPGenerator:NumberOfEvents 10000
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set SimpleLEPGenerator:EventHandler:DecayHandler NULL
+set SimpleLEPGenerator:DumpPeriod 7000
+set SimpleLEPGenerator:EventHandler:HadronizationHandler /TheP8I/Handlers/StringFrag/StringFragmenter
+create TheP8I::BoseEinsteinHandler BEHandler
+set SimpleLEPGenerator:EventHandler:DecayHandler BEHandler
+set /TheP8I/Particles/e+:PDF /Defaults/Partons/SimpleLeptonPDF
+set /TheP8I/Particles/e-:PDF /Defaults/Partons/SimpleLeptonPDF
+set /TheP8I/Particles/pi0:Stable Stable
+set SimpleLEPGenerator:Strategy /TheP8I/StdStrategy
+saverun SimpleLEP SimpleLEPGenerator

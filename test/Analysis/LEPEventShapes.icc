@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the LEPEventShapes class.
+//
+
+namespace ThePEG {
+
+inline IBPtr LEPEventShapes::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LEPEventShapes::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

@@ -1,0 +1,1096 @@
+2008-01-30  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DIPSY/*: Added directory for DIPSY (Dipoles in Impact Parameter
+	Space and rapiditY) and empty base classes.
+
+2007-10-24  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc (DipoleState::init): Removed
+	conditional macro for units.
+
+2007-07-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/DISAnalysis.h, DipoleCascade/Parton.h,
+	DipoleCascade/HardSubSys.cc, Config/Ariadne.h: Changed include
+	directory CLHEPWrap -> Vectors.
+
+2007-07-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am (CLEANFILES): Added some files to be cleaned.
+
+	* configure.ac: Removed CLHEP check.
+
+2007-05-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Made the index() facility work on
+	const objects.
+
+	* DipoleCascade/*.*: Made debugme() const.
+
+	* DipoleCascade/CascadeBase.*: The debug() function was removed
+	and is now defined globally for ThePEG.
+
+2007-05-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/DISAnalysis.h, DipoleCascade/HardSubSys.cc,
+	DipoleCascade/ExtendedDipole.cc, DipoleCascade/CascadeHandler.cc:
+	Fixed some units.
+
+2007-03-28  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.*: Added clone methods.
+
+	* DipoleCascade/ExtendedDipole.*: Included all partons and
+	remnants in fillReferences.
+
+2007-03-21  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Fixed several bugs related to
+	the dipole ending up in a state that was not self consistant.
+	Added functions to correctly calculate the maximum transverse
+	momentum to be used in the soft suppression. Cleaned up the
+	code.
+
+	* DipoleCascade/CascadeHandler.*, DipoleCascade/DipoleState.*,
+	DipoleCascade/Emitter.*, DipoleCascade/Dipole.*,
+	DipoleCascade/ExtendedDipole.*: Added functions to check if all
+	the emitters in the dipole state are self consistant. This is
+	now checked at every step of the cascade and an
+	IntegretyException is thrown if an error is found.
+
+2007-03-05  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added new attributes for hard
+	remnants. Added a function for generating gluon emissions from a
+	dipole containing hard remnants.
+
+	* DipoleCascade/DYCorr.cc, DipoleCascade/DISDipole.cc: Some
+	minor updates to make the classes compatible with the new
+	version of extended dipole.
+
+	* DipoleCascade/Dipole.cc: Removed all the code related to hard
+	remnants.
+
+2007-03-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/SoftRemnant.*, DipoleCascade/HardRemnant.*,
+	DipoleCascade/RemnantParton.*,: Renamed RemnantParton to
+	SoftRemnant. Both SoftRemnant and HardRemnant now inherits from
+	RemnantParton
+
+2007-02-21  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/HardRemnant.*: Added functions so that
+	HardRemnant can be cloned.
+
+	* DipoleCascade/HardSubSys.*: Changed the constructor and
+	fillReferance method so that the hard remnants are copied and the
+	pointers correctly translated, when the hard sub system is cloned.
+
+2007-02-20  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.cc, DipoleCascade/ExtendedDipole.cc:
+	Fixed a bug in the soft suppression where beta was implicitly
+	multiplied by a factor of two.
+
+2007-02-07  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.*: Fixed an error in the bgf splitting
+	function. Fixed a typo in the calculation of z in final state
+	gluon emission.
+
+	* DipoleCascade/HardRemnant.*: Added debugme() function.
+
+2007-02-02  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DISDipole.*: Added debugme() function.
+
+2007-02-02  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.cc: Changed back the jacobian in gluon
+	emissions to once agian include a 1/z pole.
+
+	* src/DISAnalysis.*: Added histograms for the rapidity and transverse
+	momentum of gluons and quarks in the hadronic center of mass. Also
+	added a histogram showing W.
+
+2007-01-24  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DISDipole.cc: Changed back jacobian in gluon
+	emission.
+
+2007-01-23  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadneDIS.in: Switch on HZTool routines by default.
+
+	* DipoleCascade/DipoleState.cc: Fixed bug in setIncoming when
+	incoming DIS lepton is the first incoming.
+
+2007-01-22  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.*: Modified the gluon matrix element
+	by a factor z to give correct behavior with the soft suppression.
+
+2007-01-19  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.*: Implemented matrix element
+	correction and changed the scale to mT in DIS boson gluon
+	fusion. Also implemented matrix element correction to the gluon
+	emission and a function that calculates y.
+
+	* DipoleCascade/ExtendedDipole.cc: Changed the scale to
+	transverse mass in genSeaQ and genQtoGQ. Made sure touch is
+	always called for the hard sub system whenever an emission is
+	performed. This fixes a bug which caused a violation of
+	conservation of four momentum.
+
+2006-12-20  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadneDIS.in, src/Makefile.am: TestAriadneDIS now also
+	includes hadronization and is included in the standard check
+	target.
+
+	* src/DISAnalysis.cc: Cheat, and only look at scattered leptons
+	from the hard sub-process.
+
+	* src/AriadneDefaults.in: Switched off pi0 decays by default in
+	Ariadne.
+
+	* src/TestAriadneDIS.in: Now sets a MinW2 cut.
+
+	* DipoleCascade/HardSubSys.cc: Fixed bug in setMomentum where a
+	single parton got the whole momentum even if there was initial()
+	particles in the subsystem.
+
+	* DipoleCascade/DipoleState.cc: Fixed bug in fill, where the
+	photon remnant was incorrectly treated.
+
+	* DipoleCascade/DISDipole.cc: Fixed bug in genBGF where the mass
+	of the hard subsystem was accidentally squared.
+
+2006-12-19  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/HardSubSys.h, DipoleCascade/HardSubSys.cc:
+	Modified setMomentum to better handle the case of only one nearly
+	massless particle in the hard subsystem.
+
+2006-12-19  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DISDipole.cc: Fixed a bug in the kinematics and
+	a bug in the calculation of xi in genBGF.
+
+2006-12-18  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.icc: Fixed strangness in templated
+	create() function.
+
+2006-12-16  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.icc, DipoleCascade/DipoleState.h,
+	DipoleCascade/DipoleState.cc: Added member variables for scattered
+	quarks. Initialization of DIS events seems to be working. However,
+	the corresponding generation still doesn't work.
+
+2006-12-15  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/HardSubSys.*: Added a function Q2 that returns
+	the sum of the virtuality of the hard remnants.
+
+	* DipoleCascade/ExtendedDipole.*: Made performInitialQ virtual.
+	Modified genIniG to include effects from virtual incoming
+	partons. Simplified the way setMomentum in HardSubSys is called.
+
+	* DipoleCascade/DISDipole.*: Implemented the boson gluon fusion
+	emission and modified performInitialQ so that it can deal with
+	hard remnants.
+
+2006-12-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/HardRemnant.icc, DipoleCascade/HardRemnant.h ,
+	DipoleCascade/HardRemnant.cc: Now inherits directly from Parton
+	rather than from RemnantParton
+
+	* DipoleCascade/DipoleState.icc, DipoleCascade/DipoleState.h,
+	DipoleCascade/DipoleState.cc: Added member variables for scattered
+	leptons
+
+	* DipoleCascade/DipoleState.h, DipoleCascade/DipoleState.cc: Fixed
+	bug where remnants were wronly connected. Started fixing DIS
+	initialization (still not working).
+
+2006-12-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadneDIS.in: Testing remnant decays.
+
+	* DipoleCascade/HardSubSys.icc, DipoleCascade/HardSubSys.h: Fixed
+	setting of hard remnants so that they can be set separately.
+
+	* DipoleCascade/HardSubSys.cc: Fixed dimensionality bug, GeV ->
+	GeV2.
+
+	* DipoleCascade/DipoleState.cc: Fixed init functions so that the
+	HardRemnants are properly set in the HardSubSys.
+
+2006-12-12  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/HardRemnant.*: Added a new class to describe the
+	struck quark in DIS.
+
+	* DipoleCascade/DISDipole.*: Added a new class to take care of
+	the first emission in DIS.
+
+	* DipoleCascade/HardSubSys.*: Added new member variables and
+	access functions for hard remnants. Changed setMomentum so that
+	it uses Utilities::getTransformToMomentum.
+
+	* DipoleCascade/ExtendedDipole.*: The init function was modified
+	not to set iRem and oRem, if the partons are hard remnants.
+
+2006-12-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadneDIS.in: Use new remnants.
+
+2006-12-07  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadneDY.in: Now uses new remnant handling and
+	fragmentation and decay.
+
+	* src/DYAnalysis.cc: Fixed segfault if no suitable leptons are
+	found.
+
+	* DipoleCascade/ExtendedDipole.cc: Fixed roundoff errors in
+	performInitialQ.
+
+	* DipoleCascade/DipoleState.cc: Fixed bug in remnant momenta.
+
+2006-12-07  Nils Lavesson  <nils@thep.lu.se>
+
+	* src/Makefile.am, src/TestAriadneDIS.in, src/DISAnalysis.*:
+	Added a simple input file and analysis handler for DIS.
+
+2006-11-28  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Implemented the function
+	PDFRatio that returns pdf ratios and soft suppressions needed
+	for CKKW reweighting.
+
+	* DipoleCascade/DipoleState.cc: Modified select to also run
+	untouch on the hard sub system.
+
+2006-11-27  Nils Lavesson  <nils@thep.lu.se>
+
+	* src/TestAriadneDY.in, src/Makefile.am: Added HZTool to the
+	analysis handlers.
+
+2006-11-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.cc: Fixed minor error in
+	preInitialize() function.
+
+2006-11-24  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.icc,
+	DipoleCascade/CascadeHandler.h, DipoleCascade/CascadeHandler.cc:
+	Implemented preinit procedure to create internal alpha_s
+	object. Not tested.
+
+	* DipoleCascade/Emitter.cc, DipoleCascade/Dipole.cc: Modified to
+	reflect the new alpha_s option in CascadeHandler.
+
+	* DipoleCascade/CascadeHandler.icc,
+	DipoleCascade/CascadeHandler.h, DipoleCascade/CascadeHandler.cc:
+	Added an option to handle the running of alpha_s where an
+	AlphaSBase object, different from that in the StandardModel can be
+	used.
+
+	* DipoleCascade/DipoleState.h, DipoleCascade/DipoleState.cc:
+	Changed the containers objects, strings and emitters from sets to
+	lists.
+
+	* DipoleCascade/CascadeHandler.h: Made CKKWState a proper struct.
+
+	* DipoleCascade/CascadeHandler.cc: Changed the default to not
+	include photon emissions.
+
+2006-11-22  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.cc: Modified coupling so that the correct
+	maximum alphas scale is used during CKKW reweighting.
+
+2006-11-21  Nils Lavesson  <nils@thep.lu.se>
+
+	* src/CKKWLEP.in: Included LEP eventshape and multiplicity count
+	analysis. Also included 4 jet MadGraph events.
+
+2006-11-15  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.cc: Fixed a bug in reweightCKKW
+	where the returned weight was multiplied by the new alphas but
+	not divide by the old one.
+
+2006-11-14  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.cc: Fixed bug where the map of
+	saved CKKWstates's incorrectly used insert rather than operator[].
+
+	* src/TestAriadne.in: Check consistency every step and print out
+	inconsistent event.
+
+	* src/Makefile.am: Added generic targets for %.run and %.out
+
+	* src/CKKWLEP.in: Tell the event handler to produce weighted
+	events.
+
+	* DipoleCascade/CascadeHandler.cc: Make sure cascade() actually
+	performs an emission before checking if above CKKW cuts.
+
+2006-11-14  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.*: Fixed bugs in reweightCKKW.
+
+	* DipoleCascade/DipoleState.*: Cleaned up and fixed bugs in
+	sudakovVeto and in history construction.
+
+	* src/CKKWLEP.in: Added a new input file that can be used to
+	test CKKW at LEP.
+
+	* src/MadGraph_LEP/*: Added a small event sample of 2, 3 and 4
+	jet events.
+
+2006-11-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: Cleaned up and fixed problem with using
+	parallel make.
+
+2006-11-10  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added a function constructedPT2
+	that returns the lowest scale of the constructed history or s/4
+	if no scale is found.
+
+	* DipoleCascade/CascadeHandler.*: Implemented reweightCKKW and
+	modified cascade to deal with CKKW events. Added
+	CKKWMuliplicityException to be used when incorrect multiplicity
+	information is given to reweightCKKW. Also implemented a
+	function called passCuts that checks if the particles in a
+	dipole state is above the cuts in lastXComb.
+
+2006-11-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added option to createString to set
+	individual maximum scales for the dipoles depending on the scales
+	of the original particles. Changed select() so that individual
+	maximum scales of the emitters are respected. Changed fill
+	functions to set the scales of the produced particles. Also fixed
+	bug in the fill function for a vector of initial particles so that
+	only partons which have taken part in the cascade are flagged as
+	decayed.
+
+	* DipoleCascade/Emitter.*: Added member variable and functions
+	maxScale() to limit the maximum scale from an emission of an
+	Emitter.
+
+	* DipoleCascade/ExtendedDipole.*, DipoleCascade/EMDipole.*,
+	DipoleCascade/Dipole.*: Optionally determine a maximum scale from
+	the original particles in the init() function.
+
+	* DipoleCascade/CascadeHandler.cc: Make sure the same sub-process
+	is not cascaded twice.
+
+2006-11-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/Makefile.am: Use PYTHIA7LIBPATH and skip most of the -L
+	options.
+
+	* configure.ac: Added setting of PYTHIA7LIBPATH.
+
+2006-11-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/RemnantParton.cc: Use x(), y() and z() instead of
+	px(), py() and pz() in LorentzVector. Fixed simple units bug.
+
+	* DipoleCascade/Parton.cc: Made output work with strict units
+	checking.
+
+	* DipoleCascade/HardSubSys.cc: Use x(), y() and z() instead of
+	px(), py() and pz() in LorentzVector. Change argument order for
+	LorentzVector(double, Vector3) to LorentzVector(Vector3, double).
+
+	* DipoleCascade/ExtendedDipole.cc: Use x(), y() and z() instead of
+	px(), py() and pz() in LorentzVector. Fixed trivial GeV -> GeV2
+	and Energy -> Energy2 bugs.
+
+	* DipoleCascade/Emitter.*: Fixed trivial GeV -> GeV2 bug.
+
+	* DipoleCascade/EMDipole.cc: Fixed trivial GeV -> GeV2
+	bug. Optionally use proper units for charges. Use Lorentz5Momentum
+	instead of LorentzMomentum for p1, p2, p3 in perform().
+
+	* DipoleCascade/DipoleState.cc: Fixed output to work with strict
+	units checking. Also removed usage of Vector3::setZ()
+	function. Optionally use new templated Vector3<double>.
+
+	* DipoleCascade/Dipole.cc: Fixed trivial GeV -> GeV2 bug. Fixed C1
+	and C3 initialization to work with strict units checking.
+
+	* DipoleCascade/DYCorr.cc: Fixed trivial Energy -> Energy2 bug.
+
+	* DipoleCascade/CascadeHandler.cc: Fixed trivial GeV -> GeV2 bug.
+
+	* Config/Ariadne.h: Changed ptRapidity() to use doubles rather
+	than templated type for angles.
+
+2006-10-05  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added ME corretors to constructed
+	cascade histories. Fixed a bug in the treament of emission
+	probabilities when unorded histories where removed.
+
+	* DipoleCascade/MECorrBase.*, DipoleCascade/DipoleState.*,
+	DipoleCascade/DYCorr.*, DipoleCascade/Dipole.*,
+	DipoleCascade/EMDipole.*, DipoleCascade/ExtendedDipole.*:
+	Changed the arguments of the ME correction interface to pointers. 
+
+	* DipoleCascade/ExtendedDipole.*, DipoleCascade/Dipole.*:
+	Implemented emission probabilites including ME corrections.
+
+2006-10-03  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadne.in: Add Hadronization and decay.
+
+	* src/Makefile.am: Use repository with Pythia7.
+
+2006-10-03  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*, DipoleCascade/RemnantParton.*:
+	Added a function to remnant parton that calculates x for the
+	extracted parton.
+
+	* DipoleCascade/DipoleState.*: Added new debuing output
+	containing information regarding generated cascade histories.
+
+	* DipoleCascade/Dipole.*: Small bugfix in performG.
+
+2006-10-02  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Fixed a bug in initial state
+	gluon emissions and added an undo function. Also added an undo
+	function for final state gluons.
+
+2006-09-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/TestAriadne.in: Include ClusterCollapser as
+	PostCascadeHandler for debugging purposes.
+
+2006-09-26  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Updated the undo functions for
+	initial state quark emissons to work with the new version of
+	genSeaQ and genQtoGQ.
+
+2006-09-25  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added restrictions for gluon
+	emissions near heavy quarks in genRemG.
+
+	* src/DYAnalysis.*: Added several new histograms and changed the
+	namespace.
+
+2006-09-22  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Remaped the phase space in
+	genSeaQ and genQtoGQ to use fraction of positive light cone
+	momentum. This fixes the problem of dead regions in phase space.
+	Added restrictions to gluon emission near remnants where a heavy
+	quark was extracted in genIniG. The invariant mass of the
+	emitted gluon and the remant is required to be at least two
+	times the extracted quark mass.
+
+	* DipoleCascade/DYCorr.*: Implemented matrix element corrections
+	to sea quark emissions.
+
+2006-09-19  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.*, DipoleCascade/EMDipole.*,
+	DipoleCascade/Emitter.*, DipoleCascade/ExtendedDipole.*: Removed
+	the attributes x1, x3, a1 and a3 from Dipole, EMDipole and
+	ExtendedDipole. All the information that perform need to save is
+	now stored in a vector of doubles called genVar which is an
+	attribute of Emitter.
+
+	* DipoleCascade/MECorrBase.*, DipoleCascade/DYCorr.*: Changed
+	the arguments of reweight by including the whole genVar vector
+	instead of only the rapidity.
+
+2006-09-15  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added a function to undo
+	remnant-remnant gluon emissions. Also added code to undo final
+	state g->qqbar splittings.
+
+2006-09-14  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Rewrote undoSeaQ, undoQtoQG
+	and constructStep.
+
+	* DipoleCascade/HardSubSys.*: Made setMomentum a bit more
+	general so that it can handle an initial momenum with nonzero
+	transverse component.
+
+2006-09-13  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.*, DipoleCascade/EMDipole.*,
+	DipoleCascade/ExtendedDipole.*, DipoleCascade/MECorrBase.*:
+	Included the dipole state in the arguments of preweight and
+	reweight in MECorrBase.
+
+	* DipoleCascade/DYCorr.*, DipoleCascade/Makefile.am, 
+	src/TestAriadneDY.in: Added matrix element correction to the
+	first gluon emission in a Drell-Yan process.
+
+2006-09-08  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added final state q qbar
+	splitting.
+
+	* DipoleCascade/Dipole.*: Modified the undo functions to use new
+	boost functions.
+
+2006-09-07  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added final state gluon
+	radiation.
+
+	* DipoleCascade/String.*: Fixed a bug in join.
+
+	* DipoleCascade/Dipole.*: Rewrote the code that undos quark
+	splittings fixing several problems.
+
+	* DipoleCascade/DipoleState.*: Fixed a problem in allHistories,
+	where the attribute theSelected was set to an emitter belonging
+	to another dipole state.
+
+2006-09-06  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Fixed a bug in history
+	construction.
+
+	* DipoleCascade/Dipole.*: Fixed serveral bugs in undoOG.
+
+2006-09-04  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/HardSubSys.*: Removed the old version of
+	setMomentum.
+
+	* DipoleCascade/ExtendedDipole.*: Changed performRemG so that it
+	also uses the new version of setMomentum. Added a restriction to
+	the initial state gluon phase space requiring that the gluon
+	has higher lightcone momentum than the hard sub system.
+
+2006-09-01  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/HardSubSys.*: Added a new function setMomentum
+	which changes the momentum by modifying one of the incoming
+	momenta (assumed to be along the z axis).
+
+	* DipoleCascade/Emitter.*: Limited the number of flavors in
+	alphas to 5.
+
+	* DipoleCascade/ExtendedDipole.*: Fixed a bug in genSeaQ that
+	was due to that the wrong flavors where sampled in the pdf.
+	Also changed the way reqoils are transfered to the hardSubSys.
+
+2006-09-01  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.cc: The use of maxEmissions() was
+	messed up when including cloning of the state before
+	emission. This is fixed now.
+
+2006-08-30  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/EMDipole.*: Fixed a bug in the cross section.
+
+	* DipoleCascade/DipoleState.*: Perform now checks after each
+	emission if all the gluons have an invariant pt2 above the
+	cutoff.
+
+	* DipoleCascade/Parton.*: Added a function to calculate
+	invariant pt2.
+
+2006-08-28  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added a function to calculate the
+	total momentum of the state and modified perform to check
+	conservation of four momentum.
+
+	* DipoleCascade/Dipole.*: Changed the argument of emitGluon and
+	splitGluon from LorentzMomentum to Lorentz5Momentum in order to
+	give the emitted quarks correct mass.
+
+	* DipoleCascade/ExtendedDipole.*: Changed the argument of
+	emitGluon. 
+
+2006-08-25  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.cc: Now pre-clones the current
+	state before perfoming an emission to be able to recover if the
+	emission failed or was vetoed.
+
+	* DipoleCascade/DipoleState.*: Introduced preclone() and
+	postclone() functions to make clonings more efficient.
+
+	* DipoleCascade/String.*: Fixed bug where endpoints were not
+	properly rebound after cloning.
+
+2006-08-22  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Fixed some Energy vs. Energy2.
+
+2006-08-22  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/CascadeHandler.*: Added a new option
+	MaxEmissions to limit the number of emissions in the cascade.
+
+	* DipoleCascade/ExtendedDipole.cc: Fixed a bug in the initial
+	state quark emission and cleand up the code a bit.
+
+	* src/MEqq2gZ2ll.cc: Fixed a bug in the matrix element.
+
+2006-06-17  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/*.*: Added infrastructure for leading-order
+	matrix-element correction. Base class is MECorrBase, Initial
+	dipoles may be assigned a MECorrBase object by the DipoleState to
+	be used to reweight emissions. After the first emission the
+	MECorrBase object is removed.
+
+2006-06-13  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* include/Makefile.am: All needed subdirectory links are now
+	separate targets.
+
+	* DipoleCascade/CascadeHandler.*, DipoleCascade/DipoleState.cc:
+	Added interfaces and member functions to manipulate the mu and
+	alpha.
+
+	* src/Makefile.am, src/TestAriadneDY.in, src/DYAnalysis.*: Added
+	analysis handler to get some histograms.
+
+2006-06-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/RemnantParton.*, DipoleCascade/Parton.*,
+	DipoleCascade/DipoleState.cc: The created ThePEG::Particles are
+	now stored in the Parton class (where now also the scale is
+	set). No more need for the ObjectIndexer translation.
+
+2006-06-02  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added a new function to
+	calculate pdf ratios. Added initial state gluon emissions.
+	Fixed a few bugs in inital state quark emissions.
+
+2006-05-31  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added gluon emissions from
+	remnant remnant dipoles. Implemented a new version of emitGluon
+	that works for extended dipoles.
+
+	* DipoleCascade/Dipole.h: Made emitGluon virtual.
+
+2006-05-29  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Improved the estimate of the
+	pdf ratios in initial state quark emissions.
+
+2006-05-23  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Made a few modification to
+	the generation of initial state quark emissions. Included
+	initial state q->gq in the cascade.
+
+	* DipoleCascade/String.cc: Modified join to work according to
+	the new color flow convention.
+
+2006-05-23  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/Dipole.h, DipoleCascade/DipoleState.cc,
+	DipoleCascade/String.h: Changed the colour flow in the String
+	class so that the first parton in the string is anti-coloured and
+	the second is coloured.
+
+2006-05-23  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Improved the estimate of
+	the maximum pt2 and the maximum pdf ratio in genSeaQ.
+
+	* DipoleCascade/HardSubSys.cc: Modifiled sumMomentum so that
+	it returns a vector with correct mass.
+
+2006-05-22  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc: Fixed colour-flow bug in remnants.
+	Fixed problem in adding the produced hard partons as children with
+	the templated Step::addDecayProducts() function which was a bit
+	too stringent in its checking that the parents were appropriate.
+
+	* DipoleCascade/ExtendedDipole.cc: Added squared quarkmass to the
+	PDF scale in genSeaQ().
+
+	* DipoleCascade/Parton.cc: Modified debugging output.
+
+2006-05-22  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.cc: Fixed several bugs in initial
+	state quark emissions.
+
+2006-05-18  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc, DipoleCascade/Parton.cc: Polished
+	the debugme() functions.
+
+	* DipoleCascade/DipoleState.cc: Cleared mixup due to
+	RemnantPartons having the flavour of the incoming rather than
+	remnant which messed up the colour flow direction in the Extended
+	dipoles. Also fixed boost to get incoming partons and remnants
+	along the z-axis.
+
+2006-05-17  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/*.*: Started implementing some debugme()
+	functions.
+
+	* DipoleCascade/CascadeBase.*, DipoleCascade/*.*: Added debug()
+	function calling the virtual debugme() function for debugging
+	purposes. Implemented empty debugme() functions in all subclasses.
+
+	* DipoleCascade/DipoleState.cc: Fixed mother/daughter pointers for
+	the new incoming partons.
+
+2006-05-16  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc: Fixed incoming particle colour
+	lines. Still need to fix daughter pointers for the new incoming
+	partons.
+
+	* DipoleCascade/ExtendedDipole.cc: Temporarily commented out the
+	generate functions to test the DipoleState::fill function.
+
+2006-05-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/*: Added check target to generate Z0 to leptons at LHC.
+
+	* DipoleCascade/DipoleState.cc: Don't re-extract remnants if not
+	necessary.
+
+	* DipoleCascade/String.cc, DipoleCascade/Dipole.*: Added
+	additional bool argument to split to indicate if the split gluon
+	should be removed (default is false).
+
+	* DipoleCascade/DipoleState.cc: init and fill from SubProcess now seems
+	to work at least for e+e-.
+
+	* DipoleCascade/CascadeHandler.cc: Now uses the SubProcess to
+	initialize the DipoleState.
+
+2006-05-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/String.cc: split function is now responsible for
+	removing the gluon split into a qqbar.
+
+	* DipoleCascade/ExtendedDipole.cc, DipoleCascade/EMDipole.cc: Use
+	the new create functions.
+
+	* DipoleCascade/Dipole.cc: Use the new create functions. Also
+	fixed bug where a gluon split into qqbar was not properly removed.
+
+	* DipoleCascade/DipoleState.*: Added separate create functions for
+	partons taking Particle and ParticleData as argument to enable to
+	correctly assign them to the 'active' and 'produced' sets in the
+	HardSubSystem.
+
+2006-05-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc: Almost finnished implementing the
+	filling of the produced step in case of init from a SubProcess.
+
+2006-05-08  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/String.*: Added a method that can join strings.
+
+	* DipoleCascade/Dipole.*: Fixed a bug in undoQ to join the
+	strings in a proper way.
+
+	* DipoleCascade/DipoleState.*: Added methods to remove strings
+	and a method that return the product of PDF ratios that would
+	have been used in the constructed emissions.
+
+	* DipoleCascade/Emitter.*: Added a function that returns the PDF
+	ratio.
+
+	* DipoleCascade/ExtendedDipole.*: Implemented constructStep and
+	methods to undo inital state g->qqbar and q->gq splittings. The
+	splitting functions and pdf ratios were also implemented.
+
+2006-05-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/Parton.*: Added recursive function to fins the
+	original parent.
+
+	* DipoleCascade/DipoleState.*: Added member variable and function
+	for the number of emissions done. Also started to implement the
+	filling of the produced step in case of init from a SubProcess.
+
+	* DipoleCascade/CascadeHandler.cc: Rotate the SubProcess back to
+	the original system even if nothing was changed.
+
+2006-04-26  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* src/AriadneDefaults.in: Added Ariadne::CascadeHandler object to
+	installed repository for demonstration.
+
+	* DipoleCascade/CascadeHandler.cc: Ranked the interfaces for
+	demonstration.
+
+2006-04-26  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Fixed a few bugs with initial
+	state quark emissions. Modified the emission code so that the
+	sign of flav is used to determine which parton is radiating.
+
+2006-04-19  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Added initial 
+	state q -> gq emissions. Added warning messages when 
+	the weights are larger than one in genSeaQ and genQtoGQ.
+
+	* DipoleCascade/String.*: Modified split so that it no
+	longer removes the gluon. (Needed by ExtendedDipole)
+
+	* DipoleCascade/Dipole.*: Modified splitGluon so that
+	it removes the gluon.
+
+2006-04-18  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*: Fixed two bugs
+	in genSeaQ.
+
+2006-04-13  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/String.*: Added a method to change
+	the endpoint of a string.
+
+	* DipoleCascade/HardSubSys.*: Changed the inheritance
+	from PersistentBase to CascadeBase. Renamed the method
+	touch.
+
+	* DipoleCascade/ExtendedDipole.*: Added functions to
+	generate and perform sea quark emissions. Added attributes
+	to keep track of emission type and which remnant parton
+	is radiating.
+
+2006-04-11  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc: Modified setIncoming so
+	that it set the pdf attribute in the remnant partons.
+
+	* DipoleCascade/RemnantParton.*: Added an attribute that
+	refers to the pdf.
+
+2006-04-09  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/RemnantParton.*: Added mu and alpha members to be
+	used for soft suppression.
+
+	* DipoleCascade/ExtendedDipole.*: Started implementing gluon
+	emission and g->qqbar emission with soft suppression.
+
+	* DipoleCascade/DipoleState.*: Added functions getSoftAlpha and
+	getHardAlpha to determine the dimensionality of an extended
+	emitter, also set the corresponding variables in RemnantParton
+	objects. Removed theMus member variables, the corresponding values
+	are now set directly in the RemnantParton objects. Set the
+	resonance of a dipole to be used for first order ME corrections
+	both in e+e-annuhilation, DIS and Drell-Yan production.
+
+	* DipoleCascade/Dipole.*: Added reset method which among other
+	things resets the number of flavours used in alpha_S, and the
+	resonance variable used for leading order ME corrections.
+
+	* DipoleCascade/CascadeHandler.*: Added parameter for
+	power-suppression of high transverse momenta in emission from
+	extended dipoles.
+
+2006-04-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.cc: If DIS-like event, the scattered
+	quark is now made a RemnantParton.
+
+2006-04-04  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*, DipoleCascade/DipoleState.*,
+	DipoleCascade/RemnantParton.*: Removed class IncomingParton and
+	introduced RemnantParton.
+
+2006-04-03  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Removed the PartonSet
+	partons from DipoleState. All the partons are now
+	stored only in hardSubSys.
+
+2006-03-31  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.cc: Modified constructStep
+	to undo g->qqbar splittings by searching for 
+	quarks in the hard subsystem.
+
+	* DipoleCascade/DipoleState.h: Changed hardSubSys
+	to public.
+
+	* DipoleCascade/DipoleState.*: Added a function
+	to compute the product of coupling strengths in a cascade
+	history. Modified selectHistory to deal with unordered
+	histories.
+
+	* DipoleCascade/Dipole.*: Implemented
+	the function coupling to return the value of alphas.
+
+	* DipoleCascade/Emitter.*: Added a function
+	coupling that returns the coupling strength for the
+	emitter at the scale lastPT2().
+
+2006-03-29  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Changed the 
+	constructHistry method to make use of a Selector object.
+	Restructured the code used in constructing cascade
+	histories. Added a function for Sudakov veto.
+
+2006-03-28  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added and modified functions used
+	by init(SubProPtr). Also introduced createString function used by
+	both init functions.
+
+	* DipoleCascade/Parton.*: Renamed the members refering to the
+	original ThePEG particle from 'parent' to 'orig'.
+
+2006-03-24  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.cc (Module): Implemented
+	a function to return the emission probability.
+	Changed the sign of y. Removed a factor of two
+	in the quark splitting function.
+
+	* DipoleCascade/DipoleState.h (Module): Added
+	a function to select one cascade history among
+	the ones constructed.
+
+	* DipoleCascade/Emitter.* (Module): Changed
+	the return type of constructHistory to
+	vector of DipoleStates. Added a function
+	emissionProbability that returns the splitting
+	function for the selected emission.
+
+2006-03-17  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/EMDipole.cc (Module): Fixed a bug
+	in the generate function.
+
+	* DipoleCascade/DipoleState.* (Module): Added a
+	function to construct all possible cascade histories.
+
+	* DipoleCascade/Emitter.* (Module): Added a function
+	to construct a possible history of emissions.
+
+	* DipoleCascade/Dipole.* (Module): Added functions
+	that construct a step back in the cascade. Functions
+	exist that undo different types of a emissions, but
+	only the one for gluons is used.
+
+2006-03-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: Added function to return
+	extendedness of hadrons. Not yet implemented.
+
+	* DipoleCascade/DipoleState.*: Added enumeration and member
+	variable to describe the type of sub-process used.
+
+	* DipoleCascade/Dipole.*: Added pointer to particle data object in
+	case the dipole came from a colour-singlet resonance, for future
+	implementation of exact leading order massive matrix elements.
+
+	* DipoleCascade/DipoleState.*: Added member variables and
+	functions for incoming partons and hard sub-system.
+
+2006-03-12  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/ExtendedDipole.*, DipoleCascade/IncomingParton.*:
+	Added new classes to deal with initial-state quark and gluon
+	emissions.
+
+2006-03-11  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/EMDipole.cc: Reset lastPT2 to -1 before generating
+	new value. Also use sqr() rather than pow(,2).
+
+	* DipoleCascade/EMDipole.cc, DipoleCascade/Dipole.cc: use mass()
+	and mass2() functions and Lorentz5Momentum where appropriate rather
+	than m() and m2() and LorentzMomentum.
+
+	* DipoleCascade/Emitter.cc: Fixed bug in rndsudEM where the alpha
+	was running even if it was requested to be fixed.
+
+	* DipoleCascade/EMDipole.*, DipoleCascade/Dipole.*,
+	DipoleCascade/Emitter.*: Fixed bug in the check function of the
+	dipole classes. Also moved this function to Emitter since it is
+	used both by Dipole and EMDipole.
+
+	* DipoleCascade/CascadeHandler.*: Added thePhotonEmission in
+	constructors and persistency functions.
+
+2006-03-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/HardSubSys.h: Corrected the library name in
+	ClassTraits<Ariadne::EMDipole> specialization.
+
+2006-03-10  Nils Lavesson  <nils@thep.lu.se>
+
+	* DipoleCascade/Dipole.cc: Modified generate to not generate an
+	emission agian unless it is touched.
+
+	* DipoleCascade/CascadeHandler.*: Added an option to switch em
+	emission on and off.
+
+	* DipoleCascade/DipoleState.*: Modified init so that it also
+	creates em dipoles and added a function to remove emitters.
+
+	* DipoleCascade/String.*: Added an attribute to point to the em
+	dipole associated with the endpoint of the string. Modified the
+	split function so that it removes the em dipole if a string
+	splits.
+
+	* DipoleCascade/EMDipole.*: Added em dipoles to the cascade
+
+2006-03-10  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* DipoleCascade/DipoleState.*: added fullclone(TranslationMap &)
+	function.
+
+	* DipoleCascade/PartonTraits.h: Added traits specializations for
+	Partons so that they can be used in the UtilityBase and
+	SimplePhaseSpace functions.
+
+	* DipoleCascade/HardSubSys.*: Added class representing the hard
+	sub-process. Compiles but not yet used or tested.
+
+	* DipoleCascade/Parton.*: Added coloured() function.
+
+2006-02-15  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* *** GLOBAL ***: Joined in changes from the cuts-devel branch.
+
+2005-09-08  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* ChangeLog: Added to see that I can add files to the cedar
+	repository. In particular this was added in the cuts-devel branch.
+

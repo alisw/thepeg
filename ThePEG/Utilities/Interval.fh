@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_Interval_FH
+#define ThePEG_Interval_FH
+
+#include <functional>
+
+namespace ThePEG {
+
+template <typename T = double, typename CMP = std::less<T> >
+class Interval;
+
+}
+
+#endif /* ThePEG_Interval_FH */

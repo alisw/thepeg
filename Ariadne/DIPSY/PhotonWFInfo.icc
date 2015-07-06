@@ -1,0 +1,39 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PhotonWFInfo class.
+//
+
+namespace DIPSY {
+
+inline PhotonWFInfo::PhotonWFInfo(tcWaveFunctionPtr wfin, InvEnergy rini,
+				  double zini, int polini,
+				  int hini, int hbarini, int flini)
+  : WFInfo(wfin, rini), theZ(zini), thePol(polini),
+    theH(hini), theHbar(hbarini), theFlav(flini) {}
+
+inline PhotonWFInfo::PhotonWFInfo(const PhotonWFInfo & x)
+  : WFInfo(x), theZ(x.theZ), thePol(x.thePol),
+    theH(x.theH), theHbar(x.theHbar), theFlav(x.theFlav) {}
+
+inline double PhotonWFInfo::z() const {
+  return theZ;
+}
+
+inline int PhotonWFInfo::pol() const {
+  return thePol;
+}
+
+inline int PhotonWFInfo::h() const {
+  return theH;
+}
+
+inline int PhotonWFInfo::hbar() const {
+  return theHbar;
+}
+
+inline int PhotonWFInfo::flav() const {
+  return theFlav;
+}
+
+}

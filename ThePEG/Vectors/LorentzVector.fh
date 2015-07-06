@@ -1,0 +1,10 @@
+// -*- C++ -*-
+#ifndef ThePEG_LorentzVector_FH
+#define ThePEG_LorentzVector_FH
+
+namespace ThePEG {
+  template <typename Value>
+  class LorentzVector; 
+}
+
+#endif /* ThePEG_LorentzVector_FH */

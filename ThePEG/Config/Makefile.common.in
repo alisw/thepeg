@@ -1,0 +1,114 @@
+
+LIBDIR = ../../ThePEG/lib
+
+CXX = @CXX@
+
+CXXFLAGS = @CXXFLAGS@
+
+CXXOPTFLAG = @CXXOPTFLAG@
+
+CXXDLFLAGS = @CXXDLFLAGS@
+
+CXXDEBUGFLAG = @CXXDEBUGFLAG@
+
+CXXEXT = @CXXEXT@
+
+DEFS =
+
+AR = @AR@
+
+ARFLAGS = @ARFLAGS@
+
+RANLIB = @RANLIB@
+
+CLHEPPATH = @CLHEPPATH@
+
+CLHEPLIB = @CLHEPLIB@
+
+CLHEPINCLUDE = @CLHEPINCLUDE@
+
+PREFIX = @prefix@
+
+INCLUDEINSTALL = $(PREFIX)/include
+
+INSTALLINCLUDE = $(PREFIX)/include/ThePEG
+
+INSTALLSHARE = $(PREFIX)/share/ThePEG
+
+INSTALLLIB = $(PREFIX)/lib/ThePEG/$(VERSION)
+
+INSTALLBIN = $(PREFIX)/bin
+
+INCLUDES = -I../../ $(CLHEPINCLUDE)
+
+DLLIB = -ldl
+
+LIBS = -lm $(DLLIB)
+
+LINKFLAGS = -rdynamic
+
+RPATH = $(LIBDIR)
+
+THEPEGLIBS = -lThePEGRepo -lThePEGHandlers -lThePEGPDF -lThePEGME -lThePEGEvent -lThePEGPDT -lThePEGSM -lThePEGInter -lThePEGHelicity -lThePEG -lCLHEP
+
+
+all: depend check lib
+
+.cc.o:
+ifdef SHOWCOMMAND	
+	$(CXX) -c $(CXXFLAGS) $(CXXEXT) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $<
+else
+	@SRCDIR=`pwd`; DIR=`basename $$SRCDIR`; echo "compiling $$DIR/$< ..."
+	@$(CXX) -c $(CXXFLAGS) $(CXXEXT) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $<
+endif
+
+%.so: %.o
+ifdef SHOWCOMMAND	
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+else
+	@echo "linking shared library $@ ..."
+	@$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+endif
+
+lib%.so:
+ifdef SHOWCOMMAND	
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $^ -o $@
+else
+	@echo "linking shared library $@ ..."
+	@$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $^ -o $@
+endif
+
+depend:
+ifdef SOURCES
+	$(LIBDIR)/g++dep $(INCLUDES) $(SOURCES)
+endif
+
+lib: $(OBJECTS)
+
+debugfiles: $(DEBUGOBJECTS)
+
+assembler: $(DOTSS)
+
+check: $(CHECKPROGS) $(CHECKOBJECTS)
+
+tags: *cc *h
+	ctags --c++ --language=c++ --ignore-indentation --members --typedefs-and-c++ --no-warn --update $?
+
+tagsfile:
+	ctags --c++ --language=c++ --ignore-indentation --members --typedefs-and-c++ --no-warn  *cc *h
+
+clean:
+	rm -f $(CHECKPROGS) $(PROGS) $(LIBRARIES) *.o *.so *~ a.out
+
+dist:
+	SRCDIR=`pwd`; DIR=`basename $$SRCDIR` ; mkdir -p ../$(TAGDIR)/$$DIR ; cp $(DISTFILES) ../$(TAGDIR)/$$DIR
+
+install: install-local
+	if [ ! -z "$(INCLUDEFILES)" ]; then mkdir -p $(INSTALLINCLUDE)/$(INCLUDEDIR); cp $(INCLUDEFILES) $(INSTALLINCLUDE)/$(INCLUDEDIR); fi
+	if [ ! -z "$(LIBFILES)" ]; then mkdir -p $(INSTALLLIB); cp $(LIBFILES) $(INSTALLLIB); fi
+
+install-local:
+
+# Local Variables:
+# mode: makefile
+# End:

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the RSFermionSpinInfo class.
+//
+#ifndef ThePEG_RSFermionSpinInfo_FH
+#define ThePEG_RSFermionSpinInfo_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+ThePEG_DECLARE_CLASS_POINTERS(RSFermionSpinInfo,RSFermionSpinPtr);
+
+}
+}
+
+#endif

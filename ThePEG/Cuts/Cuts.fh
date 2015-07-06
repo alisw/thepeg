@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Cuts class.
+//
+#ifndef ThePEG_Cuts_FH
+#define ThePEG_Cuts_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class Cuts;
+ThePEG_DECLARE_POINTERS(Cuts,CutsPtr);
+
+}
+
+#endif

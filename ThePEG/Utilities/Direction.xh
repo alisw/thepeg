@@ -1,0 +1,39 @@
+// -*- C++ -*-
+//
+// Direction.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_Direction_XH
+#define ThePEG_Direction_XH
+//
+// This is the declarations of the exception classes used by the
+// Direction class.
+//
+
+#include "ThePEG/Utilities/Exception.h"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by Direction when multiple objects of the
+ *  same direction class is requested. */
+struct MultipleDirectionException: public Exception {
+  /** Constructor */
+  MultipleDirectionException(int);
+};
+
+/** Exception class used by Direction when an undefined direction is
+ *  used. */
+struct UndefinedDirectionException: public Exception {
+  /** Constructor */
+  UndefinedDirectionException(int);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_Direction_XH */
+

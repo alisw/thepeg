@@ -1,0 +1,8 @@
+
+include ../../ThePEG/Config/Makefile.common
+
+INSTALLINCLUDE = $(PREFIX)/include/Pythia7
+
+# Local Variables:
+# mode: makefile
+# End:

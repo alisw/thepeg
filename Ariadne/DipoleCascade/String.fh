@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the String class.
+//
+#ifndef ThePEG_String_FH
+#define ThePEG_String_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne {
+
+class String;
+ThePEG_DECLARE_POINTERS(String,StrPtr);
+
+}
+
+#endif

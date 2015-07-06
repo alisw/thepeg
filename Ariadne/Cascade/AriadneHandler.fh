@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the AriadneHandler class.
+//
+#ifndef Ariadne5_AriadneHandler_FH
+#define Ariadne5_AriadneHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Ariadne5 {
+
+class AriadneHandler;
+ThePEG_DECLARE_POINTERS(AriadneHandler,HandlerPtr);
+
+}
+
+#endif

@@ -1,0 +1,14 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TestJunctions class.
+//
+
+namespace ThePEG {
+
+inline TestJunctions::TestJunctions() {}
+
+inline TestJunctions::TestJunctions(const TestJunctions & x)
+  : Main(x) {}
+
+}

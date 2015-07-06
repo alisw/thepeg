@@ -1,0 +1,20 @@
+include ../../ThePEG/Config/Makefile.common
+
+INCLUDES = -I../../ $(CLHEPINCLUDE)
+
+LIBDIR = ../../ThePEG/lib
+
+SRCDIR = ../../ThePEG
+
+%.run: %.in ../../Pythia7/lib/Pythia7Defaults.rpo $(SRCDIR)/src/setupThePEG.exe
+	$(SRCDIR)/src/setupThePEG -L../../Pythia7/lib -r ../../Pythia7/lib/Pythia7Defaults.rpo $<
+
+distclean: clean
+	rm -f *.log *.out *.run *.exe *.tex
+
+%.out: %.so %.run
+	$(SRCDIR)/src/runThePEG -L../../Pythia7/lib -d 1 -x $+
+
+# Local Variables:
+# mode: makefile
+# End:

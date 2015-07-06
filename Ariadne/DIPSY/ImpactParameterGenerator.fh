@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ImpactParameterGenerator class.
+//
+#ifndef DIPSY_ImpactParameterGenerator_FH
+#define DIPSY_ImpactParameterGenerator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace DIPSY {
+
+class ImpactParameterGenerator;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(DIPSY::ImpactParameterGenerator,
+			ImpactParameterGeneratorPtr);
+
+}
+
+#endif

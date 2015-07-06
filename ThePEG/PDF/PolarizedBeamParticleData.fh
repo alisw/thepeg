@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PolarizedBeamParticleData class.
+//
+#ifndef THEPEG_PolarizedBeamParticleData_FH
+#define THEPEG_PolarizedBeamParticleData_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class PolarizedBeamParticleData;
+
+ThePEG_DECLARE_POINTERS(ThePEG::PolarizedBeamParticleData,PolarizedBeamPDPtr);
+
+}
+
+#endif

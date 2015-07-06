@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ConsistencyChecker class.
+//
+#ifndef Ariadne5_ConsistencyChecker_FH
+#define Ariadne5_ConsistencyChecker_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Ariadne5 {
+
+class ConsistencyChecker;
+
+ThePEG_DECLARE_POINTERS(Ariadne5::ConsistencyChecker,CCheckPtr);
+
+}
+
+#endif

@@ -1,0 +1,16 @@
+// -*- C++ -*-
+#ifndef ThePEG_DecayMode_FH
+#define ThePEG_DecayMode_FH
+//
+// This is the forward declaration of the DecayMode class.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class DecayMode;
+
+}
+
+#endif /* ThePEG_DecayMode_FH */

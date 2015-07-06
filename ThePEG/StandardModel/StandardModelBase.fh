@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_StandardModelBase_FH
+#define ThePEG_StandardModelBase_FH
+//
+// This is the forward declaration of the StandardModelBase class.
+//
+
+namespace ThePEG {
+
+class StandardModelBase;
+
+}
+
+#endif /* ThePEG_StandardModelBase_FH */

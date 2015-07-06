@@ -1,0 +1,92 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the StringRegion class.
+//
+
+namespace Pythia7 {
+
+inline StringRegion::StringRegion()
+  :jj(0), kk(0), theString(0) {}
+
+inline StringRegion::StringRegion(int newj, int newk,  StringPtr str)
+  : jj(newj), kk(newk), theString(str), w2(0.0*GeV2) { 
+  init();
+}
+
+inline StringRegion::~StringRegion() {}
+
+// Index
+inline int StringRegion::j() const {return jj;}
+inline int StringRegion::k() const {return kk;} 
+
+//Oriented index
+inline int StringRegion::Ifwd() const { 
+  return((Oriented::Dir()==Oriented::right)? j():k() );
+}
+
+inline int StringRegion::Ibwd() const { 
+  return((Oriented::Dir()==Oriented::left)? j():k() );
+}
+ 
+inline Energy2 StringRegion::W2() const { return w2; }   
+
+inline const LorentzVector<double> & StringRegion::ex() const { return Ex; }
+
+inline const LorentzVector<double> & StringRegion::ey() const { return Ey; }
+
+inline const LorentzMomentum&  StringRegion::Pplus() const {
+  return theString->Pplus(j());
+}
+
+inline const LorentzMomentum&  StringRegion::Pminus() const {
+  return theString->Pminus(k());
+}
+
+inline const LorentzMomentum&  StringRegion::Pfwd() const {
+  return theString->Pfwd(Ifwd());
+}
+
+inline const LorentzMomentum&  StringRegion::Pbwd() const {
+  return theString->Pbwd(Ibwd());
+}
+
+inline double StringRegion::Xremf() const {
+  return  theString->Xremf(Ifwd());
+}
+
+inline double StringRegion::Xremb() const {
+  return  theString->Xremb(Ibwd());
+}
+
+inline Energy2 StringRegion::remW2() const { 
+  return Xremf()*Xremb()*W2();
+}
+
+inline StringPtr StringRegion::getTheStringPtr() const {
+  return theString;
+}
+
+inline bool StringRegion::aPrimaryStringRegion() const{   //In FragHandler ??
+  return (j() == k());
+} 
+
+// String Update Function 
+inline void StringRegion::setXrem(double xplus, double xminus) const{
+  theString->setXplusRem(j(), xplus);
+  theString->setXminusRem(k(), xminus);
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+

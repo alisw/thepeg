@@ -1,0 +1,13 @@
+#include "ThePEG/Config/LWH.h"
+
+#include "AIAnalysisFactory.h"
+#include "AITreeFactory.h"
+#include "AITree.h"
+#include "AIHistogramFactory.h"
+#include "AIHistogram1D.h"
+#include "AIHistogram2D.h"
+#include "AIAxis.h"
+#include "AIDataPointSetFactory.h"
+#include "AIDataPointSet.h"
+#include "AIDataPoint.h"
+#include "AIMeasurement.h"

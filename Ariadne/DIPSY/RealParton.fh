@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the RealParton class.
+//
+#ifndef DIPSY_RealParton_FH
+#define DIPSY_RealParton_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace DIPSY {
+
+class RealParton;
+
+ThePEG_DECLARE_POINTERS(DIPSY::RealParton,RealPartonPtr);
+
+}
+
+#endif

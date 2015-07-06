@@ -1,0 +1,48 @@
+// -*- C++ -*-
+//
+// DecayMode.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_DecayMode_XH
+#define ThePEG_DecayMode_XH
+//
+// This is the declarations of the exception classes used by the
+// DecayMode class.
+//
+
+#include "ThePEG/Interface/InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used if a DecayMode is found to be inconsistent
+    during the setup phase. */
+class DecModNoAccept: public UpdateException {
+public:
+  /** Standard constructor. */
+  DecModNoAccept(string, string);
+};
+
+/** Exception class used if a DecayMode is found to be inconsistent
+    during the setup phase. */
+class DecModSetupNoAccept: public SetupException {
+public:
+  /** Standard constructor. */
+  DecModSetupNoAccept(string, string);
+};
+
+/** Exception class used by DecayMode if rebinding fails. */
+class DecModRebind: public RebindException {
+public:
+  /** Standard constructor. */
+  DecModRebind(string, string);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_DecayMode_XH */
+

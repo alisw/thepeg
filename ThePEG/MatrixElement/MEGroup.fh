@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEGroup class.
+//
+#ifndef ThePEG_MEGroup_FH
+#define ThePEG_MEGroup_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+
+class MEGroup;
+ThePEG_DECLARE_POINTERS(MEGroup,MEGroupPtr);
+
+/** A vector of pointers to MEGroup objects. */
+typedef vector<MEGroupPtr> MEGroupVector;
+
+}
+
+#endif

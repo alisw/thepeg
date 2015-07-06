@@ -1,0 +1,182 @@
+rrmdir /Pythia7
+mkdir /Pythia7
+cd /Pythia7
+create Pythia7::Pythia7Strategy StdStrategy Pythia7Strategy.so
+insert StdStrategy:DefaultParticlesDirs[0] /Defaults/Particles
+
+mkdir /Pythia7/Handlers
+mkdir /Pythia7/Handlers/StringFrag
+cd /Pythia7/Handlers/StringFrag
+library libP7String.so
+create Pythia7::LundFragHandler StdFragHandler
+create Pythia7::LundPtGenerator StdPtGenerator
+set StdFragHandler:PtGenerator StdPtGenerator
+create Pythia7::LundZGenerator StdZGenerator
+set StdFragHandler:ZGenerator StdZGenerator
+create Pythia7::LundFlavourGenerator StdFlavourGenerator
+newdef StdFlavourGenerator:BaryonMode 1
+set StdFragHandler:FlavourGenerator StdFlavourGenerator
+create Pythia7::StringCollapser StdCollapser
+set StdCollapser:FlavourGenerator StdFlavourGenerator
+set StdFragHandler:ClusterCollapser StdCollapser
+
+mkdir /Pythia7/Handlers/Shower
+cd /Pythia7/Handlers/Shower
+library libP7Shower.so
+create Pythia7::ShowerHandler StdShower
+create Pythia7::TimeShowerHandler StdTimeShower
+create Pythia7::SpaceShowerHandler StdSpaceShower
+set StdShower:SpaceShower StdSpaceShower
+set StdShower:TimeShower StdTimeShower
+
+mkdir /Pythia7/Handlers/Decay
+cd /Pythia7/Handlers/Decay
+cp /Defaults/Handlers/StandardDecayHandler StdDecay
+
+mkdir /Pythia7/Handlers/Partons
+cd /Pythia7/Handlers/Partons
+create ThePEG::SoftRemnantHandler RemnantHandler
+create ThePEG::SimpleBaryonRemnantDecayer RemnantDecayer
+set RemnantHandler:RemnantDecayer RemnantDecayer
+set RemnantDecayer:FlavourGenerator /Pythia7/Handlers/StringFrag/StdFlavourGenerator
+set RemnantDecayer:ZGenerator /Pythia7/Handlers/StringFrag/StdZGenerator
+set RemnantDecayer:PTGenerator /Pythia7/Handlers/StringFrag/StdPtGenerator
+cp /Defaults/Partons/GRV94L GRV94L
+cp /Defaults/Partons/GRV94M GRV94M
+set GRV94L:RemnantHandler RemnantHandler
+set GRV94M:RemnantHandler RemnantHandler
+cp /Defaults/Partons/SimpleLeptonRemnants SimpleLeptonRemnants
+cp /Defaults/Partons/SimpleLeptonPDF SimpleLeptonPDF
+set SimpleLeptonPDF:RemnantHandler SimpleLeptonRemnants
+cp /Defaults/Handlers/StandardExtractor QCDExtractor
+cp /Defaults/Handlers/EEExtractor EEExtractor
+
+mkdir /Pythia7/Particles
+cd /Pythia7/Particles
+cp /Defaults/Particles/p+ p+
+set p+:PDF /Pythia7/Handlers/Partons/GRV94L
+set pbar-:PDF /Pythia7/Handlers/Partons/GRV94L
+cp /Defaults/Particles/e- e-
+set e-:PDF /Pythia7/Handlers/Partons/SimpleLeptonPDF
+set e+:PDF /Pythia7/Handlers/Partons/SimpleLeptonPDF
+set /Pythia7/StdStrategy:LocalParticlesDir /Pythia7/Particles
+
+mkdir /Pythia7/Handlers/ME
+cd /Pythia7/Handlers/ME
+cp /Defaults/MatrixElements/MEee2gZ2qq ee2gZ2qq
+cp /Defaults/MatrixElements/MEGG2GG GG2GG
+cp /Defaults/MatrixElements/MEQG2QG QG2QG
+cp /Defaults/MatrixElements/MEQQ2GG QQ2GG
+cp /Defaults/MatrixElements/MEQQ2QQ QQ2QQ
+cp /Defaults/MatrixElements/MEQq2Qq Qq2Qq
+cp /Defaults/MatrixElements/MEGG2QQ GG2QQ
+cp /Defaults/MatrixElements/MEQQ2qq QQ2qq
+cp /Defaults/MatrixElements/MEqq2qq qq2qq
+set GG2QQ:MaxFlavour 4
+set QQ2qq:MaxFlavour 4
+
+mkdir /Pythia7/Handlers/SubProcesses
+cd /Pythia7/Handlers/SubProcesses
+cp /Defaults/Handlers/SimpleEE2QQ EE2QQ
+set EE2QQ:MatrixElements[0]  /Pythia7/Handlers/ME/ee2gZ2qq
+set EE2QQ:PartonExtractor /Pythia7/Handlers/Partons/EEExtractor
+create ThePEG::SubProcessHandler StdQCD
+insert StdQCD:MatrixElements[0] /Pythia7/Handlers/ME/GG2GG
+insert StdQCD:MatrixElements[1] /Pythia7/Handlers/ME/QG2QG
+insert StdQCD:MatrixElements[2] /Pythia7/Handlers/ME/QQ2QQ
+insert StdQCD:MatrixElements[3] /Pythia7/Handlers/ME/Qq2Qq
+insert StdQCD:MatrixElements[4] /Pythia7/Handlers/ME/GG2QQ
+insert StdQCD:MatrixElements[5] /Pythia7/Handlers/ME/QQ2qq
+insert StdQCD:MatrixElements[6] /Pythia7/Handlers/ME/qq2qq
+insert StdQCD:MatrixElements[7] /Pythia7/Handlers/ME/QQ2GG
+set StdQCD:PartonExtractor /Pythia7/Handlers/Partons/QCDExtractor
+
+mkdir /Pythia7/Handlers/Lumi
+cd /Pythia7/Handlers/Lumi
+cp /Defaults/Handlers/FixedLEPLuminosity LEP1
+set LEP1:Energy 91.2
+create ThePEG::LuminosityFunction LHC
+set LHC:BeamEMaxA 7000.0
+set LHC:BeamEMaxB 7000.0
+
+mkdir /Pythia7/Handlers/Sampler
+cd /Pythia7/Handlers/Sampler
+cp /Defaults/Handlers/ACDCSampler ACDC
+
+mkdir /Pythia7/Handlers/Cuts
+cd /Pythia7/Handlers/Cuts
+cp /Defaults/Generators/EECuts EECuts
+set EECuts:MHatMin 22.36068
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 25.0
+set QCDCuts:X1Min 0.0000001
+set QCDCuts:X2Min 0.0000001
+library SimpleKTCut.so
+create ThePEG::SimpleKTCut KtCut
+set KtCut:MinKT 5.0
+insert QCDCuts:OneCuts[0] KtCut
+set QCDCuts:YHatMin -10.0
+set QCDCuts:YHatMax 10.0
+set QCDCuts:MHatMin 10.0
+
+mkdir /Pythia7/Handlers/Event
+cd /Pythia7/Handlers/Event
+cp /Defaults/Handlers/SimpleLEPHandler StdLEP
+set StdLEP:LuminosityFunction /Pythia7/Handlers/Lumi/LEP1
+set StdLEP:SubProcessHandlers[0] /Pythia7/Handlers/SubProcesses/EE2QQ
+set StdLEP:BeamA /Pythia7/Particles/e-
+set StdLEP:BeamB /Pythia7/Particles/e+
+set StdLEP:Sampler /Pythia7/Handlers/Sampler/ACDC
+set StdLEP:Cuts /Pythia7/Handlers/Cuts/EECuts
+set StdLEP:CascadeHandler /Pythia7/Handlers/Shower/StdShower
+set StdLEP:HadronizationHandler /Pythia7/Handlers/StringFrag/StdFragHandler
+set StdLEP:DecayHandler /Pythia7/Handlers/Decay/StdDecay
+
+create ThePEG::StandardEventHandler StdLHC
+set StdLHC:LuminosityFunction /Pythia7/Handlers/Lumi/LHC
+insert StdLHC:SubProcessHandlers[0] /Pythia7/Handlers/SubProcesses/StdQCD
+set StdLHC:BeamA /Pythia7/Particles/p+
+set StdLHC:BeamB /Pythia7/Particles/p+
+set StdLHC:Sampler /Pythia7/Handlers/Sampler/ACDC
+set StdLHC:Cuts /Pythia7/Handlers/Cuts/QCDCuts
+set StdLHC:CascadeHandler /Pythia7/Handlers/Shower/StdShower
+set StdLHC:HadronizationHandler /Pythia7/Handlers/StringFrag/StdFragHandler
+set StdLHC:DecayHandler /Pythia7/Handlers/Decay/StdDecay
+
+mkdir /Pythia7/Handlers/Random
+cd /Pythia7/Handlers/Random
+cp /Defaults/Random StdRandom
+
+mkdir /Pythia7/Handlers/StandardModels
+cd /Pythia7/Handlers/StandardModels
+cp /Defaults/StandardModel StandardModel
+cp /Defaults/AlphaS O1AlphaS
+set StandardModel:QCD/RunningAlphaS O1AlphaS
+set O1AlphaS:LambdaFlav 4
+newdef O1AlphaS:LambdaQCD 0.2322
+cp /Defaults/AlphaEM AlphaEM
+set StandardModel:EW/RunningAlphaEM AlphaEM
+cp /Defaults/CKM CKM
+set StandardModel:EW/CKM CKM
+
+mkdir /Pythia7/Generators
+cd /Pythia7/Generators
+
+cp /Defaults/Generators/SimpleLEPGenerator StdLEP
+set StdLEP:RandomNumberGenerator /Pythia7/Handlers/Random/StdRandom
+set StdLEP:StandardModelParameters /Pythia7/Handlers/StandardModels/StandardModel
+set StdLEP:EventHandler /Pythia7/Handlers/Event/StdLEP
+set StdLEP:Strategy /Pythia7/StdStrategy
+
+create ThePEG::EventGenerator StdLHC
+set StdLHC:RandomNumberGenerator /Pythia7/Handlers/Random/StdRandom
+set StdLHC:StandardModelParameters /Pythia7/Handlers/StandardModels/StandardModel
+set StdLHC:EventHandler /Pythia7/Handlers/Event/StdLHC
+set StdLHC:Strategy /Pythia7/StdStrategy
+
+# The string fragmentation fails to fragment the three-gluon loop, so
+# we disable this decay for now.
+set /Defaults/Particles/Upsilon/Upsilon->g,g,g;:OnOff 0
+set /Defaults/Particles/Upsilon'/Upsilon'->g,g,g;:OnOff 0
+
+cd /

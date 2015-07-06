@@ -1,0 +1,30 @@
+// -*- C++ -*-
+#ifndef ThePEG_ClassDescription_FH
+#define ThePEG_ClassDescription_FH
+//
+// This is the forward declaration of the ClassDescriptionBase,
+// ClassDescriptionTBase, ClassDescription, AbstractClassDescription,
+// NoPIOClassDescription and AbstractNoPIOClassDescription, classes.
+//
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace ThePEG {
+
+class ClassDescriptionBase;
+
+template <typename T>
+class ClassDescription;
+
+template <typename T>
+class AbstractClassDescription;
+
+template <typename T>
+class NoPIOClassDescription;
+
+template <typename T>
+class AbstractNoPIOClassDescription;
+
+}
+
+#endif /* ThePEG_ClassDescription_FH */

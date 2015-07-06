@@ -1,0 +1,18 @@
+cd /Defaults/Generators
+create ThePEG::MultiEventGenerator MultiLEPGenerator MultiEventGenerator.so
+set MultiLEPGenerator:RandomNumberGenerator /Defaults/Random
+cp  /Defaults/Random RandomArg
+# set MultiLEPGenerator:SeparateRandom RandomArg
+set MultiLEPGenerator:StandardModelParameters /Defaults/StandardModel
+set MultiLEPGenerator:EventHandler /Defaults/Handlers/SimpleLEPHandler
+set MultiLEPGenerator:EventHandler:Cuts EECuts
+set MultiLEPGenerator:NumberOfEvents 100
+set MultiLEPGenerator:DebugLevel 1
+set MultiLEPGenerator:PrintEvent 10
+set MultiLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set MultiLEPGenerator:EventHandler:DecayHandler NULL
+set /Defaults/Particles/Z0:NominalMass 92
+# do MultiLEPGenerator:AddInterface /Defaults/Random:Seed 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+do MultiLEPGenerator:AddRndInterface  /Defaults/Generators/MultiLEPGenerator:EventHandler:LuminosityFunction:Energy 5 90 92 91.2 0.1
+saverun MultiLEP MultiLEPGenerator
+

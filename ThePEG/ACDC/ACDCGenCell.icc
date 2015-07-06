@@ -1,0 +1,227 @@
+// -*- C++ -*-
+//
+// ACDCGenCell.icc is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+
+namespace ACDCGenerator {
+
+inline ACDCGenCell::ACDCGenCell(double newG)
+  : theG(newG), theV(1.0), theUpper(0), theLower(0),
+    theDivision(-1.0), theSplitDimension(-1) {}
+
+inline ACDCGenCell::
+ACDCGenCell(double newG, double newV)
+  : theG(newG), theV(newV), theUpper(0), theLower(0),
+    theDivision(-1.0), theSplitDimension(-1) {}
+
+inline ACDCGenCell::~ACDCGenCell() {
+  if ( isSplit() ) {
+    delete theUpper;
+    delete theLower;
+  }
+}
+
+template <typename RndType>
+inline ACDCGenCell * ACDCGenCell::
+generate(DVector & lo, DVector & up, RndType * rnd) {
+  if ( isSplit() ) {
+    if ( ACDCRandomTraits<RndType>::
+	 rndBool(rnd, upper()->maxInt(), lower()->maxInt()) ) {
+      lo[dim()] = div();
+      return upper()->generate(lo, up, rnd);
+    } else {
+      up[dim()] = div();
+      return lower()->generate(lo, up, rnd);
+    }
+  }
+  return this;
+}
+
+inline ACDCGenCell * ACDCGenCell::
+generate(DVector & lo, DVector & up, DVector & rndv) {
+  if ( isSplit() ) {
+    double r = lower()->maxInt()/maxInt();
+    if ( rndv[dim()] > r ) {
+      lo[dim()] = div();
+      rndv[dim()] = (rndv[dim()] - r)/(1.0 - r);
+      return upper()->generate(lo, up, rndv);
+    } else {
+      up[dim()] = div();
+      rndv[dim()] = rndv[dim()]/r;
+      return lower()->generate(lo, up, rndv);
+    }
+  }
+  return this;
+}
+
+inline ACDCGenCell *  ACDCGenCell::
+getCell(DVector & lo, const DVector & x, DVector & up) {
+  if ( isSplit() ) {
+    if ( x[dim()] > div() ) {
+      lo[dim()] = div();
+      return upper()->getCell(lo, x, up);
+    } else {
+      up[dim()] = div();
+      return lower()->getCell(lo, x, up);
+    }
+  } else
+    return this;
+}
+  
+inline void ACDCGenCell::
+splitme(double lo, double newDiv, double up, DimType newDim) {
+  theSplitDimension = newDim;
+  theDivision = newDiv;
+  double frac = (up - div())/(up - lo);
+  theUpper = new ACDCGenCell(g(), v()*frac);
+  frac = (div() - lo)/(up - lo);
+  theLower = new ACDCGenCell(g(), v()*frac);
+}
+
+inline bool ACDCGenCell::isSplit() const {
+  return upper();
+}
+
+inline double ACDCGenCell::doMaxInt(double scale) {
+  if ( isSplit() ) theG = (upper()->doMaxInt() + lower()->doMaxInt())/v();
+  else theG *= scale;
+  return maxInt();
+}
+
+inline void ACDCGenCell::smooth(double frac) {
+  if ( !isSplit() ) return;
+  upper()->smooth(frac);
+  lower()->smooth(frac);
+  if ( upper()->maxInt() < lower()->maxInt()*frac &&
+       upper()->maxInt() > 0.0 )
+    upper()->doMaxInt(lower()->maxInt()*frac/upper()->maxInt());
+  else if ( lower()->maxInt() < upper()->maxInt()*frac &&
+	    lower()->maxInt() > 0.0 )
+    lower()->doMaxInt(upper()->maxInt()*frac/lower()->maxInt());
+  doMaxInt();
+}
+
+inline double ACDCGenCell::maxInt() const {
+  return g()*v();
+}
+
+inline void ACDCGenCell::g(double newG) {
+  theG = newG;
+}
+
+inline int ACDCGenCell::nBins() const {
+  return isSplit()? upper()->nBins() + lower()->nBins(): 1;
+}
+
+inline int ACDCGenCell::depth() const {
+  return isSplit()? std::max(upper()->depth(), lower()->depth()) + 1: 1;
+}
+
+inline double ACDCGenCell::g() const {
+  return theG;
+}
+
+inline double ACDCGenCell::v() const {
+  return theV;
+}
+
+inline double ACDCGenCell::div() const  {
+  return theDivision;
+}
+
+inline DimType ACDCGenCell::dim() const {
+  return theSplitDimension;
+}
+
+inline ACDCGenCell * ACDCGenCell::upper() const {
+  return theUpper;
+}
+
+inline ACDCGenCell * ACDCGenCell::lower() const {
+  return theLower;
+}
+
+inline void ACDCGenCell::
+extract(DVector & lo, DVector & up, vector<ACDCGenCellInfo> & out) const {
+
+  // First add this cell which gets index isave.
+  ACDCGenCellInfo::Index isave = out.size();
+  out.push_back(ACDCGenCellInfo());
+  out.back().g = g();
+  out.back().v = v();
+  out.back().up = up;
+  out.back().lo = lo;
+  out.back().iup = 0;
+  out.back().ilo = 0;
+
+  if ( isSplit() ) {
+    // If split add the upper cell.
+    out[isave].iup = out.size();    
+    double save = lo[dim()];
+    lo[dim()] = div();
+    upper()->extract(lo, up, out);
+    lo[dim()] = save;
+
+    // Then add the lower cell.
+    out[isave].ilo = out.size(); 
+    save = up[dim()];
+    up[dim()] = div();
+    lower()->extract(lo, up, out);
+    up[dim()] = save;
+  }
+}
+
+template <typename OStream>
+inline OStream & operator<<(OStream & os, const ACDCGenCell & c) {
+  os << c.dim() << c.div() << c.g() << c.v();
+  if ( c.dim() < 0 ) return os;
+  return os << *c.upper() << *c.lower();
+}
+
+template <typename IStream>
+inline IStream & operator>>(IStream & is, ACDCGenCell & c) {
+  is >> c.theSplitDimension >> c.theDivision >> c.theG >> c.theV;
+  if ( c.dim() < 0 ) return is;
+  c.theUpper = new ACDCGenCell(0.0);
+  c.theLower = new ACDCGenCell(0.0);
+  return is >> *c.theUpper >> *c.theLower;
+}
+
+inline long ACDCGenCell::getIndex(const ACDCGenCell * c) const {
+  long indx = -1;
+  return getIndex(c, indx);
+}
+
+
+inline long ACDCGenCell::getIndex(const ACDCGenCell * c, long & indx) const {
+  ++indx;
+  if ( c == this ) return indx;
+  if ( isSplit() ) {
+    long i = upper()->getIndex(c, indx);
+    if ( i >= 0 ) return i;
+    return lower()->getIndex(c, indx);
+  }
+  return -1;
+}
+
+inline ACDCGenCell * ACDCGenCell::getCell(long i) {
+  long indx = -1;
+  return getCell(i, indx);
+}
+  
+inline ACDCGenCell * ACDCGenCell::getCell(long i, long & indx) {
+  ++indx;
+  if ( i == indx ) return this;
+  if ( isSplit() ) {
+    ACDCGenCell * tmp = upper()->getCell(i, indx);
+    if ( tmp ) return tmp;
+    return lower()->getCell(i, indx);
+  }
+  return 0;
+}
+
+}

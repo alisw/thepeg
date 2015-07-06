@@ -1,0 +1,228 @@
+rrmdir /Ariadne5
+mkdir /Ariadne5
+library libAriadne5.so
+cd /Ariadne5
+create ThePEG::Strategy StdStrategy
+
+mkdir /Ariadne5/Particles
+cp /TheP8I/Particles/pi0 /Ariadne5/Particles/pi0
+set /Ariadne5/Particles/pi0:Stable Stable
+insert /Ariadne5/StdStrategy:DefaultParticlesDirs[0] /TheP8I/Particles
+insert /Ariadne5/StdStrategy:LocalParticles[0] /Ariadne5/Particles/pi0
+
+mkdir /Ariadne5/Cascade
+cd /Ariadne5/Cascade
+create Ariadne5::AriadneHandler AriadneCascade
+create Ariadne5::AriadneHandler AriadneCascadePlain
+
+mkdir /Ariadne5/Defaults
+cd /Ariadne5/Defaults
+create TheP8I::StringFragmentation Frag8 libTheP8I.so
+create ThePEG::ClusterCollapser Collapser
+create ThePEG::SimpleFlavour FlavGen
+set Collapser:FlavourGenerator FlavGen
+set Collapser:EnergyCut 2
+set Frag8:Collapser Collapser
+set Frag8:StringZ_aLund 0.23
+set Frag8:StringZ_bLund 0.34
+set Frag8:StringPT_sigma 0.405
+create ThePEG::SoftRemnantHandler RemnantHandler
+create ThePEG::SimpleBaryonRemnantDecayer RemnantDecayer
+set RemnantDecayer:RespectDISKinematics Yes
+create ThePEG::GaussianPtGenerator GaussianPt
+set RemnantDecayer:PTGenerator GaussianPt
+set GaussianPt:Sigma 0.6
+set RemnantHandler:RemnantDecayer RemnantDecayer
+create ThePEG::LHAPDF CTEQ6l ThePEGLHAPDF.so
+set CTEQ6l:RemnantHandler RemnantHandler
+set CTEQ6l:PDFName cteq6l.LHpdf
+set CTEQ6l:RangeException Freeze
+cp /TheP8I/Particles/p+ p+
+set p+:PDF CTEQ6l
+set pbar-:PDF CTEQ6l
+cp /Defaults/Random Random
+cp /Defaults/StandardModel StandardModel
+
+mkdir /Ariadne5/Cascade/Models
+cd /Ariadne5/Cascade/Models
+create Ariadne5::FSGluonEmitter FSGluon
+create Ariadne5::FSQQEmitter FSQQ
+create Ariadne5::ColourChargeRegions ColourChargeRegions
+insert FSGluon:Reweighters[0] ColourChargeRegions
+create Ariadne5::FSGluonEmitter FSGluonPlain
+create Ariadne5::FSQQEmitter FSQQPlain
+create Ariadne5::DISME DISME
+create Ariadne5::DYME DYME
+create Ariadne5::RRGluonEmitter RRGluon
+create Ariadne5::ISGtoQEmitter ISGtoQ
+create Ariadne5::ISQtoGEmitter ISQtoG
+create Ariadne5::SpecialGluonEmitter SpecialGluon
+create Ariadne5::SpecialQQEmitter SpecialQQ
+create Ariadne5::RemnantGluonEmitter RemnantGluon
+create Ariadne5::RecoilGluonEmitter RecoilGluon
+
+cd /Ariadne5/Cascade
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/FSGluon
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/FSQQ
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/DISME
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/DYME
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/RRGluon
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/ISGtoQ
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/ISQtoG
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/SpecialGluon
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/SpecialQQ
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/RemnantGluon
+insert AriadneCascade:Emitters[0] /Ariadne5/Cascade/Models/RecoilGluon
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/FSGluonPlain
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/FSQQPlain
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/DISME
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/DYME
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/RRGluon
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/ISGtoQ
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/ISQtoG
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/SpecialGluon
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/SpecialQQ
+insert AriadneCascadePlain:Emitters[0] /Ariadne5/Cascade/Models/RecoilGluon
+create Ariadne5::QCDDipoleFinder BasicQCDFinder
+set AriadneCascade:QCDFinder BasicQCDFinder
+set AriadneCascadePlain:QCDFinder BasicQCDFinder
+create Ariadne5::ResonanceFinder BasicResonanceFinder
+set AriadneCascade:ResonanceFinder BasicResonanceFinder
+set AriadneCascadePlain:ResonanceFinder BasicResonanceFinder
+create Ariadne5::DISFinder BasicDISFinder
+set AriadneCascade:DISFinder BasicDISFinder
+set AriadneCascadePlain:DISFinder BasicDISFinder
+create Ariadne5::ScaleSetter BasicScaleSetter
+set AriadneCascade:ScaleSetter BasicScaleSetter
+set AriadneCascadePlain:ScaleSetter BasicScaleSetter
+create Ariadne5::ConsistencyChecker BasicConsistency
+set BasicConsistency:CheckGluonPT On
+set AriadneCascade:ConsistencyChecker BasicConsistency
+create Ariadne5::ConsistencyChecker PlainConsistency
+set PlainConsistency:CheckGluonPT Off
+set AriadneCascadePlain:ConsistencyChecker PlainConsistency
+create Ariadne5::RemnantModel DefaultRemnantModel
+set AriadneCascadePlain:RemnantModel DefaultRemnantModel
+set AriadneCascade:RemnantModel DefaultRemnantModel
+
+mkdir /Ariadne5/Generators
+mkdir /Ariadne5/Generators/LEP
+cd /Ariadne5/Generators/LEP
+cp /Defaults/Generators/SimpleLEPGenerator LEPGenerator
+cp /Defaults/Handlers/SimpleLEPHandler LEPHandler
+set LEPGenerator:EventHandler LEPHandler
+set LEPGenerator:Strategy /Ariadne5/StdStrategy
+set LEPHandler:CascadeHandler /Ariadne5/Cascade/AriadneCascade
+set LEPHandler:HadronizationHandler /Ariadne5/Defaults/Frag8
+cp /Defaults/Handlers/StandardDecayHandler DecayHandler
+set DecayHandler:MaxLifeTime 100
+set LEPHandler:DecayHandler DecayHandler
+set LEPHandler:LuminosityFunction:Energy 91.2
+
+mkdir /Ariadne5/Generators/HERA
+cd /Ariadne5/Generators/HERA
+create ThePEG::StandardEventHandler HERAHandler
+create ThePEG::LuminosityFunction HERALumi
+set HERALumi:BeamEMaxB 820
+set HERALumi:BeamEMaxA 26.7
+create ThePEG::LuminosityFunction HERALumi+
+set HERALumi+:BeamEMaxB 820
+set HERALumi+:BeamEMaxA 27.5
+set HERAHandler:LuminosityFunction HERALumi
+cp /Defaults/Handlers/ACDCSampler ACDC
+set HERAHandler:Sampler ACDC
+
+create ThePEG::Cuts DISCuts
+create ThePEG::SimpleDISCut Q2Cut SimpleDISCut.so
+set Q2Cut:MinQ2 4.0
+set Q2Cut:MaxQ2 10000000.0
+set Q2Cut:MinW2 2500.0
+set Q2Cut:Current Neutral
+set DISCuts:X2Min 0.0001
+set DISCuts:X2Max 0.01
+set DISCuts:ScaleMin 4.0
+insert DISCuts:TwoCuts[0] Q2Cut
+set HERAHandler:Cuts DISCuts
+create ThePEG::SubProcessHandler DISSub
+create ThePEG::MENCDIS DISME MENCDIS.so
+insert DISSub:MatrixElements[0] DISME
+cp /Defaults/Handlers/StandardExtractor DISExtractor
+set DISExtractor:FlatSHatY 0
+set DISSub:PartonExtractor DISExtractor
+insert HERAHandler:SubProcessHandlers[0] DISSub
+set HERAHandler:BeamB /Ariadne5/Defaults/p+
+set HERAHandler:BeamA /TheP8I/Particles/e-
+set HERAHandler:CascadeHandler /Ariadne5/Cascade/AriadneCascade
+set HERAHandler:HadronizationHandler /Ariadne5/Defaults/Frag8
+cp /Defaults/Handlers/StandardDecayHandler DecayHandler
+set DecayHandler:MaxLifeTime 100
+set HERAHandler:DecayHandler DecayHandler
+create ThePEG::EventGenerator HERAGenerator
+insert HERAGenerator:LocalParticles[0] /Ariadne5/Defaults/p+
+insert HERAGenerator:LocalParticles[0] /Ariadne5/Defaults/pbar-
+set HERAGenerator:RandomNumberGenerator /Ariadne5/Defaults/Random
+set HERAGenerator:StandardModelParameters /Ariadne5/Defaults/StandardModel
+set HERAGenerator:EventHandler HERAHandler
+set HERAGenerator:Strategy /Ariadne5/StdStrategy
+set HERAGenerator:NumberOfEvents 10000
+set HERAGenerator:DebugLevel 1
+set HERAGenerator:PrintEvent 10
+cp HERAGenerator HERAGenerator+
+cp HERAHandler HERAHandler+
+set HERAHandler+:BeamA /TheP8I/Particles/e+
+set HERAHandler+:LuminosityFunction HERALumi+
+set HERAGenerator+:EventHandler HERAHandler+
+
+mkdir /Ariadne5/Generators/Tevatron
+cd /Ariadne5/Generators/Tevatron
+create ThePEG::StandardEventHandler TevatronHandler
+set TevatronHandler:BeamA /Ariadne5/Defaults/p+
+set TevatronHandler:BeamB /Ariadne5/Defaults/pbar-
+set TevatronHandler:CascadeHandler /Ariadne5/Cascade/AriadneCascade
+set TevatronHandler:HadronizationHandler /Ariadne5/Defaults/Frag8
+cp /Defaults/Handlers/StandardDecayHandler DecayHandler
+set TevatronHandler:DecayHandler DecayHandler
+create ThePEG::LuminosityFunction TevatronLumi
+set TevatronLumi:BeamEMaxB 900
+set TevatronLumi:BeamEMaxA 900
+create ThePEG::LuminosityFunction Tevatron2Lumi
+set Tevatron2Lumi:BeamEMaxB 980
+set Tevatron2Lumi:BeamEMaxA 980
+set TevatronHandler:LuminosityFunction TevatronLumi
+cp /Defaults/Handlers/ACDCSampler ACDC
+set TevatronHandler:Sampler ACDC
+cp TevatronHandler Tevatron2Handler
+set Tevatron2Handler:LuminosityFunction Tevatron2Lumi
+
+create ThePEG::Cuts Z0Cuts
+set Z0Cuts:X1Max 0.99
+set Z0Cuts:X2Max 0.99
+set TevatronHandler:Cuts Z0Cuts
+create ThePEG::SubProcessHandler Z0Sub
+create Herwig::MEqq2gZ2ll Z0ME MEqq2gZ2ll.so
+insert Z0Sub:MatrixElements[0] Z0ME
+cp /Defaults/Handlers/StandardExtractor QCDExtractor
+set Z0Sub:PartonExtractor QCDExtractor
+cp TevatronHandler TevatronZ0Handler
+insert TevatronZ0Handler:SubProcessHandlers[0] Z0Sub
+cp TevatronZ0Handler Tevatron2Z0Handler
+set Tevatron2Z0Handler:LuminosityFunction Tevatron2Lumi
+
+
+create ThePEG::EventGenerator TevatronGenerator
+insert TevatronGenerator:LocalParticles[0] /Ariadne5/Defaults/p+
+insert TevatronGenerator:LocalParticles[0] /Ariadne5/Defaults/pbar-
+set TevatronGenerator:RandomNumberGenerator /Ariadne5/Defaults/Random
+set TevatronGenerator:StandardModelParameters /Ariadne5/Defaults/StandardModel
+set TevatronGenerator:EventHandler TevatronHandler
+set TevatronGenerator:Strategy /Ariadne5/StdStrategy
+set TevatronGenerator:NumberOfEvents 10000
+set TevatronGenerator:DebugLevel 1
+set TevatronGenerator:PrintEvent 10
+
+cp TevatronGenerator TevatronZ0Generator
+set TevatronZ0Generator:EventHandler TevatronZ0Handler
+cp TevatronGenerator Tevatron2Z0Generator
+set Tevatron2Z0Generator:EventHandler Tevatron2Z0Handler
+
+cd /

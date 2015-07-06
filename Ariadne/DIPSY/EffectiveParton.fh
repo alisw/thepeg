@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EffectiveParton class.
+//
+#ifndef DIPSY_EffectiveParton_FH
+#define DIPSY_EffectiveParton_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace DIPSY {
+
+class EffectiveParton;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(DIPSY::EffectiveParton,EffectivePartonPtr);
+
+}
+
+#endif

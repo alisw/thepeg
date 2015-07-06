@@ -1,0 +1,17 @@
+// -*- C++ -*-
+#ifndef PYTHIA7_SpaceShowerHandler_FH
+#define PYTHIA7_SpaceShowerHandler_FH
+//
+// This is the forward declaration of the SpaceShowerHandler class.
+//
+#include "ThePEG/Config/Pointers.h"
+
+namespace Pythia7 {
+
+class SpaceShowerHandler;
+
+ThePEG_DECLARE_CLASS_POINTERS(SpaceShowerHandler,SpaceShowerPtr);
+
+}
+
+#endif /* PYTHIA7_SpaceShowerHandler_FH */

@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the History class.
+//
+#ifndef Ariadne5_History_FH
+#define Ariadne5_History_FH
+
+#include "ThePEG/Config/ThePEG.h"
+
+namespace Ariadne5 {
+
+class History;
+
+ThePEG_DECLARE_POINTERS(Ariadne5::History,HistoryPtr);
+
+}
+
+#endif

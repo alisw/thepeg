@@ -1,0 +1,45 @@
+// -*- C++ -*-
+//
+// PDFBase.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2011 Leif Lonnblad
+//
+// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_PDFBase_XH
+#define ThePEG_PDFBase_XH
+//
+// This is the declarations of the exception classes used by the
+// PDFBase class.
+//
+
+#include "ThePEG/Interface/InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by RemnantHandler if unable to handle a
+    specified particle. */
+struct RemnantHandlerCantHandle: public InterfaceException {
+  /** Standard constructor. */
+  RemnantHandlerCantHandle(string, string);
+};
+
+/** Exception class used by PDFBase if unable to handle a
+    specified particle. */
+struct PDFWrongParticle: public InterfaceException {
+  /** Standard constructor. */
+  PDFWrongParticle(string p, string pdf, string mess);
+};
+
+/** Exception class used by PDFBase if values were outside limits. */
+struct PDFRange: public Exception {
+  /** Standard constructor. */
+  PDFRange(string pdf, string var, double val, double lim);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_PDFBase_XH */
+

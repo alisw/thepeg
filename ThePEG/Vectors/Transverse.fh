@@ -1,0 +1,14 @@
+// -*- C++ -*-
+#ifndef ThePEG_Transverse_FH
+#define ThePEG_Transverse_FH
+
+// Forward declaration of the <!id>Transverse<!!id> class.
+
+namespace ThePEG {
+
+template <typename FloatType>
+class Transverse;
+
+}
+
+#endif /* ThePEG_Transverse_FH */

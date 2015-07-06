@@ -1,0 +1,131 @@
+// -*- C++ -*-
+namespace Pythia7 {
+
+inline LundFlavourGenerator::~LundFlavourGenerator(){}
+
+
+inline PDPtr LundFlavourGenerator::getRandomFlavour() const {
+  long rndFlavourId = long(selectQuark()*(rndbool()? -1: 1));
+  return getParticleData(rndFlavourId);
+}
+
+
+inline int LundFlavourGenerator::BaryonMod() const{
+  return theBaryonMod;
+}
+
+inline double LundFlavourGenerator::strangeQSup() const{
+  return sQsup;
+}
+
+inline bool LundFlavourGenerator::isQuark(long fl) const {
+  return abs(fl) <= 10;
+}
+
+inline bool LundFlavourGenerator::isDiquark(long fl) const{
+  fl = abs(fl);
+  int hq = (fl/1000)%10 ;
+  int lq = (fl/100)%10 ;
+  int dq = (fl/10)%10;
+
+  return (hq && lq &&!dq );
+}
+
+inline void  LundFlavourGenerator::
+getDQcontent(int inDQ,  int& hq, int& lq, int& s) const{
+  inDQ = abs(inDQ);
+  hq = (inDQ/1000)%10;
+  lq = (inDQ/100)%10;
+  s  =  (inDQ%10 -1)/2; 
+}
+
+
+//                *** Meson Production Inline Functions ***
+
+inline int LundFlavourGenerator::MesonSpin(int multIdx) const{
+  int J=1;
+  if(multIdx==0 || multIdx==3) J=0;
+  else if(multIdx==5)    J=2;
+  return(J);
+}
+
+inline int LundFlavourGenerator::
+RandomFlavourMixing(long inFl, int multIdx, double rndMixing) const{
+  //Fl = abs(Fl);
+  long flavourIdx = 2*( abs(inFl) - 1);
+  return(1 + int(rndMixing + theMixingProbVec[multIdx][flavourIdx]) 
+	   + int(rndMixing + theMixingProbVec[multIdx][flavourIdx+1]) );
+}
+
+inline bool  LundFlavourGenerator::extraSuppressed() const {
+  return extraSup;
+}
+
+
+//                  *** Inline functions Diquark production ***
+
+inline bool LundFlavourGenerator::DQproduction() const{
+  return (1.0 + DQsup)*rnd() > 1.0;
+}
+
+inline bool LundFlavourGenerator::DQspinSup(int DQspin) const{
+  if( DQspin == 0 ) return S1DQsup*rnd() > 1.0;
+  else return S1DQsup < rnd();
+}
+
+
+//                  *** Inline functions Baryon production ***
+
+inline double LundFlavourGenerator::OctetWT(WeightsVecPtr wtIt) const{
+  return(*wtIt);
+}
+
+inline double LundFlavourGenerator::DecupletWT(WeightsVecPtr wtIt) const{
+  return(*(++wtIt) );
+}
+
+
+//                    *** Inline functions PopCorn Scheme ***
+
+inline bool LundFlavourGenerator::PopGenRejected() const {
+  return(thePopRejection);
+}
+
+inline int LundFlavourGenerator::PopMesonN(tcPDPtr inDQ) const {
+  return PopMesonN(inDQ->id() );
+}
+
+inline long LundFlavourGenerator::
+PopSelectCurtainFlavour(tcPDPtr inDQ) const {
+  return PopSelectCurtainFlavour(inDQ->id() );
+}
+
+// ============================================================
+//                Standard Methods for Interface
+// =============================================================
+
+inline IBPtr LundFlavourGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LundFlavourGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+  
+// 
+
+inline void LundFlavourGenerator::doupdate() throw(UpdateException){
+  initialize();
+}
+
+inline void LundFlavourGenerator::doinit() throw(InitException){}
+
+inline void LundFlavourGenerator::dofinish(){}
+
+
+}//End_Pythia7_Namespace 
+
+
+
+
+

@@ -1,0 +1,13 @@
+Toolkit for High Energy Physics Event Generation - ThePEG
+
+This directory contains the distribution of ThePEG as well as Pythia7,
+which is implemented using ThePEG, and a directory 'test' which
+contains a few test programs which are automatically run with 'make
+check'.
+
+To compile and install, run the configure script (see ThePEG/README
+for details) and run 'make check' and 'make install'.
+
+See ThePEG/README for more instructions.
+
+
