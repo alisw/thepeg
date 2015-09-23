@@ -182,7 +182,7 @@ private:
   /**
    * The place where Pythia 8 is installed.
    */
-  static string installDir;
+  static string xmlDir;
 
   /**
    * The interface to the random generatorof ThePEG.

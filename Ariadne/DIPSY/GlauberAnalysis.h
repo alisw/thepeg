@@ -10,6 +10,7 @@
 #include "ThePEG/Analysis/FactoryBase.h"
 #include "ThePEG/Analysis/LWH/AnalysisFactory.h"
 #include <valarray>
+#include "Bin.h"
 
 namespace DIPSY {
 
@@ -60,6 +61,10 @@ public:
 		       const vector<ImpactParameters> & vb, const DipoleXSec & xsec,
 		       const Vec3D & probs, double jac);
 
+  virtual void analyze2(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
+		       const vector<ImpactParameters> & vb, const DipoleXSec & xsec,
+		       const Vec3D & probs, double jac);
+
 
   /**
    * Finalize the analysis, (compute statistics etc.). \a neve is the
@@ -67,6 +72,7 @@ public:
    * initialize().
    */
   virtual void finalize(long neve);
+  virtual void finalize2(long neve);
   //@}
 
 
@@ -138,21 +144,22 @@ private:
   /**
    * Number of strategies.
    */
-  static const int nstr = 8;
+  static const int nstr = 10;
 
   /**
    * The sums.
    */
-  valarray<double> sigtot, signd, sigel, sigdt, sigdr, sigdl, sigdd;
-  valarray<double> sumlr, sum2lr, sumlr2, suml2r, sumr2l;
+  valarray<double> sigtot, signd, sigel,
+  sigdt, sigdr, sigdl, sigdd, sigql, sigqr;
+  Bin< valarray<double> > sumlr, sumnd, sum2lr, sumlr2, suml2r, sumr2l;
+
+  
 
   /**
    * The sum of squares.
    */
-  valarray<double> sigtot2, signd2, sigel2, sigdt2, sigdr2, sigdl2, sigdd2;
-  valarray<double> sTwLR, sTw2LR, sTwLR2, sTwL2R, sTwR2L;
-  valarray<double> sT2wLR, sT2w2LR, sT2wLR2, sT2wL2R, sT2wR2L;
-  double swLR, sw2LR, swLR2, swL2R, swR2L;
+  valarray<double> sigtot2, signd2, sigel2,
+  sigdt2, sigdr2, sigdl2, sigdd2, sigql2, sigqr2;
 
   /**
    * The number of b-values.
@@ -173,6 +180,12 @@ private:
    * The t-values, first and second strategy
    */
   vector<FactoryBase::tH1DPtr> hists;
+  vector< Bin< valarray<double> > > tel, tel0, telql, telqr;
+
+  /**
+   * The grey2 probabilities for the nucleons,
+   */
+  mutable map<const DipoleState *, vector<bool> > probl, probr;
 
   /**
    * Calulate all transition probabilities
@@ -180,12 +193,20 @@ private:
   valarray<double> getT(const DipoleState & dr, const DipoleState & dl,
 			const ImpactParameters & b, const DipoleXSec & xsec,
 			double fsum) const;
+  /**
+   * Setup probabilities for grey2 nucleons.
+   */
+  void setupProb(int Nr, const DipoleState & dr,
+		 int Nl, const DipoleState & dl) const;
 
   /**
    * helper function for printing
    */
   void print(valarray<double> sig, valarray<double> sig2,
 	     int ntot, string xstype) const;
+  void print(valarray<double> sig, valarray<double> sig2,
+	     string xstype) const;
+  void print(const Bin< valarray<double> > & sig, string xstype) const;
   /**
    * helper function for histogram booking;
    */
@@ -195,6 +216,8 @@ private:
    * helper function for printing
    */
   string getStrat(int i) const;
+
+  static const bool a2 = 1;
 
 private:
 

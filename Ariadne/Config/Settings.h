@@ -24,7 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  Settings();
+  Settings(): verb(true) {}
 
   /**
    * The destructor.
@@ -140,7 +140,7 @@ private:
   /**
    * The objects that needs setting.
    */
-  vector<string> setObjects;
+  IVector setObjects;
 
   /**
    * The interfaces that needs setting.
@@ -151,6 +151,16 @@ private:
    * The values to be set for the interfaces of the objects.
    */
   vector<string> setValues;
+
+  /**
+   * The references to be set for the interfaces of the objects.
+   */
+  IVector setRefs;
+
+  /**
+   * Verbosity. Write out in log-file what is done.
+   */
+  bool verb;
 
 private:
 

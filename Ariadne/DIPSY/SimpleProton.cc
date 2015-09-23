@@ -208,7 +208,7 @@ bool SimpleProton::splitValence(Step & step, tPPtr p, const vector<PPtr> & val) 
     if ( maxmass < 2.0*p->mass() ) mt02 = mt12 = ptv.pt2();
     double z = remdec->zGenerator().generate(dqv->dataPtr(), qv->dataPtr(), mt12);
     Energy mv = sqrt(mt02/(1.0 - z) + mt12/z);
-    // Make shure the mass is small enough to be kinamatically allowd.
+    // Make sure the mass is small enough to be kinamatically allowd.
     if ( mv >= maxmass ) continue;
 
     // Calculate the momenta of the remnants and how much the rest
@@ -216,19 +216,25 @@ bool SimpleProton::splitValence(Step & step, tPPtr p, const vector<PPtr> & val) 
     LorentzMomentum pqv = lightCone((1.0 - z)*mv, mt02/((1.0 - z)*mv), ptv);
     LorentzMomentum pdqv = lightCone(z*mv, mt12/(z*mv), -ptv);
     LorentzRotation Rshift;
-    LorentzRotation Rr = Utilities::transformFromCMS(DipoleState::changeMass(pv, mv, pr, &Rshift));
+    Lorentz5Momentum pvnew = DipoleState::changeMass(pv, mv, pr, &Rshift);
+    //    LorentzRotation Rr = Utilities::transformFromCMS(pvnew);
+    LorentzRotation Rr(pvnew.x()/pvnew.e(), pvnew.y()/pvnew.e(),
+		       pvnew.z()/pvnew.e(), pvnew.e()/mv);
     qv->setMomentum(Rr*pqv);
     if ( qv->hasColour() ) coll->addColoured(qv);
     else acol->addAntiColoured(qv);
     dqv->setMomentum(Rr*pdqv);
     if ( dqv->hasColour() ) coll->addColoured(dqv);
     else acol->addAntiColoured(dqv);
+    Lorentz5Momentum pvcheck = qv->momentum() + dqv->momentum();
     qv->setVertex(vnew);
     dqv->setVertex(vnew);
     step.addDecayProduct(valence.begin(), valence.end(), qv);
     step.addDecayProduct(valence.begin(), valence.end(), dqv);
     step.collision()->incoming().first->transform(Rshift);
     step.collision()->incoming().second->transform(Rshift);
+    DipoleState dummy;
+    dummy.checkFSMomentum(step);
     return true;
   }
 

@@ -101,12 +101,20 @@ void HIHepMCFile::analyze(tEventPtr event, long, int, int) {
 					       eUnit, lUnit);
 
   HepMC::HeavyIon heavyion(1,1,1,1,1,1);
-  double bpar = (event->incoming().first->vertex() - event->incoming().second->vertex()).perp()/femtometer;
+  
+  const LorentzPoint v1 = event->incoming().first->vertex();
+  const LorentzPoint v2 = event->incoming().second->vertex();
+  
+  double bpar = (v1 - v2).perp()/femtometer;
+  heavyion.HepMC::HeavyIon::set_event_plane_angle(atan2((v1 - v2).y(),(v1 - v2).x()));
   heavyion.HepMC::HeavyIon::set_impact_parameter(float(bpar));  
+
+  // Clear and blatant abuse of the Pdf info container!!
+  HepMC::PdfInfo pdfinfo(1,1,event->optionalWeight("averageKappa"),event->optionalWeight("junctions"),event->optionalWeight("lambdaSum"),1,1);
+
+  
   hepmc->set_heavy_ion(heavyion);
-  //HepMC::GenCrossSection xs;
-  //xs.set_cross_section( 666666, 0.666 );
-  //hepmc->set_cross_section( xs );
+  hepmc->set_pdf_info(pdfinfo);
   
   if (_hepmcio)
     _hepmcio->write_event(hepmc);

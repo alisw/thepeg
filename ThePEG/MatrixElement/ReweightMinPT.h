@@ -31,7 +31,7 @@ public:
    * Default constructor.
    */
   ReweightMinPT()
-    : power(4.0), scale(50.0*GeV) {}
+    : power(4.0), scale(50.0*GeV), onlyColoured(false) {}
   //@}
 
 public:
@@ -93,6 +93,11 @@ private:
    * The weight is the minimum pt/\a scale to a power.
    */
   Energy scale;
+
+  /**
+   * Flag to indicate that only coloured partons should be considered.
+   */
+  bool onlyColoured;
 
 private:
 

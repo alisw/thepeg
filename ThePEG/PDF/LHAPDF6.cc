@@ -154,8 +154,9 @@ cPDVector ThePEG::LHAPDF::partons(tcPDPtr particle) const {
   return ret;
 }
 
-double ThePEG::LHAPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                      double x, double, Energy2 particleScale) const {
+double ThePEG::LHAPDF::xfx(tcPDPtr particle, tcPDPtr parton,
+			   Energy2 partonScale,
+			   double x, double, Energy2) const {
   // Here we should return the actual density.
   using namespace ThePEG::ParticleID;
 
@@ -230,14 +231,17 @@ double ThePEG::LHAPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale
   return 0.0;
 }
 
-double ThePEG::LHAPDF::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale) const {
+double ThePEG::LHAPDF::xfvl(tcPDPtr particle, tcPDPtr parton,
+			    Energy2 partonScale,
+			    double l, Energy2 particleScale) const {
   using Math::exp1m;
-  return xfvx(particle, parton, partonScale, exp(-l), exp1m(-l), particleScale);
+  return xfvx(particle, parton, partonScale,
+	      exp(-l), exp1m(-l), particleScale);
 }
 
-double ThePEG::LHAPDF::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double x, double, Energy2 particleScale) const {
+double ThePEG::LHAPDF::xfvx(tcPDPtr particle, tcPDPtr parton,
+			    Energy2 partonScale,
+			    double x, double, Energy2) const {
   // Here we should return the actual valence density. This will only
   // work properly for nucleons
   using namespace ThePEG::ParticleID;
@@ -308,8 +312,9 @@ double ThePEG::LHAPDF::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScal
   return 0.0;
 }
 
-double ThePEG::LHAPDF::xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		    double x, double, Energy2 particleScale) const {
+double ThePEG::LHAPDF::xfsx(tcPDPtr particle, tcPDPtr parton,
+			    Energy2 partonScale, double x,
+			    double, Energy2) const {
   // Here we should return the actual density.
   using namespace ThePEG::ParticleID;
 

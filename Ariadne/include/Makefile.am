@@ -30,7 +30,7 @@ done-all-links: $(CONFIGHEADERS) $(DIRLINKS)
 @EMPTY@endif
 
 install-data-local:
-	find Ariadne -follow \( -name '*.h' -or -name '*.icc' \
+	find Ariadne -maxdepth 2 -follow \( -name '*.h' -or -name '*.icc' \
 	-or -name '*.tcc' -or -name '*.fh' -or -name '*.xh' \) \
           -exec $(install_sh_DATA) \{\} $(DESTDIR)$(includedir)/\{\} \;
 

@@ -12,7 +12,7 @@
 #include "WFInfo.h"
 #include "DipoleXSec.h"
 #include "ThePEG/EventRecord/Particle.h"
-
+#include "ShadowParton.h"
 
 #include "ThePEG/Analysis/FactoryBase.h"
 
@@ -52,12 +52,17 @@ public:
    * The standard constructor taking the controlling
    * DipoleEventHandler as argument.
    */
-  inline DipoleState(const DipoleEventHandler &, WFInfoPtr wf = WFInfoPtr());
+  inline DipoleState(const DipoleEventHandler & h, WFInfoPtr wf = WFInfoPtr())
+    : thePlus(ZERO), theMinus(ZERO), theMinusDeficit(ZERO), theHandler(&h),
+      theWFInfo(wf), theWeight(1.0), doTakeHistory(false), theYmax(0.0),
+      theCollidingEnergy(ZERO) {}
 
   /**
    * The default constructor.
    */
-  inline DipoleState();
+  inline DipoleState()
+    : thePlus(ZERO), theMinus(ZERO), theMinusDeficit(ZERO), theWeight(1.0),
+      doTakeHistory(false), theYmax(0.0), theCollidingEnergy(ZERO)  {}
 
   /**
    * The copy constructor.
@@ -164,6 +169,16 @@ public:
   bool diagnosis(bool print) const;
 
   /**
+   * Check energy-momentum conservation.
+   */
+  void checkFSMomentum() const;
+
+  /**
+   * Check energy-momentum conservation.
+   */
+  void checkFSMomentum(const Step & step) const;
+
+  /**
    * Prints the state to file.
    */
   void saveGluonsToFile(double weight) const;
@@ -217,14 +232,46 @@ public:
   void balanceMomenta();
 
   /**
+   * Check if shadows has been setup.
+   */
+  bool hasShadows() const {
+    return !theIncomingShadows.empty();
+  }
+
+  /**
+   * Set up shadow partons for all valence partons, thus initializing
+   * the shadow parton procedure.
+   */
+  void setupShadows();
+
+  /**
+   * Reset all interaction flags and interactions in all shadows.
+   */
+  void resetShadows();
+
+  /**
+   * Reset all interaction flags in all shadows.
+   */
+  void resetInteractedShadows();
+
+  /**
+   * Return the incoming momentum of the given valens shadow parton.
+   */
+  LorentzMomentum incomingMomentum(tcSPartonPtr valence, int mode);
+
+  /**
    * Get the weight associated with the generation of this dipole state.
    */
-  inline double weight() const;
+  inline double weight() const {
+    return theWeight;
+  }
 
   /**
    * Set the weight associated with the generation of this dipole state.
    */
-  inline void weight(double);
+  inline void weight(double x) {
+    theWeight = x;
+  }
 
   /**
    * Get the p+ that the original particle brought.
@@ -264,55 +311,78 @@ public:
   /**
    * Set if the state should save its history or not.
    */
-  inline void takeHistory(bool);
+  inline void takeHistory(bool b) {
+    doTakeHistory = b;
+  }
 
   /**
    * saves the current state into the states history, but only if
    * doTakeHistory is true.
    */
-  inline void save();
+  inline void save() {
+    if ( doTakeHistory ) theHistory.push_back( clone() );
+  }
 
   /**
    * The list of initial dipoles.
    */
-  inline const vector<DipolePtr> & initialDipoles() const;
+  inline const vector<DipolePtr> & initialDipoles() const {
+    return theInitialDipoles;
+  }
 
   /**
    * Adds a dipole to the initial Dipoles.
    * Mainly for testing purposes.
    */
-  inline void addDipole(Dipole & dip);
+  inline void addDipole(Dipole & dip) {
+    theInitialDipoles.push_back(& dip);
+  }
 
   /**
    * Get additional info about the wavefunction used to create this state.
    */
-  inline WFInfoPtr WFInfo() const;
+  inline WFInfoPtr WFInfo() const {
+    return theWFInfo;
+  }
 
   /**
    * Get additional info about the wavefunction used to create this state.
    */
-  inline const WaveFunction & wf() const;
+  inline const WaveFunction & wf() const {
+    return WFInfo()->wf();
+  }
 
   /**
    * Set additional info about the wavefunction used to create this state.
    */
-  inline void WFInfo(WFInfoPtr);
+  inline void WFInfo(WFInfoPtr x) {
+    theWFInfo = x;
+  }
 
   /**
    * The controlling DipoleEventHandler.
    */
-  inline const DipoleEventHandler & handler() const;
+  inline const DipoleEventHandler & handler() const {
+    return *theHandler;
+  }
 
   /**
    * Set the controlling DipoleEventHandler.
    * added by CF to access from emitter.
    */
-  inline void handler(tcDipoleEventHandlerPtr);
+  inline void handler(tcDipoleEventHandlerPtr hdl) {
+    theHandler = hdl;
+  }
 
   /**
    * Create a Dipole belonging to this state.
    */
-  inline tDipolePtr createDipole();
+  inline tDipolePtr createDipole() {
+    DipolePtr d = new_ptr(Dipole());
+    d->theDipoleState = this;
+    allDipoles.insert(d);
+    return d;
+  }
 
   /**
    * Generate a consistent colour index for the given Dipole.
@@ -328,7 +398,12 @@ public:
    * return dipoles which have been touched since the last emission.
    */
   inline const vector<tDipolePtr> &
-  swingCandidates(int, bool touched = false) const;
+  swingCandidates(int c, bool touched = false) const {
+    static vector<tDipolePtr> dummy;
+    if ( !touched ) return theSwingCandidates[c];
+    if ( c >= int(theTouchedSwingCandidates.size()) ) return dummy;
+    return theTouchedSwingCandidates[c];
+  }
 
   /**
    * adds the dipole, and all its children, to theSwingCandidates list.
@@ -421,7 +496,10 @@ public:
    * called instead.
    */
   template <typename OutputIterator>
-  inline void extract(OutputIterator it) const;
+  inline void extract(OutputIterator it) const {
+    for ( int i = 0, N = initialDipoles().size(); i < N; ++i )
+      initialDipoles()[i]->extract(it);
+  }
 
 public:
 
@@ -536,6 +614,18 @@ protected:
    */
   mutable map<tcPartonPtr,PPtr> theProducedParticles;
 
+  /**
+   * The shadowing incoming partons.
+   */
+  vector<SPartonPtr> theIncomingShadows;
+
+  /**
+   * The propagator momenta of each valence shadow. Set once and for
+   * all as the total momentum of the state minus all other valence
+   * shadows.
+   */
+  map<tcSPartonPtr,LorentzMomentum> theShadowPropagators;
+
 protected:
 
   /**
@@ -569,6 +659,13 @@ public:
   static LorentzMomentum changeMass(LorentzMomentum p, Energy m, LorentzMomentum ref,
 				    LorentzRotation * Rshift = 0);
 
+  /**
+   * Printout the shadow structure if available.
+   */
+  void debugShadowTree() const;
+
+  void checkShadowMomentum(Sum20Momentum & sum20,
+			   const ImpactParameters * b = 0) const;
 
 private:
 
@@ -581,7 +678,5 @@ private:
 };
 
 }
-
-#include "DipoleState.icc"
 
 #endif /* DIPSY_DipoleState_H */

@@ -388,8 +388,8 @@ void Swinger::recombine(Dipole & d1) const {
     d22->DGLAPsafe(true);
   }
 
-  if ( d1.interacted() ) d11->interact(*d1.interacted());
-  if ( d2.interacted() ) d22->interact(*d2.interacted());
+  if ( d1.interacted() ) d11->interacted(d1.interacted());
+  if ( d2.interacted() ) d22->interacted(d2.interacted());
 
   d1.reset();
   d2.reset();          //are these really needed?

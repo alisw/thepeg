@@ -36,6 +36,8 @@ namespace ThePEG {
 
 ParticleData::ParticleData()
   : theId(0), thePDGName(""), theMass(-1.0*GeV), theWidth(-1.0*GeV),
+    theHardProcessMass(-1.0*GeV), hardProcessMassSet(false),
+    theHardProcessWidth(-1.0*GeV), hardProcessWidthSet(false),
     theWidthUpCut(-1.0*GeV), theWidthLoCut(-1.0*GeV), theCTau(-1.0*mm),
     theCharge(PDT::ChargeUnknown),
     theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), isStable(true),
@@ -47,6 +49,8 @@ ParticleData::ParticleData()
 ParticleData::
 ParticleData(PID newId, const string & newPDGName)
   : theId(newId), thePDGName(newPDGName), theMass(-1.0*GeV), theWidth(-1.0*GeV),
+    theHardProcessMass(-1.0*GeV), hardProcessMassSet(false),
+    theHardProcessWidth(-1.0*GeV), hardProcessWidthSet(false),
     theWidthUpCut(-1.0*GeV), theWidthLoCut(-1.0*GeV), theCTau(-1.0*mm),
     theCharge(PDT::ChargeUnknown),
     theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), isStable(true),
@@ -213,7 +217,11 @@ void ParticleData::synchronize() {
   if ( !CC() ) return;
   isStable = CC()->isStable;
   theMass = CC()->theMass;
+  theHardProcessMass = CC()->theHardProcessMass;
+  hardProcessMassSet = CC()->hardProcessMassSet;
   theWidth = CC()->theWidth;
+  theHardProcessWidth = CC()->theHardProcessWidth;
+  hardProcessWidthSet = CC()->hardProcessWidthSet;
   theWidthUpCut = CC()->theWidthUpCut;
   theWidthLoCut = CC()->theWidthLoCut;
   theCTau = CC()->theCTau;
@@ -367,6 +375,44 @@ void ParticleData::setMass(Energy mi) {
   theMass = mi;
   ParticleData * apd = CC().operator->();
   if ( synchronized() && apd ) apd->theMass = theMass;
+}
+
+void ParticleData::setHardProcessMass(Energy mi) {
+  theHardProcessMass = mi;
+  hardProcessMassSet = true;
+  ParticleData * apd = CC().operator->();
+  if ( synchronized() && apd ) {
+    apd->theHardProcessMass = theHardProcessMass;
+    apd->hardProcessMassSet = true;
+  }
+}
+
+void ParticleData::setHardProcessWidth(Energy mi) {
+  theHardProcessWidth = mi;
+  hardProcessWidthSet = true;
+  ParticleData * apd = CC().operator->();
+  if ( synchronized() && apd ) {
+    apd->theHardProcessWidth = theHardProcessWidth;
+    apd->hardProcessWidthSet = true;
+  }
+}
+
+string ParticleData::doUnsetHardProcessMass(string) {
+  hardProcessMassSet = false;  
+  theHardProcessMass = -1.*GeV;
+  return "";
+}
+
+string ParticleData::doAdjustNominalMass(string) {
+  if ( hardProcessMassSet )
+    setMass(theHardProcessMass);
+  return "";
+}
+  
+string ParticleData::doUnsetHardProcessWidth(string) {
+  hardProcessWidthSet = false;  
+  theHardProcessWidth = -1.*GeV;
+  return "";
 }
 
 Energy ParticleData::defMass() const {
@@ -542,6 +588,8 @@ void ParticleData::persistentOutput(PersistentOStream & os) const {
   multiset<tcDMPtr,ModeOrdering>
     modes(theDecayModes.begin(), theDecayModes.end());
   os << long(theId) << thePDGName << ounit(theMass, GeV) << ounit(theWidth, GeV)
+     << ounit(theHardProcessMass,GeV) << hardProcessMassSet
+     << ounit(theHardProcessWidth,GeV) << hardProcessWidthSet
      << ounit(theWidthUpCut, GeV) << ounit(theWidthLoCut, GeV)
      << ounit(theCTau, mm) << oenum(theCharge) << oenum(theSpin)
      << oenum(theColour);
@@ -555,6 +603,8 @@ void ParticleData::persistentOutput(PersistentOStream & os) const {
 void ParticleData::persistentInput(PersistentIStream & is, int) {
   long id;
   is >> id >> thePDGName >> iunit(theMass, GeV) >> iunit(theWidth, GeV)
+     >> iunit(theHardProcessMass,GeV) >> hardProcessMassSet
+     >> iunit(theHardProcessWidth,GeV) >> hardProcessWidthSet
      >> iunit(theWidthUpCut, GeV) >> iunit(theWidthLoCut, GeV)
      >> iunit(theCTau, mm) >> ienum(theCharge) >> ienum(theSpin)
      >> ienum(theColour) >> theMassGenerator >> isStable
@@ -582,6 +632,13 @@ void ParticleData::Init() {
      false, false, Interface::lowerlim,
      &ParticleData::setMass, 0, 0, 0, &ParticleData::defMass);
 
+  static Parameter<ParticleData,Energy> interfaceHardProcessMass
+    ("HardProcessMass",
+     "The mass in GeV of the particle to be used in calculating hard process cross sections.",
+     &ParticleData::theHardProcessMass, GeV, ZERO, ZERO, Constants::MaxEnergy,
+     false, false, Interface::lowerlim,
+     &ParticleData::setHardProcessMass, 0, 0, 0, 0);
+
   static Parameter<ParticleData,Energy> interfaceDefMass
     ("DefaultMass",
      "The default nominal mass in GeV of the particle. The actual mass "
@@ -600,6 +657,13 @@ void ParticleData::Init() {
      false, false, Interface::lowerlim,
      &ParticleData::setWidth, &ParticleData::getWidth,
      0, 0, &ParticleData::defWidth);
+
+  static Parameter<ParticleData,Energy> interfaceHardProcessWidth
+    ("HardProcessWidth",
+     "The width in GeV of the particle to be used in calculating hard process cross sections.",
+     &ParticleData::theHardProcessWidth, GeV, ZERO, ZERO, Constants::MaxEnergy,
+     false, false, Interface::lowerlim,
+     &ParticleData::setHardProcessWidth, 0, 0, 0, 0);
 
   static Parameter<ParticleData,Energy> interfaceDefWidth
     ("DefaultWidth",
@@ -854,6 +918,22 @@ void ParticleData::Init() {
      "Print all decay modes of this particle.",
      &ParticleData::doPrintDecayModes, true);
 
+
+
+  static Command<ParticleData> interfaceUnsetHardProcessMass
+    ("UnsetHardProcessMass",
+     "Unset a previously set hard process mass.",
+     &ParticleData::doUnsetHardProcessMass, false);
+
+  static Command<ParticleData> interfaceAdjustNominalMass
+    ("AdjustNominalMass",
+     "Unset a previously set hard process mass.",
+     &ParticleData::doAdjustNominalMass, false);
+
+  static Command<ParticleData> interfaceUnsetHardProcessWidth
+    ("UnsetHardProcessWidth",
+     "Unset a previously set hard process width.",
+     &ParticleData::doUnsetHardProcessWidth, false);
 
   interfaceStable.rank(14);
   interfaceDecayModes.rank(13);

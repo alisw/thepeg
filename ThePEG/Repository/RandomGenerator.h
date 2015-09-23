@@ -117,22 +117,41 @@ public:
   long operator()(long N) { return long(rnd() * N); }
 
   /**
+   * Return a true with probability \a p. Uses rnd().
+   */
+  bool rndbool(double p = 0.5) {
+    return rnd() < p;
+  }
+
+  /**
    * Return a true with probability \a p. Uses rnd(). Also uses
    * push_back(double).
    */
-  bool rndbool(double p = 0.5);
+  bool prndbool(double p = 0.5);
+
+  /**
+   * Return a true with probability \a p1/(\a p1+\a p2). Uses
+   * rnd().
+   */
+  bool rndbool(double p1, double p2) { return rndbool(p1/(p1 + p2)); }
 
   /**
    * Return a true with probability \a p1/(\a p1+\a p2). Uses
    * rnd(). Also uses push_back(double).
    */
-  bool rndbool(double p1, double p2) { return rndbool(p1/(p1 + p2)); }
+  bool prndbool(double p1, double p2) { return prndbool(p1/(p1 + p2)); }
+
+  /**
+   * Return -1, 0, or 1 with relative probabilities \a p1, \a p2, \a
+   * p3. Uses rnd().
+   */
+  int rndsign(double p1, double p2, double p3);
 
   /**
    * Return -1, 0, or 1 with relative probabilities \a p1, \a p2, \a
    * p3. Uses rnd(). Also uses push_back(double).
    */
-  int rndsign(double p1, double p2, double p3);
+  int prndsign(double p1, double p2, double p3);
 
   /**
    * Return an integer \f$i\f$ with probability p\f$i\f$/(\a p0+\a

@@ -226,9 +226,11 @@ void NLORivetAnalysis::dofinish() {
 
     string fname = filename;
 #if ThePEG_RIVET_VERSION == 1
-    if ( fname.empty() ) fname = generator()->runName() + ".aida";
+    if ( fname.empty() )
+      fname = generator()->path() + "/" + generator()->runName() + ".aida";
 #elif ThePEG_RIVET_VERSION > 1
-    if ( fname.empty() ) fname = generator()->runName() + ".yoda";
+    if ( fname.empty() )
+      fname = generator()->path() + "/" + generator()->runName() + ".yoda";
 #else
 #error "Unknown ThePEG_RIVET_VERSION"
 #endif

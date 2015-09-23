@@ -183,6 +183,14 @@ public:
   Energy mass() const { return theMass; }
 
   /**
+   * Return the mass to be used when evaluating hard process cross sections.
+   */
+  Energy hardProcessMass() const { 
+    return 
+      hardProcessMassSet ? theHardProcessMass : mass();
+  }
+
+  /**
    * Return the maximum possible mass of this particle type.
    */
   Energy massMax() const { return mass() + widthUpCut(); }
@@ -265,6 +273,14 @@ public:
     return theCTau > Length() ? theCTau :
       ( theWidth > ZERO ? hbarc/theWidth :
 	( stable() ? Constants::MaxLength : Length() ) );
+  }
+
+  /**
+   * Return the width to be used when evaluating hard process cross sections.
+   */
+  Energy hardProcessWidth() const { 
+    return 
+      hardProcessWidthSet ? theHardProcessWidth : width();
   }
 
   /**
@@ -561,6 +577,26 @@ private:
   Energy theWidth;
 
   /**
+   * The mass to be used when evaluating hard process cross sections.
+   */
+  Energy theHardProcessMass;
+
+  /**
+   * True, if a hard process mass has been set.
+   */
+  bool hardProcessMassSet;
+
+  /**
+   * The width to be used when evaluating hard process cross sections.
+   */
+  Energy theHardProcessWidth;
+
+  /**
+   * True, if a hard process width has been set.
+   */
+  bool hardProcessWidthSet;
+
+  /**
    * Upper width cut.
    */
   Energy theWidthUpCut;
@@ -682,12 +718,38 @@ private:
   /**
    * Utility function for the interface.
    */
+  void setHardProcessMass(Energy);
+
+  /**
+   * Reset the hard process mass
+   */
+  string doUnsetHardProcessMass(string);
+
+  /**
+   * Adjust the nominal mass to the hard process mass if a reshuffling
+   * is not desirable.
+   */
+  string doAdjustNominalMass(string);
+
+  /**
+   * Utility function for the interface.
+   */
   Energy defMass() const;
 
   /**
    * Utility function for the interface.
    */
   void setWidth(Energy);
+
+  /**
+   * Utility function for the interface.
+   */
+  void setHardProcessWidth(Energy);
+
+  /**
+   * Reset the hard process mass
+   */
+  string doUnsetHardProcessWidth(string);
 
   /**
    * Utility function for the interface.

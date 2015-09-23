@@ -68,6 +68,10 @@ void StandardModelBase::doinit() {
   else  if(theElectroWeakScheme==5) {
     mw = mz*sqrt(1.-sw2);
   }
+  else  if(theElectroWeakScheme==7) {
+    mw = mz*sqrt(1.-sw2);
+    sw2 = 1.-sqr(mw/mz);
+  }
   // reset if needed
   if(theElectroWeakScheme!=0) {
     recalculateEW = true;
@@ -313,6 +317,11 @@ void StandardModelBase::Init() {
      "Independent",
      "All values input but fixed scale in ME calculations",
      6);
+  static SwitchOption interfaceElectroWeakSchemeFeynRulesUFO
+    (interfaceElectroWeakScheme,
+     "FeynRulesUFO",
+     "Input parameters mZ, GF and alpha(mZ). Frequently used by FeynRules/UFO models.",
+     7);
 
   static Switch<StandardModelBase,unsigned int> interfaceEWBosonWidth
     ("EW/BosonWidth",

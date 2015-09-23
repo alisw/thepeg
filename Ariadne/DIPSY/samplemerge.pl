@@ -30,40 +30,40 @@ while ( <> ) {
 	$sum{$tag} += $x;
 	$sum2{$tag} += $x*$x;
 	$sumerr2{$tag} += $dx*$dx;
-	if ( $tag =~ s/Total:/Inelastic(tot):/ ) {
-	    if ( !exists($n{$tag}) ) {
-		push @tags, $tag;
-		$n{$tag} = 0;
-		$sum{$tag} = 0;
-		$sum2{$tag} = 0;
-		$sumerr2{$tag} = 0;
-		$space{$tag} = "      ";
-	    }
-	    ++$n{$tag};
-	    $sum{$tag} += $x;
-	    $sum2{$tag} += $x*$x;
-	    $sumerr2{$tag} += $dx*$dx;
-	    $junk{$tag} = $rest;
-	}
-	if ( $tag =~ s/Elastic:/Inelastic(tot):/ ) {
-	    if ( !exists($n{$tag}) ) {
-		push @tags, $tag;
-		$n{$tag} = 0;
-		$sum{$tag} = 0;
-		$sum2{$tag} = 0;
-		$sumerr2{$tag} = 0;
-	    }
-	    ++$n{$tag};
-	    $sum{$tag} -= $x;
-	    $sum2{$tag} += $x*$x;
-	    $sumerr2{$tag} += $dx*$dx;
-	    $junk{$tag} = $rest;
-	}
+#	if ( $tag =~ s/Total:/Inelastic(tot):/ ) {
+#	    if ( !exists($n{$tag}) ) {
+#		push @tags, $tag;
+#		$n{$tag} = 0;
+#		$sum{$tag} = 0;
+#		$sum2{$tag} = 0;
+#		$sumerr2{$tag} = 0;
+#		$space{$tag} = "      ";
+#	    }
+#	    ++$n{$tag};
+#	    $sum{$tag} += $x;
+#	    $sum2{$tag} += $x*$x;
+#	    $sumerr2{$tag} += $dx*$dx;
+#	    $junk{$tag} = $rest;
+#	}
+#	if ( $tag =~ s/Elastic:/Inelastic(tot):/ ) {
+#	    if ( !exists($n{$tag}) ) {
+#		push @tags, $tag;
+#		$n{$tag} = 0;
+#		$sum{$tag} = 0;
+#		$sum2{$tag} = 0;
+#		$sumerr2{$tag} = 0;
+#	    }
+#	    ++$n{$tag};
+#	    $sum{$tag} -= $x;
+#	    $sum2{$tag} += $x*$x;
+#	    $sumerr2{$tag} += $dx*$dx;
+#	    $junk{$tag} = $rest;
+#	}
     }
 }
 
 foreach $tag (@tags) {
-    next if $tag =~ /Inelastic\(tot\)/;
+#    next if $tag =~ /Inelastic\(tot\)/;
   $x = $sum{$tag}/$n{$tag};
   $dx = sqrt($sumerr2{$tag})/$n{$tag};
   $oerr = `/home/beckett/leif/bin/outputerr $x $dx`;
@@ -71,11 +71,15 @@ foreach $tag (@tags) {
 }
 
 foreach $tag (@tags) {
-    next if not $tag =~ /Inelastic\(tot\)/;
-  $x = $sum{$tag}/($n{$tag}/2.0);
-  $dx = sqrt($sumerr2{$tag})/($n{$tag}/2.0);
-  $oerr = `/home/beckett/leif/bin/outputerr $x $dx`;
-  printf "%-50s%s%s\n", $tag, $oerr, $junk{$tag};
+#    next if not $tag =~ /Inelastic\(tot\)/;
+#  $x = $sum{$tag}/($n{$tag});
+#  $dx = sqrt($sumerr2{$tag})/($n{$tag});
+#  $DX2 = ($sum2{$tag}/$n{$tag} - $x*$x)/$n{$tag};
+#  $DX = 0;
+#  $DX = sqrt($DX2) if $DX2 > 0;
+#  $oerr = `/home/beckett/leif/bin/outputerr $x $DX`;
+#  printf "%-50s%s%s\n", $tag, $oerr, $junk{$tag};
+#  print "$x $dx $DX\n";
 }
 
 

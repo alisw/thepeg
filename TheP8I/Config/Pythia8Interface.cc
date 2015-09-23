@@ -20,14 +20,14 @@ Pythia8Interface::~Pythia8Interface() {
 
 bool Pythia8Interface::initialized = false;
 
-string Pythia8Interface::installDir = PYTHIA8_DIR;
+string Pythia8Interface::xmlDir = PYTHIA8_XMLDIR;
 
 RndmEngine Pythia8Interface::rnd;
 
 void Pythia8Interface::Init() {
   if ( initialized ) return;
 
-  if ( installDir[installDir.length() - 1] != '/' ) installDir += '/';
+  if ( xmlDir[xmlDir.length() - 1] != '/' ) xmlDir += '/';
 
   initialized = true;
 
@@ -93,7 +93,7 @@ init(const Interfaced & handler, const vector<string> & additional) {
 
   CurrentGenerator::Redirect stdout(cout);
 
-  pythia = new Pythia8::Pythia(installDir + "xmldoc");
+  pythia = new Pythia8::Pythia(xmlDir);
 
   pythia->setRndmEnginePtr(&rnd);
 

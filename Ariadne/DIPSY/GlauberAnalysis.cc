@@ -10,7 +10,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
-
+#include "Bin.h"
 #include "gsl/gsl_sf_bessel.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -20,6 +20,8 @@ using namespace DIPSY;
 
 template <typename T>
 valarray<T> sqr(valarray<T> v) { return v*v; }
+
+valarray<double> vsqr(const valarray<double> & v) { return v*v; }
 
 GlauberAnalysis::GlauberAnalysis()
   : nnSigTot(50.0*millibarn), nnSigEl(9.2*millibarn), nnSigInND(35.9*millibarn), Nt(1000), tMax(10.0*GeV2) {}
@@ -31,21 +33,34 @@ void GlauberAnalysis::initialize() {
   generator()->histogramFactory()->registerClient(this);
 
   ntot = 0;
-  sigtot = signd = sigel = sigdt = sigdr = sigdl = sigdd
+  sigtot = signd = sigel = sigdt = sigdr = sigdl = sigdd = sigql = sigqr
     = valarray<double>(ZERO, nstr);
-  sigtot2 = signd2 = sigel2 = sigdt2 = sigdr2 = sigdl2 = sigdd2
+  sigtot2 = signd2 = sigel2 = sigdt2 = sigdr2 = sigdl2 = sigdd2 = sigql2 = sigqr2
     = valarray<double>(ZERO, nstr);
-  sTwLR = sTw2LR = sTwLR2 = sTwL2R = sTwR2L = valarray<double>(ZERO, nstr);
-  sT2wLR = sT2w2LR = sT2wLR2 = sT2wL2R = sT2wR2L = valarray<double>(ZERO, nstr);
-  swLR = sw2LR = swLR2 = swL2R = swR2L = 0.0;
-  hists = vector<FactoryBase::tH1DPtr>(3*nstr);
+  hists = vector<FactoryBase::tH1DPtr>(5*nstr);
+  sumlr = sumnd = sum2lr = sumlr2 = suml2r = sumr2l =
+    Bin< valarray<double> >(valarray<double>(0.0, nstr));
   bookHistos();
+
 
 }
 
-valarray<double> GlauberAnalysis::getT(const DipoleState & dr, const DipoleState & dl,
-				      const ImpactParameters & b, const DipoleXSec & xsec,
-				      double fsum) const {
+void GlauberAnalysis::
+setupProb(int Nr, const DipoleState & dr,
+	  int Nl, const DipoleState & dl) const {
+  double ar = sqrt(2.0*nnSigEl/nnSigTot);
+  if ( probl.find(&dl) == probl.end() )
+    for ( int il = 0; il < Nl; ++il )
+      probl[&dl].push_back(UseRandom::rndbool(ar));
+  if ( probr.find(&dr) == probr.end() )
+    for ( int ir = 0; ir < Nr; ++ir )
+      probr[&dr].push_back(UseRandom::rndbool(ar));
+}
+
+valarray<double> 
+  GlauberAnalysis::getT(const DipoleState & dr, const DipoleState & dl,
+			const ImpactParameters & b, const DipoleXSec & xsec,
+			double fsum) const {
   valarray<double> T(0.0, nstr);
   T[0] = xsec.unitarize(fsum);
   int Ndl = dl.initialDipoles().size();
@@ -57,8 +72,11 @@ valarray<double> GlauberAnalysis::getT(const DipoleState & dr, const DipoleState
   int Nr = dr.initialDipoles().size()/3;
   if ( Ndr == 1 ) Nr = 1;
 
+  setupProb(Nr, dr, Nl, dl);
+
   double alpha = 2.0*(1.0 - nnSigInND/nnSigTot);
   int nalpha = 0;
+  bool strikprob = UseRandom::rndbool(2.0*nnSigEl/nnSigTot);
     
   for ( int il = 0; il < Nl; ++il ) {
     Parton::Point pl =
@@ -112,6 +130,14 @@ valarray<double> GlauberAnalysis::getT(const DipoleState & dr, const DipoleState
       R = sqrt(nnSigInND/Constants::pi);
       if ( r <= R ) T[7] = 1.0;
 
+      // Gray disc 2
+      R = nnSigTot/sqrt(4.0*Constants::pi*nnSigEl);
+      if ( r <= R && probr[&dr][ir] && probl[&dl][il] ) T[8] = 1.0;
+
+      // Gray disc strikman
+      R = nnSigTot/sqrt(4.0*Constants::pi*nnSigEl);
+      if ( r <= R && strikprob ) T[9] = 1.0;
+
     }
   }
 
@@ -125,11 +151,23 @@ analyze(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
 	const vector<ImpactParameters> & vb, const DipoleXSec & xsec,
 	const Vec3D & probs, double jac) {
 
+  if ( a2 ) {
+    analyze2(vr, vl, vb, xsec, probs, jac);
+    return;
+  }
+
   int Nr = vr.size();
   int Nl = vl.size();
+  int Nb = vb.size();
   if ( Nr*Nl*vb.size() == 0 ) return;
 
-  for ( int ib = 0, Nb = vb.size(); ib < Nb; ++ib ) {
+  vector < vector< vector < valarray<double> > > >
+    UTB(Nb, vector< vector < valarray<double> > >
+	(Nl,  vector < valarray<double> >
+	 (Nr)));
+
+
+  for ( int ib = 0; ib < Nb; ++ib ) {
     CrossSection bweight = sqr(hbarc)*vb[ib].weight()*jac;
     double bw = bweight/nanobarn;
     double bw2 = sqr(bw);
@@ -145,10 +183,16 @@ analyze(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
     valarray<double> sumR2L(0.0, nstr); // (T averaged over R)^2 averaged over L
     int nR2L = 0;
 
-    vector< vector < valarray<double> > > UT(Nl, vector < valarray<double> >(Nr));
+    vector< vector < valarray<double> > >
+      UT(Nl, vector < valarray<double> >(Nr));
+
+    probl.clear();
+    probr.clear();
+
     for ( int ir1 = 0; ir1 < Nr; ++ir1 )
       for ( int il1 = 0; il1 < Nl; ++il1 )
-	UT[il1][ir1] = getT(*vl[il1], *vr[ir1], vb[ib], xsec, probs[il1][ir1][ib]);
+	UTB[ib][il1][ir1] = UT[il1][ir1] =
+	  getT(*vl[il1], *vr[ir1], vb[ib], xsec, probs[il1][ir1][ib]);
 
 
     for ( int ir1 = 0; ir1 < Nr; ++ir1 ) for ( int il1 = 0; il1 < Nl; ++il1 ) {
@@ -156,15 +200,8 @@ analyze(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
 	double w1 = vr[ir1]->weight()*vl[il1]->weight();
 	sumLR += UT1*w1;
 	++nLR;
-	sTwLR += UT1*w1*bw;
-	sT2wLR += sqr(UT1)*sqr(w1*bw);
-	swLR += 1.0;
-	//	sum2LR += sqr(UT1)*sqr(w1);
 	sum2LR += sqr(UT1)*w1;
 	++n2LR;
-	sTw2LR += sqr(UT1)*w1*bw;
-	sT2w2LR += sqr(sqr(UT1))*sqr(w1*bw);
-	sw2LR += 1.0;
 	for ( int ir2 = 0; ir2 < Nr; ++ir2 ) for ( int il2 = 0; il2 < Nl; ++il2 ) {
 	    valarray<double> UT2 = UT[il2][ir2];
 	    double w2 = vr[ir2]->weight()*vl[il2]->weight();
@@ -173,23 +210,14 @@ analyze(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
 	    if ( il1 != il2 && ir1 != ir2 ){
 	      sumLR2 += UT12*w1*w2;
 	      ++nLR2;
-	      sTwLR2 += UT12*w1*w2*bw;
-	      sT2wLR2 += sqr(UT12)*sqr(w1*w2*bw);
-	      swLR2 += 1.0;
 	    }
 	    if ( il1 != il2 && ir1 == ir2 ) {
 	      sumL2R += UT12*w1*w2;
 	      ++nL2R;
-	      sTwL2R += UT12*w1*w2*bw;
-	      sTwL2R += sqr(UT12)*sqr(w1*w2*bw);
-	      swL2R += 1.0;
 	    }
 	    if ( il1 == il2 && ir1 != ir2 ) {
 	      sumR2L += UT12*w1*w2;
 	      ++nR2L;
-	      sTwR2L += UT12*w1*w2*bw;
-	      sTwR2L += sqr(UT12)*sqr(w1*w2*bw);
-	      swR2L += 1.0;
 	    }
 	  }
       }
@@ -208,30 +236,155 @@ analyze(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
     sigel2 += sumLR2*sumLR2*bw2;
     sigdl += (sumL2R - sumLR2)*bw;
     sigdl2 += (sumL2R - sumLR2)*(sumL2R - sumLR2)*bw2;
+    sigql += sumL2R*bw;
+    sigql2 += sumL2R*sumL2R*bw2;
     sigdr += (sumR2L - sumLR2)*bw;
     sigdr2 += (sumR2L - sumLR2)*(sumR2L - sumLR2)*bw2;
+    sigqr += sumR2L*bw;
+    sigqr2 += sumR2L*sumR2L*bw2;
     sigdd += (sum2LR - sumR2L - sumL2R + sumLR2)*bw;
     sigdd2 += (sum2LR - sumR2L - sumL2R + sumLR2)*(sum2LR - sumR2L - sumL2R + sumLR2)*bw2;
     sigdt += (sum2LR - sumLR2)*bw;
     sigdt2 += (sum2LR - sumLR2)*(sum2LR - sumLR2)*bw2;
 
     InvEnergy b = vb[ib].bVec().pt();
-    double tw = vb[ib].weight()*jac*GeV2;
     for ( int it = 0; it < Nt; ++it ) {
       Energy q = sqrt((double(it) + 0.5)*tMax/double(Nt));
       double J0 = gsl_sf_bessel_J0(b*q);
-      double sq = sqrt(q/GeV);
       for ( int i = 0; i < nstr; ++i ) {
-	hists[i]->fill(sqr(q)/GeV2, sq*J0*sumLR[i]*bw);
-	if ( J0 > 0.0 )
-	  hists[i + nstr]->fill(sqr(q)/GeV2, J0*sumLR2[i]*tw);
-	else
-	  hists[i + 2*nstr]->fill(sqr(q)/GeV2, J0*sumLR2[i]*tw);
+	hists[i]->fill(sqr(q)/GeV2, J0*sumLR[i]*bw);
+	//  hists[i + nstr]->fill(sqr(q)/GeV2, J0*sumLR[i]*bw);
+	//  hists[i + 2*nstr]->fill(sqr(q)/GeV2, 2.0*Constants::pi*J0*sumLR[i]*bw);
+	hists[i + 3*nstr]->fill(sqr(q)/GeV2, J0*sqrt(sumL2R[i])*bw);
+	hists[i + 4*nstr]->fill(sqr(q)/GeV2, J0*sqrt(sumR2L[i])*bw);
       }
     }
 
     ++ntot;
   }
+
+  double xBLR = double((Nb-1)*Nl*(Nl-1)*Nr*(Nr-1))/8.0;
+  vector< vector<double> > J0(Nb, vector<double>(Nt));
+  vector< vector< vector<double> > >
+    J02(Nb, vector< vector<double> >(Nb, vector<double>(Nt)));
+  for ( int it = 0; it < Nt; ++it ) {
+    Energy q = sqrt((double(it) + 0.5)*tMax/double(Nt));
+    for ( int ib1 = 0; ib1 < Nb; ++ib1 ) {
+      J0[ib1][it] = gsl_sf_bessel_J0(vb[ib1].bVec().pt()*q);
+      for ( int ib2 = ib1 + 1; ib2 < Nb; ++ib2 ) 
+	J02[ib1][ib2][it] =
+	  gsl_sf_bessel_J0((vb[ib1].bVec() - vb[ib2].bVec()).pt()*q);
+    }
+  }
+
+  vector<double> bw(Nb);
+  for ( int ib1 = 0; ib1 < Nb; ++ib1 )
+    bw[ib1] = sqr(hbarc)*vb[ib1].weight()*jac/nanobarn;
+
+  for ( int ib1 = 0; ib1 < Nb; ++ib1 ) 
+    for ( int ir1 = 0; ir1 < Nr; ++ir1 )
+      for ( int il1 = 0; il1 < Nl; ++il1 ) {
+	valarray<double> UT1 = UTB[ib1][il1][ir1];
+	double w1 = vr[ir1]->weight()*vl[il1]->weight();
+	for ( int ib2 = ib1; ib2 < Nb; ++ib2 )
+  	  for ( int ir2 = ir1; ir2 < Nr; ++ir2 )
+  	    for ( int il2= il1; il2 < Nl; ++il2 ) {
+	      valarray<double> UT2 = UTB[ib2][il2][ir2];
+	      double w2 = vr[ir2]->weight()*vl[il2]->weight();
+	      if ( ib1 != ib2 && il1 != il2 && ir1 != ir2 ) {
+		for ( int it = 0; it < Nt; ++it ) {
+		  double q2 = (double(it) + 0.5)*tMax/double(Nt)/GeV2;
+		  for ( int i = 0; i < nstr; ++i ) {
+		    hists[i + nstr]->fill(q2,
+					  J0[ib1][it]*UT1[i]*w1*bw[ib1]*
+					  J0[ib2][it]*UT2[i]*w2*bw[ib2]/xBLR);
+		    hists[i + 2*nstr]->fill(q2,
+					    J02[ib1][ib2][it]*
+					    UT1[i]*w1*bw[ib1]*
+					    UT2[i]*w2*bw[ib2]/xBLR);
+		  }
+		}
+	      }
+	    }
+      }	      
+}
+
+void GlauberAnalysis::
+analyze2(const vector<DipoleStatePtr> & vr, const vector<DipoleStatePtr> & vl,
+	const vector<ImpactParameters> & vb, const DipoleXSec & xsec,
+	const Vec3D & probs, double jac) {
+
+  int Nr = vr.size();
+  int Nl = vl.size();
+  int Nb = vb.size();
+  if ( Nr*Nl*Nb == 0 ) return;
+
+  vector < vector< vector < valarray<double> > > >
+    UTB(Nb, vector< vector < valarray<double> > >
+	(Nl,  vector < valarray<double> >
+	 (Nr)));
+  for ( int ib1 = 0; ib1 < Nb; ++ib1 ) {
+    probl.clear();
+    probr.clear();
+    for ( int ir1 = 0; ir1 < Nr; ++ir1 )
+      for ( int il1 = 0; il1 < Nl; ++il1 )
+	UTB[ib1][il1][ir1] =
+	  getT(*vl[il1], *vr[ir1], vb[ib1], xsec, probs[il1][ir1][ib1]);
+  }
+
+  vector< vector<double> > J0(Nb, vector<double>(Nt));
+  vector< vector< vector<double> > >
+    J02(Nb, vector< vector<double> >(Nb, vector<double>(Nt)));
+  for ( int it = 0; it < Nt; ++it ) {
+    Energy q = sqrt((double(it) + 0.5)*tMax/double(Nt));
+    for ( int ib1 = 0; ib1 < Nb; ++ib1 ) {
+      J0[ib1][it] = gsl_sf_bessel_J0(vb[ib1].bVec().pt()*q);
+      for ( int ib2 = ib1 + 1; ib2 < Nb; ++ib2 ) 
+	J02[ib1][ib2][it] =
+	  gsl_sf_bessel_J0((vb[ib1].bVec() - vb[ib2].bVec()).pt()*q);
+    }
+  }
+
+  vector<double> bw(Nb);
+  for ( int ib1 = 0; ib1 < Nb; ++ib1 )
+    bw[ib1] = sqr(hbarc)*vb[ib1].weight()*jac/nanobarn;
+
+  for ( int ib1 = 0; ib1 < Nb; ++ib1 )
+    for ( int ir1 = 0; ir1 < Nr; ++ir1 )
+      for ( int il1 = 0; il1 < Nl; ++il1 ) {
+	valarray<double> UT1 = UTB[ib1][il1][ir1];
+	double w1 = vr[ir1]->weight()*vl[il1]->weight();
+	sumlr += 2.0*UT1*w1*bw[ib1];
+	sumnd += (2.0*UT1 - vsqr(UT1))*w1*bw[ib1];
+	sum2lr += vsqr(UT1)*w1*bw[ib1];
+
+	for ( int it = 0; it < Nt; ++it )
+	  tel0[it] += J0[ib1][it]*UT1*w1*bw[ib1];
+
+	for ( int ib2 = ib1; ib2 < Nb; ++ib2 )
+	  for ( int ir2 = ir1; ir2 < Nr; ++ir2 )
+	    for ( int il2 = il1; il2 < Nl; ++il2 ) {
+	      valarray<double> UT2 = UTB[ib2][il2][ir2];
+	      double w2 = vr[ir2]->weight()*vl[il2]->weight();
+	      valarray<double> UT12 = UT1*UT2;
+	      if ( ib1 == ib2 && il1 != il2 && ir1 != ir2 )
+		sumlr2 +=      UT12*w1*w2*bw[ib1];
+	      if ( ib1 == ib2 && il1 != il2 && ir1 == ir2 )
+		suml2r +=      UT12*w1*w2*bw[ib1];
+	      if ( ib1 == ib2 && il1 == il2 && ir1 != ir2 )
+		sumr2l +=      UT12*w1*w2*bw[ib1];
+	      if ( ib1 != ib2 && il1 != il2 && ir1 != ir2 )
+		for ( int it = 0; it < Nt; ++it )
+		  tel[it] += J02[ib1][ib2][it]*UT12*w1*w2*bw[ib1]*bw[ib2];
+	      if ( ib1 != ib2 && il1 != il2 && ir1 == ir2 )
+		for ( int it = 0; it < Nt; ++it )
+		  telql[it] += J02[ib1][ib2][it]*UT12*w1*w2*bw[ib1]*bw[ib2];
+	      if ( ib1 != ib2 && il1 == il2 && ir1 != ir2 )
+		for ( int it = 0; it < Nt; ++it )
+		  telqr[it] += J02[ib1][ib2][it]*UT12*w1*w2*bw[ib1]*bw[ib2];
+	    }
+      }
+
 }
 
 string GlauberAnalysis::getStrat(int i) const {
@@ -242,7 +395,9 @@ string GlauberAnalysis::getStrat(int i) const {
   if ( i == 4 ) strat = "Gaussian";
   if ( i == 5 ) strat = "old black disc";
   if ( i == 6 ) strat = "old grey disc";
-  if ( i == 7 ) strat = "old blac disc ND";
+  if ( i == 7 ) strat = "blakc disc ND";
+  if ( i == 8 ) strat = "grey2 disc";
+  if ( i == 9 ) strat = "grey strick";
   return strat;
 }
 
@@ -250,13 +405,22 @@ void GlauberAnalysis::bookHistos() {
   generator()->histogramFactory()->mkdirs("/Glauber");
   generator()->histogramFactory()->mkdirs("/tmp");
   for ( int i = 0; i < nstr; ++i ) {
-    string I(1, '0' + i);
-    hists[i] = generator()->histogramFactory()->createHistogram1D
-      ("/tmp/dSigmadt-a-" + I, Nt, 0.0, tMax/GeV2);
-    hists[nstr + i] = generator()->histogramFactory()->createHistogram1D
-      ("/tmp/dSigmadt-b-" + I, Nt, 0.0, tMax/GeV2);
-    hists[2*nstr + i] = generator()->histogramFactory()->createHistogram1D
-      ("/tmp/-dSigmadt-b-" + I, Nt, 0.0, tMax/GeV2);
+    if ( a2 ) {
+      tel = tel0 = telql= telqr = vector< Bin< valarray<double> > >
+	(Nt, Bin< valarray<double> >(valarray<double>(0.0, nstr)));
+    } else {
+      string I(1, '0' + i);
+      hists[i] = generator()->histogramFactory()->createHistogram1D
+	("/tmp/dSigmadt-a-" + I, Nt, 0.0, tMax/GeV2);
+      hists[nstr + i] = generator()->histogramFactory()->createHistogram1D
+	("/Glauber/dSigmadt-b-" + I, Nt, 0.0, tMax/GeV2);
+      hists[2*nstr + i] = generator()->histogramFactory()->createHistogram1D
+	("/Glauber/dSigmadt-c-" + I, Nt, 0.0, tMax/GeV2);
+      hists[3*nstr + i] = generator()->histogramFactory()->createHistogram1D
+	("/tmp/dSigmadt-ql-" + I, Nt, 0.0, tMax/GeV2);
+      hists[4*nstr + i] = generator()->histogramFactory()->createHistogram1D
+	("/tmp/dSigmadt-qr-" + I, Nt, 0.0, tMax/GeV2);
+    }
   }
 }
 
@@ -272,17 +436,57 @@ void GlauberAnalysis::print(valarray<double> sig, valarray<double> sig2,
   }
 }
 
+void GlauberAnalysis::print(valarray<double> sig, valarray<double> err,
+			    string xstype) const {
+  for ( int i = 0; i < nstr; ++i ) {
+    string strat = getStrat(i);
+    stub(": " + xstype + ": (" + strat + "):")
+      << ouniterr(sig[i], err[i], 1.0) << " nb." << endl;
+  }
+}
+
+void GlauberAnalysis::print(const Bin< valarray<double> > & sig,
+			    string xstype) const {
+  for ( int i = 0; i < nstr; ++i ) {
+    string strat = getStrat(i);
+    stub(": " + xstype + ": (" + strat + "):")
+      << ouniterr(sig.average()[i], sig.err()[i], 1.0) << " nb." << endl;
+  }
+}
+
 void GlauberAnalysis::finalize(long neve) {
   if ( neve <= 0 ) return;
+  if ( a2 ) {
+    finalize2(neve);
+    return;
+  }
+  stub(": Total: (pp):")
+    << ouniterr(double(nnSigTot/nanobarn), 10000.0, 1.0)
+      << " nb." << endl;
   print(sigtot, sigtot2, ntot, "Total");
-  //  print(2.0*sTwLR, 4.0*sT2wLR, swLR, "Total");
+
+  stub(": Inelastic(ND): (pp):")
+    << ouniterr(double(nnSigInND/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
   print(signd, signd2, ntot, "Inelastic(ND)");
+
+  stub(": Inelastic(tot): (pp):")
+    << ouniterr(double((nnSigTot - nnSigEl)/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
   print(sigtot - sigel, sigtot2 - sigel2, ntot, "Inelastic(tot)");
+
+  stub(": Elastic: (pp):")
+    << ouniterr(double(nnSigEl/nanobarn), 10000.0, 1.0) << " nb." << endl;
   print(sigel, sigel2, ntot, "Elastic");
-  //  print(sTwLR2, sT2wLR2, swLR2, "Elastic");
+
+  stub(": Diff. total: (pp):")
+    << ouniterr(double((nnSigTot - nnSigEl - nnSigInND)/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
   print(sigdt, sigdt2, ntot, "Diff. total");
   print(sigdr, sigdr2, ntot, "Diff. exc. (R)");
   print(sigdl, sigdl2, ntot, "Diff. exc. (L)");
+  print(sigqr, sigqr2, ntot, "Quasi El. (R)");
+  print(sigql, sigql2, ntot, "Quasi El. (L)");
   print(sigdd, sigdd2, ntot, "Double diff. exc.");
 
   for (int i = 0; i < nstr; ++i ) {
@@ -291,13 +495,99 @@ void GlauberAnalysis::finalize(long neve) {
       generator()->histogramFactory()->histogramFactory().multiply
       ("/Glauber/dSigmadt-a-" + I, *hists[i], *hists[i]);
     tmp->setTitle("dSigma/dt a (" + getStrat(i) + ")"); 
-    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot*ntot)*2.0*Constants::pi));
+    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot*ntot)*4.0*Constants::pi));
     generator()->histogramFactory()->histogramFactory().destroy(hists[i]);
-    tmp = generator()->histogramFactory()->histogramFactory().subtract
-      ("/Glauber/dSigmadt-b-" + I, *hists[i + nstr], *hists[i + 2*nstr]);
-    tmp->setTitle("dSigma/dt b (" + getStrat(i) + ")"); 
-    tmp->scale(1.0/(double(ntot)*2.0*Constants::pi));
+    stub(": Elastic cross check a: (" + getStrat(i) + ")")
+      << tmp->sumAllBinHeights()*(tMax/GeV2)/double(Nt) << endl;
 
+    tmp = hists[i + nstr];
+    tmp->setTitle("dSigma/dt b (" + getStrat(i) + ")"); 
+    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot)*4.0*Constants::pi));
+    stub(": Elastic cross check b: (" + getStrat(i) + ")")
+      << tmp->sumAllBinHeights()*(tMax/GeV2)/double(Nt) << endl;
+
+    tmp = hists[i + 2*nstr];
+    tmp->setTitle("dSigma/dt c (" + getStrat(i) + ")"); 
+    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot)*4.0*Constants::pi));
+    stub(": Elastic cross check c: (" + getStrat(i) + ")")
+      << tmp->sumAllBinHeights()*(tMax/GeV2)/double(Nt) << endl;
+
+    tmp = generator()->histogramFactory()->histogramFactory().multiply
+      ("/Glauber/dSigmadt-ql-" + I, *hists[3*nstr + i], *hists[3*nstr+ i]);
+    tmp->setTitle("dSigma/dt ql (" + getStrat(i) + ")"); 
+    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot*ntot)*2.0*Constants::pi));
+    generator()->histogramFactory()->histogramFactory().destroy(hists[3*nstr + i]);
+
+    tmp = generator()->histogramFactory()->histogramFactory().multiply
+      ("/Glauber/dSigmadt-qr-" + I, *hists[4*nstr + i], *hists[4*nstr+ i]);
+    tmp->setTitle("dSigma/dt qr (" + getStrat(i) + ")"); 
+    tmp->scale(nanobarn*GeV2/(sqr(hbarc)*double(ntot*ntot)*2.0*Constants::pi));
+    generator()->histogramFactory()->histogramFactory().destroy(hists[4*nstr + i]);
+
+  }
+
+}
+
+void GlauberAnalysis::finalize2(long neve) {
+  if ( neve <= 0 ) return;
+
+  stub(": Total: (pp) [New procedure]:")
+      << ouniterr(double(nnSigTot/nanobarn), 10000.0, 1.0)
+      << " nb." << endl;
+
+  print(sumlr, "Total");
+
+  stub(": Inelastic(ND): (pp):")
+    << ouniterr(double(nnSigInND/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
+  print(sumnd, "Inelastic(ND)");
+
+  stub(": Inelastic(tot): (pp):")
+    << ouniterr(double((nnSigTot - nnSigEl)/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
+  print(sumlr - sumlr2, "Inelastic(tot)");
+
+  stub(": Elastic: (pp):")
+    << ouniterr(double(nnSigEl/nanobarn), 10000.0, 1.0) << " nb." << endl;
+  print(sumlr2, "Elastic");
+
+  stub(": Diff. total: (pp):")
+    << ouniterr(double((nnSigTot - nnSigEl - nnSigInND)/nanobarn), 10000.0, 1.0)
+    << " nb." << endl;
+  print(sum2lr - sumlr2, "Diff. total");
+  print(sumr2l - sumlr2, "Diff. exc. (R)");
+  print(suml2r - sumlr2, "Diff. exc. (L)");
+  print(sumr2l, "Quasi El. (R)");
+  print(suml2r, "Quasi El. (L)");
+  print(sum2lr - sumr2l - suml2r + sumlr2, "Double diff. exc.");
+
+  ofstream os((generator()->path() + "/" + generator()->runName() +
+	       "-tdep.dat").c_str());
+  double tfac = nanobarn*GeV2/(sqr(hbarc)*4.0*Constants::pi);
+  for (int i = 0; i < nstr; ++i ) {
+    string I(1, '0' + i);
+    os << "# tdep" << I << endl;
+    for ( int it = 0; it < Nt; ++it )
+      os << (double(it) + 0.5)*(tMax/GeV2)/double(Nt) << '\t'
+	 << tel[it].average()[i]*tfac << '\t' << tel[it].err()[i]*tfac << endl;
+    os << endl;
+    os << "# t0dep" << I << endl;
+    for ( int it = 0; it < Nt; ++it ) {
+      Bin< valarray<double> > b = tel0[it].sqr();
+      os << (double(it) + 0.5)*(tMax/GeV2)/double(Nt) << '\t'
+	 << b.average()[i]*tfac << '\t' << b.err()[i]*tfac << endl;
+    }
+    os << endl;
+    os << "# tdepr" << I << endl;
+    for ( int it = 0; it < Nt; ++it )
+      os << (double(it) + 0.5)*(tMax/GeV2)/double(Nt) << '\t'
+	 << telqr[it].average()[i]*tfac << '\t' << telqr[it].err()[i]*tfac << endl;
+    os << endl;
+    os << "# tdepl" << I << endl;
+    for ( int it = 0; it < Nt; ++it )
+      os << (double(it) + 0.5)*(tMax/GeV2)/double(Nt) << '\t'
+	 << telql[it].average()[i]*tfac << '\t' << telql[it].err()[i]*tfac << endl;
+    os << endl;
   }
 
 }
@@ -319,19 +609,21 @@ void GlauberAnalysis::persistentOutput(PersistentOStream & os) const {
   const CrossSection nb = nanobarn;
   os << ounit(nnSigTot, nb) << ounit(nnSigEl, nb) << ounit(nnSigInND, nb)
      << ntot << sigtot << signd << sigel
-     << sigdt << sigdl << sigdr << sigdd
+     << sigdt << sigdl << sigdr << sigdd << sigql << sigqr
      << sigtot2 << signd2 << sigel2
-     << sigdt2 << sigdl2 << sigdr2 << sigdd2 << Nt << ounit(tMax,GeV2);
+     << sigdt2 << sigdl2 << sigdr2 << sigdd2 << sigql2 << sigqr2
+     << Nt << ounit(tMax,GeV2);
 }
 
 void GlauberAnalysis::persistentInput(PersistentIStream & is, int) {
   const CrossSection nb = nanobarn;
   is >> iunit(nnSigTot, nb) >> iunit(nnSigEl, nb) >> iunit(nnSigInND, nb)
      >> ntot >> sigtot >> signd >> sigel
-     >> sigdt >> sigdl >> sigdr >> sigdd
+     >> sigdt >> sigdl >> sigdr >> sigdd >> sigql >> sigqr
      >> sigtot2 >> signd2 >> sigel2
-     >> sigdt2 >> sigdl2 >> sigdr2 >> sigdd2 >> Nt >> iunit(tMax, GeV2);
-  hists.resize(3*nstr);
+     >> sigdt2 >> sigdl2 >> sigdr2 >> sigdd2 >> sigql2 >> sigqr2
+     >> Nt >> iunit(tMax, GeV2);
+  hists.resize(5*nstr);
   //  bookHistos();
 }
 

@@ -116,8 +116,6 @@ bool ParameterHandler::CalculateEffectiveParameters(double h){
       if (a_eff > 2.0) {a_eff = 2.0; break;}
     } while (da > 0.00001);
 
-
-
     return true;
 }
 
@@ -127,7 +125,7 @@ double ParameterHandler::IFragmentationF(double a, double b){
     double Integral = 0.0;
     for (double z = dz; z < 1; z += dz) {
       //numerical integral calculation
-      Integral += pow(1 - z, a) * exp(- b * m2 / z) / z;
+      Integral += pow(1 - z, a) * exp(- b * _m2 / z) / z;
     }
     return Integral * dz;
   }

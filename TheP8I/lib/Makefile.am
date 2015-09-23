@@ -20,7 +20,7 @@ libTheP8I_la_LIBADD = \
 	$(top_builddir)/Config/libTheP8IConfig.la \
 	$(top_builddir)/Strategy/libTheP8IStrategy.la \
 	$(top_builddir)/Hadronization/libTheP8IString.la \
-	$(top_builddir)/BE/libTheP8IBE.la $(PYTHIA8_LIBS)
+	$(top_builddir)/BE/libTheP8IBE.la
 
 all-local: done-all-links
 

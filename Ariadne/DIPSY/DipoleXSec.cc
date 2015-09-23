@@ -34,8 +34,276 @@ using namespace DIPSY;
 
 DipoleXSec::~DipoleXSec() {}
 
+DipoleInteraction::DipoleInteraction(Dipole & dlin, Dipole & drin,
+				     const ImpactParameters &  bin, int ordering)
+  : dips(&dlin, &drin), dnext(dlin.neighbors().first, drin.neighbors().first),
+    dprev(dlin.neighbors().second, drin.neighbors().second),
+    b(&bin), sints(tSPartonPtr(), tSPartonPtr()),
+    f2(0.0), uf2(0.0), norec(false), kt(ZERO), id(0), status(UNKNOWN),
+    intOrdering(ordering) {
+
+ // If different colours interaction is either between c-c or
+ // cbar-cbar. If the same colour we only haver c-cbar.
+  ints = make_pair(dlin.partons().first, drin.partons().first);
+  spec = make_pair(dlin.partons().second, drin.partons().second);
+  if ( dlin.colour() == drin.colour() ) {
+    //    if ( UseRandom::rnd() > 0.5  )
+    if ( UseRandom::rndbool()  )
+      swap(ints.second, spec.second);
+    else
+      swap(ints.first, spec.first);
+  }      
+  if ( Current<DipoleEventHandler>()->eventFiller().compat ) {
+    // *** TODO *** debugging to be removed!
+    InvEnergy2 rr11 = bin.dist2(*dlin.partons().first, *drin.partons().first);
+    InvEnergy2 rr22 = bin.dist2(*dlin.partons().second, *drin.partons().second);
+    double dummy = (rr11 + rr22)*GeV2;
+    while ( dummy > 100 ) dummy /= 10;
+    if ( 1000000.0*dummy - long(1000000.0*dummy) > 0.5 ) {
+      swap(ints.first, spec.first);
+      swap(ints.second, spec.second);
+    }
+  } else {
+    //    if ( UseRandom::rnd() < 0.5 ) {
+    if ( UseRandom::rndbool() ) {
+      swap(ints.first, spec.first);
+      swap(ints.second, spec.second);
+    }
+  }
+
+
+  Parton::Point r = bin.difference(ints.first->position(), ints.second->position()); 
+  d2 = min(min(r.pt2(), dlin.size2()), drin.size2());
+  //  kt = 1.0/sqrt(d2);
+  rec =  -Current<DipoleEventHandler>()->emitter().pTScale()*r/r.pt2();
+  kt = rec.pt();
+  if ( ints.first->shadow() ) {
+    sints = make_pair(ints.first->shadow()->resolveInteraction(d2, spec.first),
+		      ints.second->shadow()->resolveInteraction(d2, spec.second));
+  }
+}
+
+void DipoleInteraction::prepare() const {
+  sints = make_pair(ints.first->shadow()->resolveInteraction(d2, spec.first),
+		    ints.second->shadow()->resolveInteraction(d2, spec.second));
+  sints.first->insertInteraction(id);
+  sints.second->insertInteraction(id);
+}
+
+void DipoleInteraction::debug() const {
+  sints.first->memememe = sints.second->memememe = true;
+  TransverseMomentum rrec;
+  if ( !norec ) rrec = rec;
+  cerr << setw(15) << rrec.x()/GeV << setw(15) << rrec.y()/GeV << endl;
+  dips.first->dipoleState().debugShadowTree();
+  rrec = b->invRotatePT(-rrec);
+  cerr << setw(15) << rrec.x()/GeV << setw(15) << rrec.y()/GeV << endl;
+  dips.second->dipoleState().debugShadowTree();
+  sints.first->memememe = sints.second->memememe = false;
+  list<PartonPtr> plist = dips.first->dipoleState().getPartons();
+  LorentzMomentum sum;
+  for ( list<PartonPtr>::iterator it = plist.begin(); it != plist.end(); ++it )
+    if ( (**it).onShell() ) sum += (**it).momentum();
+  cerr << "left:  "
+       << setw(15) << sum.x()/GeV << setw(15) << sum.y()/GeV
+       << setw(15) << sum.z()/GeV << setw(15) << sum.t()/GeV << endl;
+  plist = dips.second->dipoleState().getPartons();
+  sum = LorentzMomentum();
+  for ( list<PartonPtr>::iterator it = plist.begin(); it != plist.end(); ++it )
+    if ( (**it).onShell() ) sum += (**it).momentum();
+  TransverseMomentum sumt = b->rotatePT(TransverseMomentum(sum.x(), sum.y()));
+  cerr << "right:  "
+       << setw(15) << sumt.x()/GeV << setw(15) << sumt.y()/GeV
+       << setw(15) << sum.z()/GeV << setw(15) << sum.t()/GeV << endl;
+}
+
+void DipoleInteraction::fail(int i ) const {
+  int off = i < 0? 4: 0;
+  if ( i > 0 ) status = ORDERING;
+  else {
+    if ( ints.first == dips.first->partons().first &&
+	 ints.second == dips.second->partons().first )
+      i = 10;
+    else if ( ints.first == dips.first->partons().first )
+      i = 11;
+    else if ( ints.second == dips.second->partons().first )
+      i = 12;
+    else
+      i = 13;
+  }
+  i += off;
+  
+  ++ofail[i];
+  if ( uf2 > 0.2 ) ++o1fail[i];
+}
+
+// *** TODO *** Remove status, it is only for debugging.
+DipoleInteraction::Status DipoleInteraction::check(int mode) const {
+  static DebugItem breakme("DIPSY::Stop", 6);
+  if ( mode >= 0 && breakme ) breakThePEG();
+  status = UNKNOWN;
+  sints = make_pair(ints.first->shadow()->resolveInteraction(d2, spec.first),
+		    ints.second->shadow()->resolveInteraction(d2, spec.second));
+  ShadowParton::Propagator ppl =
+    sints.first->propagator(d2, spec.first, mode);
+  ShadowParton::Propagator ppr =
+    sints.second->propagator(d2, spec.second, mode);
+
+  fail(-1);
+  if ( ppl.fail || ppr.fail ) return status = PROPFAIL;
+  LorentzMomentum pl = ppl.p;
+  LorentzMomentum pr = ppr.p;
+  if ( mode >= 0 ) {
+    TransverseMomentum ptr0(pr.x(), pr.y());
+    checkShadowMomentum(pl + lightCone(pr.minus(), pr.plus(),
+				       b->rotatePT(ptr0)));
+  }
+  TransverseMomentum rrec;
+  if ( !norec ) rrec = rec;
+  TransverseMomentum ptl =
+    TransverseMomentum(pl.x(), pl.y()) + rrec;
+  Energy2 mtl2 = ptl.pt2() + sqr(sints.first->mass());
+  TransverseMomentum ptr =
+    TransverseMomentum(pr.x(), pr.y()) + b->invRotatePT(-rrec);
+  Energy2 mtr2 = ptr.pt2() + sqr(sints.second->mass());
+  Energy PP = pl.plus() + pr.minus();
+  Energy PM = pl.minus() + pr.plus();
+  if ( PP <= ZERO || PP*PM + mtl2 - mtr2 < ZERO ||
+       PM <= ZERO || PP*PM + mtr2 - mtl2 < ZERO ) return status = KINEFAIL;
+  Energy2 sqrl = (sqr(PP*PM + mtl2 - mtr2) - 4.0*mtl2*PM*PP)/sqr(PM);
+  Energy2 sqrr = (sqr(PP*PM + mtr2 - mtl2) - 4.0*mtr2*PM*PP)/sqr(PP);
+  if ( sqrl < ZERO || sqrr < ZERO ) return status = KINEFAIL;
+  sints.first->pTplus(ptl, 0.5*(PP + mtl2/PM - mtr2/PM + sqrt(sqrl)));
+  sints.second->pTplus(ptr, 0.5*(PM + mtr2/PP - mtl2/PP + sqrt(sqrr)));
+
+  if ( intOrdering <= 2 ) {
+    if ( PP > min(ppl.colpos, ppl.acopos) ||
+	 PM > min(ppr.colpos, ppr.acopos) ) return status = ORDERING;
+  } else if ( intOrdering == 4 ) {
+    if ( orderfail(ppl, ppr) ) return status = ORDERING;
+  }
+  if ( !id ) return status = ACCEPTED;
+
+  sints.first->setOnShell(mode);
+  sints.second->setOnShell(mode);
+  if ( mode >= 0 ) {
+    sints.first->interacting(id);
+    sints.first->acceptInteraction(id);
+    sints.second->interacting(id);
+    sints.second->acceptInteraction(id);
+  }
+  if ( mode > 0 ) {
+    sints.first->original()->interact(true);
+    sints.second->original()->interact(true);
+  }
+
+  if ( mode >= 0 ) checkShadowMomentum();
+
+  return status = ACCEPTED;
+}
+
+void DipoleInteraction::checkShadowMomentum(const LorentzMomentum & pin) const {
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+  if ( !checkkinematics ) return;
+  Sum20Momentum sum20;
+  dips.first->dipoleState().checkShadowMomentum(sum20);
+  dips.second->dipoleState().checkShadowMomentum(sum20, b);
+  sum20 -= pin;
+
+  if ( !sum20 ) {
+    Throw<InteractionKinematicException>()
+      << "Shadow trees had inconsistent momentum" << Exception::warning;
+    debug();
+  }
+}
+
+bool DipoleInteraction::orderfail(const ShadowParton::Propagator & ppl,
+				  const ShadowParton::Propagator & ppr) const {
+  pair<bool,bool> parcol(ints.first == dips.first->partons().first,
+			 ints.second == dips.second->partons().first);
+  Energy2 ptl = ppl.p.perp2();
+  Energy2 ptr = ppr.p.perp2();
+  Energy2 ptm = (ppl.p - sints.first->momentum()).perp2();
+  Energy2 ptlm = max(ptl, ptm);
+  Energy2 ptrm = max(ptr, ptm);
+
+  fail(0);
+ 
+  if ( parcol.first &&  disorder(cending(ppl.acoptp, ptl, ptm),
+				 ppl.acopos, ppl.aconeg, sints.first) )
+  // If left is coloured it should be ordered wrt. previous emissions
+  // on the anti-colour line.
+    fail(1);
+  if ( !parcol.first && disorder(cending(ppl.colptp, ptl, ptm),
+				 ppl.colpos, ppl.colneg, sints.first) )
+  // And vice vers.
+    fail(2);
+
+  if ( parcol.second &&  disorder(cending(ppr.acoptp, ptr, ptm),
+				  ppr.acopos, ppr.aconeg, sints.second) )
+  // If right is coloured it should be ordered wrt. previous emissions
+  // on the anti-colour line.
+    fail(3);
+  if ( !parcol.second && disorder(cending(ppr.colptp, ptr, ptm),
+				  ppr.colpos, ppr.colneg, sints.second) )
+  // And vice vers.
+    fail(4);
+
+  if ( parcol.first != parcol.second &&  disorder(cending(ptl, ptm, ptr)) )
+  // If colour--anto-colour combinations,left and right should be
+  // ordered wrt. eachother
+    fail(5);
+
+  if ( parcol.first && parcol.second ) {
+    // If both partons are coloured they should be ordered wrt. the
+    // others incoming emissions on the colour line.
+    if ( disorder(cending(ppl.colptp, ptlm, ppr.colptp),
+		  sints.first, ppr.colneg, ppr.colpos) )
+      fail(6);
+    if ( disorder(cending(ppr.colptp, ptrm, ppl.colptp),
+		  sints.second, ppl.colneg, ppl.colpos) )
+      fail(7);
+  }
+  if ( !parcol.first && !parcol.second ) {
+    // ... and vice versa for anti.colour - anti-colour
+    if ( disorder(cending(ppl.acoptp, ptlm, ppr.acoptp),
+		  sints.first, ppr.aconeg, ppr.acopos) )
+      fail(8);
+    if ( disorder(cending(ppr.acoptp, ptrm, ppl.acoptp),
+		  sints.second, ppl.aconeg, ppl.acopos) )
+      fail(9);
+  }
+
+  return ( status == ORDERING );
+}
+
+void DipoleInteraction::reject() const {
+  ints.first->shadow()->rejectInteraction(id);
+  ints.second->shadow()->rejectInteraction(id);
+}
+
+void DipoleInteraction::accept() const {
+  sints = make_pair(ints.first->shadow()->resolveInteraction(d2, spec.first),
+		    ints.second->shadow()->resolveInteraction(d2, spec.second));
+}
+
 InvEnergy DipoleXSec::rMax() const {
   return theRMax > 0.0*InvGeV? theRMax: Current<DipoleEventHandler>()->rMax();
+}
+
+double DipoleXSec::fSinFn(const Parton::Point & rho1, const Parton::Point & rho2,
+			  const TransverseMomentum & pt) const {
+  
+  if ( sinFunction == 1 ) {
+    double r1 = rho1.pt2()*pt.pt2();
+    double r2 = rho2.pt2()*pt.pt2();
+    return r1*r2/(4.0*(r1 + 1.0)*(r2 + 1.0));
+  }
+
+  double s1 = pt.x()*rho1.x() + pt.y()*rho1.y();
+  double s2 = pt.x()*rho2.x() + pt.y()*rho2.y();
+  return sqr(sin(s1)*sin(s2));
+
 }
 
 double DipoleXSec::
@@ -66,7 +334,7 @@ fij(const pair<tPartonPtr, tPartonPtr> left,
     InvEnergy rscale = sqrt(min(min(min(rr12, rr21),min(rr11, rr22)),
 				min(p11->dist2(*p12), p21->dist2(*p22))));
 
-    double fudgeME = 1.0;
+    double fudgeME= 1.0;
 
     if ( theInteraction == 0 ) {  
       pair<bool, bool> ints;
@@ -77,9 +345,10 @@ fij(const pair<tPartonPtr, tPartonPtr> left,
 
       if ( r1.pt2() < min(p11->dist2(*p12), p21->dist2(*p22)) &&
 	   Current<DipoleEventHandler>()->fudgeME() ) {
-	double deltay = ( ints.first? p11->y(): p12->y() ) -
+	double deltay = ( ints.first? p11->y(): p12->y() ) +
 	                ( ints.second? p21->y(): p22->y() );
 	fudgeME = 1.0 - 1.0/(1.0 + cosh(deltay));
+	fudgeME *= Current<DipoleEventHandler>()->fudgeFactorME();
       }
 
       pt = pTScale*r1/r1.pt2();
@@ -102,13 +371,10 @@ fij(const pair<tPartonPtr, tPartonPtr> left,
     }
 
     Parton::Point rho1 = (p12->position() - p11->position())/2.0;
-    Parton::Point rho2 = (p22->position() - p21->position())/2.0;
-
-    double s1 = pt.x()*rho1.x() + pt.y()*rho1.y();
-    double s2 = pt.x()*rho2.x() + pt.y()*rho2.y();
+    Parton::Point rho2 = b.rotate(p22->position() - p21->position())/2.0;
 
     return 8.0*fudgeME*sqr(Current<DipoleEventHandler>()->alphaS(rscale))*
-      sqr(sin(s1)*sin(s2))*
+      fSinFn(rho1, rho2, pt)*
       sqr(sqr(pt.pt()))/sqr(sqr(pt.pt()) + sqr(pTScale/rMax()));
   }
 
@@ -154,9 +420,14 @@ fij(const Dipole & dleft, const Dipole & dright,
 
       if ( r1.pt2() < min(p11->dist2(*p12), p21->dist2(*p22)) &&
 	   Current<DipoleEventHandler>()->fudgeME() ) {
-	double deltay = ( ints.first? p11->y(): p12->y() ) -
+	double deltay = ( ints.first? p11->y(): p12->y() ) +
 	                ( ints.second? p21->y(): p22->y() );
 	fudgeME = 1.0 - 1.0/(1.0 + cosh(deltay));
+      }
+
+      if ( Current<DipoleEventHandler>()->fudgeME() > 1 ) {
+	if ( dleft.colour() == dright.colour() ) fudgeME *= 9.0/2.0;
+	else fudgeME *= 9.0/16.0;
       }
 
       pt = pTScale*r1/sqr(r1.pt());
@@ -179,17 +450,51 @@ fij(const Dipole & dleft, const Dipole & dright,
     }
 
     Parton::Point rho1 = (p12->position() - p11->position())/2.0;
-    Parton::Point rho2 = (p22->position() - p21->position())/2.0;
-
-    double s1 = pt.x()*rho1.x() + pt.y()*rho1.y();
-    double s2 = pt.x()*rho2.x() + pt.y()*rho2.y();
+    Parton::Point rho2 = b.rotate(p22->position() - p21->position())/2.0;
 
     return 8.0*fudgeME*sqr(Current<DipoleEventHandler>()->alphaS(rscale))*
-      sqr(sin(s1)*sin(s2))*
+      fSinFn(rho1, rho2, pt)*
       sqr(sqr(pt.pt()))/sqr(sqr(pt.pt()) + sqr(pTScale/rMax()));
   }
 
   return 0.0;
+}
+
+DipoleInteraction DipoleXSec::
+fij(const ImpactParameters & b, Dipole & dleft, Dipole & dright,
+    bool veto) const {
+  DipoleInteraction di(dleft, dright, b, theIntOrdering);
+
+  Nfij++;
+
+  double fudgeME = 1.0;
+
+  if ( veto && kinematicsVeto(di) ) return di;
+
+  Energy m0 = Current<DipoleEventHandler>()->emitter().pTScale()/rMax();
+
+
+  Parton::Point r1 = b.difference(di.ints.first->position(), di.ints.second->position());
+
+  if ( r1.pt2() < min(dleft.size2(), dright.size2()) &&
+       Current<DipoleEventHandler>()->fudgeME() ) {
+    double deltay =  di.ints.first->y() + di.ints.second->y();
+    fudgeME = 1.0 - 1.0/(1.0 + cosh(deltay));
+    fudgeME *= Current<DipoleEventHandler>()->fudgeFactorME();
+  }
+  if ( Current<DipoleEventHandler>()->fudgeME() > 1 ) {
+    if ( dleft.colour() == dright.colour() ) fudgeME *= 9.0/2.0;
+    else fudgeME *= 9.0/16.0;
+  }
+
+  Parton::Point rho1 = di.dips.first->vSize()/2.0;
+  Parton::Point rho2 = b.rotate(di.dips.second->vSize())/2.0;
+
+  di.f2 = 16.0*fudgeME*sqr(Current<DipoleEventHandler>()->alphaS(sqrt(di.d2)))*
+    fSinFn(rho1, rho2, di.rec)*sqr(di.rec.pt2())/sqr(di.rec.pt2() + sqr(m0));
+  di.uf2 = unitarize(di.f2);
+
+  return di;
 }
 
 bool DipoleXSec::kinematicsVeto(const pair<tPartonPtr, tPartonPtr> left,
@@ -197,6 +502,13 @@ bool DipoleXSec::kinematicsVeto(const pair<tPartonPtr, tPartonPtr> left,
 				const ImpactParameters &  b) const {
 
   pair<pair<bool, bool>, pair<bool, bool> > ints = doesInt(left, right, b);
+  if ( Current<DipoleEventHandler>()->eventFiller().compat ) {
+    pair<bool,bool> int0 =
+      int0Partons(left.first, left.second, right.first, right.second, b);
+    ints = make_pair(make_pair(int0.first, !int0.first),
+ 		     make_pair(int0.second, !int0.second));
+  }
+
   InteractionRecoil recs = recoil(left, right, b, ints);
 
   if ( theInteraction == 0 ) {
@@ -317,6 +629,10 @@ bool DipoleXSec::kinematicsVeto(const Dipole & dleft,
   pair<tPartonPtr, tPartonPtr> left = dleft.partons();
   pair<tPartonPtr, tPartonPtr> right = dright.partons();
   pair<pair<bool, bool>, pair<bool, bool> > ints = doesInt(left, right, b);
+  if ( Current<DipoleEventHandler>()->eventFiller().compat ) {
+    ints = make_pair(make_pair(ints0.first, !ints0.first),
+ 		     make_pair(ints0.second, !ints0.second));
+  }
   InteractionRecoil recs = recoil(left, right, b, ints, ints0);
 
   if ( theInteraction == 0 ) {
@@ -426,6 +742,79 @@ bool DipoleXSec::kinematicsVeto(const Dipole & dleft,
   return false;
 }
 
+bool DipoleXSec::kinematicsVeto(const DipoleInteraction & di) const {
+
+  if ( di.sints.first ) return di.check(-1); // Hey! We're using shadows!
+
+  ImpactParameters b = *di.b;
+  const Dipole & dleft = *di.dips.first;
+  const Dipole & dright = *di.dips.second;
+
+  //first set up effective partons with range etc
+  tcPartonPtr p1 = di.ints.first;
+  tcPartonPtr p2 = di.ints.second;
+
+  //only distance between key partons will affect range (reasonable?)
+  InvEnergy range1 = sqrt(min(dleft.size2()/4.0, b.dist2(*p1, *p2)));
+  InvEnergy range2 = sqrt(min(dright.size2()/4.0, b.dist2(*p1, *p2)));
+  EffectivePartonPtr ep1 = dleft.getEff(p1, range1);
+  EffectivePartonPtr ep2 = dright.getEff(p2, range2);
+  
+  TransverseMomentum rec1 = di.rec;
+  TransverseMomentum rec2 = di.b->invRotatePT(-di.rec);
+
+  Energy pt1 = (ep1->pT() + rec1).pt();
+  Energy minus1 = sqr(pt1)/ep1->plus();
+  Energy pt2 = (ep2->pT() + rec2).pt();
+  Energy minus2 = sqr(pt2)/ep2->plus();
+  
+    //sum up total supplied and needed LC momentum from each side
+    Energy leftPlus = ep1->plus();
+    Energy leftMinus = minus1;
+    Energy rightPlus = ep2->plus();
+    Energy rightMinus = minus2;
+
+    if ( theIntOrdering == 2 ) {
+      if ( leftPlus*rightPlus < 16.0*rec1.pt2() ) return true;
+      else return false;
+    }
+
+    //check enough energy to set all on shell
+    if ( leftPlus*rightPlus < 16.0*leftMinus*rightMinus ) {
+      return true;
+    }
+
+    //take LC momentum transfers in account
+    Energy plus1 = ep1->plus()*(1.0 - rightMinus/leftPlus);
+    minus1 /= 1.0 - rightMinus/leftPlus;
+    Energy plus2 = ep2->plus()*(1.0 - leftMinus/rightPlus);
+    minus2 /= 1.0 - leftMinus/rightPlus;
+
+    //check ordering of the key partons (secondaries can be unordered if they want)
+    double PSInf = Current<DipoleEventHandler>()->emitter().PSInflation();
+    if ( theIntOrdering == 0 ) {
+      //just check plus and minus ordering after recoils
+      if ( plus1*PSInf < minus2 ) return true;
+      if ( plus2*PSInf < minus1 ) return true;
+    }
+
+    //check that the partons stay on their side, to avoid doublecounting
+    double yInt = 0;
+    if ( p1->dipoles().first ) yInt = p1->dipoles().first->dipoleState().ymax();
+    else if ( p1->dipoles().second ) yInt = p1->dipoles().second->dipoleState().ymax();
+    double y1 = 0.5*log(minus1/plus1);
+    if ( y1 > yInt ) return true;
+    double y2 = 0.5*log(plus2/minus2);
+    if ( y2 < yInt ) return true;
+
+    //should we check secondaries as well here?
+
+    //if no veto triggered, it should not be vetoed
+    return false;
+  
+  return false;
+}
+
 double DipoleXSec::
 sumf(const DipoleState & sl, const DipoleState & sr,
      const ImpactParameters & b) const {
@@ -448,6 +837,31 @@ sumf(const DipoleState & sl, const DipoleState & sr,
 
 }
 
+double DipoleXSec::
+sumf(const ImpactParameters & b, const DipoleState & sl, const DipoleState & sr) const {
+
+  Nfij = 0;
+  NBVeto = 0;
+  NScalVeto = 0;
+  scalVeto = 0.0;
+  bVeto = 0.0;
+  vector<tDipolePtr> dl;
+  sl.extract(back_inserter(dl));
+  vector<tDipolePtr> dr;
+  sr.extract(back_inserter(dr));
+
+  double sum = 0.0;
+  for ( int i = 0, N = dl.size(); i < N; ++i )
+    for ( int j = 0, M = dr.size(); j < M; ++j ) {
+      if ( (M*i + j)%8 == 0 ) UseRandom::rnd();
+      DipoleInteraction di =  fij(b, *dl[i], *dr[j], false);
+      if ( !di.check(-1) )
+	sum += di.f2/2.0; /*** TODO: this is because we need proper f here. FIX CONFUSION */
+    }
+  return sum;
+
+}
+
 DipoleXSec::FList
 DipoleXSec::flist(const DipoleState & sl, const DipoleState & sr,
 		  const ImpactParameters & b) const {
@@ -463,7 +877,7 @@ DipoleXSec::flist(const DipoleState & sl, const DipoleState & sr,
   int skipped = 0;
   for ( int i = 0, N = dl.size(); i < N; ++i ) {
     for ( int j = 0, M = dr.size(); j < M; ++j ) {
-      double f = fij(dl[i]->partons(), dr[j]->partons(), b, false)*2.0;
+      double f = fij(*dl[i], *dr[j], b, false)*2.0;
       //extra 2 added from the non-diffractive interaction probability.
       total++;
       if ( f > cutoff &&
@@ -475,72 +889,70 @@ DipoleXSec::flist(const DipoleState & sl, const DipoleState & sr,
   return ret;
 }
 
-DipoleXSec::FList
-DipoleXSec::effectiveFlist(const DipoleState & sl, const DipoleState & sr,
-		  const ImpactParameters & b) const {
-  FList ret;
+DipoleInteraction::List
+DipoleXSec::flist(const ImpactParameters & b,
+		  const DipoleState & sl, const DipoleState & sr) const {
+  nIAccepted = 0;
+  nIBelowCut = 0;
+  nIPropFail = 0;
+  nIKineFail = 0;
+  nIOrdering = 0;
+  DipoleInteraction::List ret;
   vector<tDipolePtr> dl;
   sl.extract(back_inserter(dl));
   vector<tDipolePtr> dr;
   sr.extract(back_inserter(dr));
-  set< pair<pair<tPartonPtr, tPartonPtr>, pair<tPartonPtr, tPartonPtr> > >
-    backChecks;
-
+  //dont save the lowest fij. Otherwise the FList for LHC PbPb will take too much memory.
   double cutoff = min(0.00000001, 1.0/double(dl.size()*dr.size()));
   if ( dl.size()*dr.size() < 1000000 ) cutoff = 0.0000000001;
-
+  int total = 0;
+  int skipped = 0;
   for ( int i = 0, N = dl.size(); i < N; ++i ) {
     for ( int j = 0, M = dr.size(); j < M; ++j ) {
-      double f = fij(dl[i]->partons(), dr[j]->partons(), b)*2.0;
-      //extra 2 added from the non-diffractive interaction probability.
-
-      //if vetoed, go check the previous dipoles until non-zero fij is found
-      tPartonPtr p11 = dl[i]->partons().first;
-      tPartonPtr p12 = dl[i]->partons().second;
-      tPartonPtr p21 = dr[j]->partons().first;
-      tPartonPtr p22 = dr[j]->partons().second;
-      while ( f == 0.0 ) {
-	//replace the most forward parton on each side by its parent.
-	bool changed = false;
-	if ( p11->y() > p12->y() && p11->y() > p21->y() && p11->y() > p22->y() &&
-	     p11->parents().first ) {
-	  p11 = p11->parents().first;
-	  changed = true;
-	}
-	else if ( p12->y() > p21->y() && p12->y() > p22->y() && p12->parents().second ) {
-	  p12 = p12->parents().second;
-	  changed = true;
-	}
-	else if ( p21->y() > p22->y() && p21->parents().first ) {
-	  p21 = p21->parents().first;
-	  changed = true;
-	}
-	else if ( p22->parents().second ) {
-	  p22 = p22->parents().second;
-	  changed = true;
-	}
-
-	//if no replacements found, return 0
-	if ( !changed ) break;
-
-	//if the 4 new partons are not already checked from another fij,
-	//then calculate and return the new fij
-	pair<tPartonPtr, tPartonPtr> lp = make_pair(p11, p12);
-	pair<tPartonPtr, tPartonPtr> rp = make_pair(p21, p22);
-	if ( backChecks.find(make_pair(lp, rp)) == backChecks.end() ) {
-	  f = fij(lp, rp, b)*2.0;
-	  backChecks.insert(make_pair(lp, rp));
-	}
-	else {
-	  break;
-	}
+      if ( (M*i + j)%8 == 0 ) UseRandom::rnd();
+      /*** TODO: WHY IS VETO FALSE - because we don't want to check
+	   kinematics if below cut ***/
+      DipoleInteraction di = fij(b, *dl[i], *dr[j], false);
+      total++;
+      if ( di.f2 > cutoff && !kinematicsVeto(di) ) {
+	ret.insert(di);
+	++nIAccepted;
+      } else {
+	skipped++;
+	ret.insert(di);
+	if ( di.f2 <= cutoff ) ++nIBelowCut;
+	else switch ( di.status ) {
+	  case DipoleInteraction::PROPFAIL:
+	    ++nIPropFail;
+	    break;
+	  case DipoleInteraction::KINEFAIL:
+	    ++nIKineFail;
+	    break;
+	  case DipoleInteraction::ORDERING:
+	    ++nIOrdering;
+	    break;
+	  case DipoleInteraction::UNKNOWN:
+	  case DipoleInteraction::ACCEPTED:
+	    break;
+	  }
       }
-
-      //if f is large enough to bother, save it in the flist
-      if ( f > cutoff )
-	ret.insert(make_pair(make_pair(f, unitarize(f)), make_pair(dl[i], dr[j])));
     }
   }
+  return ret;
+}
+
+DipoleXSec::InteractionRecoil
+DipoleXSec::recoil(const DipoleInteraction & di) const {
+  InteractionRecoil ret;
+  if ( di.norec ) return ret;
+  if ( di.ints.first == di.dips.first->partons().first )
+    ret.first.first = di.rec;
+  else
+    ret.first.second = di.rec;
+  if ( di.ints.second == di.dips.second->partons().first )
+    ret.second.first = di.b->invRotatePT(-di.rec);
+  else
+    ret.second.second = di.b->invRotatePT(-di.rec);
   return ret;
 }
 
@@ -552,6 +964,7 @@ DipoleXSec::recoil(const pair<tPartonPtr, tPartonPtr> left,
   return recoil(left, right, b, doesInt, int0Partons(left.first, left.second,
 						     right.first, right.second, b));
 }
+
 DipoleXSec::InteractionRecoil
 DipoleXSec::recoil(const pair<tPartonPtr, tPartonPtr> left,
 		   const pair<tPartonPtr, tPartonPtr> right,
@@ -634,8 +1047,28 @@ DipoleXSec::recoil(const pair<tPartonPtr, tPartonPtr> left,
     TransverseMomentum rec24 = -pTScale*b.difference(p2->position(), p4->position())/
       (b.dist2(*p2,*p4) );
 
-    if ( p1->oY() + p3->oY() > p2->oY() + p4->oY() ) rec24 = TransverseMomentum();
-    else rec13 = TransverseMomentum();
+    /*** TODO: WHAT IS THIS? ***/
+    if ( !Current<DipoleEventHandler>()->eventFiller().compat ) {
+      if ( p1->oY() + p3->oY() > p2->oY() + p4->oY() ) rec24 = TransverseMomentum();
+      else rec13 = TransverseMomentum();
+    }
+
+    // if ( p1->flavour() == ParticleID::g ) {
+    //   rec13 /= 2.0;
+    //   rec14 /= 2.0;
+    // }
+    // if ( p2->flavour() == ParticleID::g ) {
+    //   rec23 /= 2.0;
+    //   rec24 /= 2.0;
+    // }
+    // if ( p3->flavour() == ParticleID::g ) {
+    //   rec13 /= 2.0;
+    //   rec23 /= 2.0;
+    // }
+    // if ( p4->flavour() == ParticleID::g ) {
+    //   rec14 /= 2.0;
+    //   rec24 /= 2.0;
+    // }
 
     TransverseMomentum rec11 = TransverseMomentum();
     if ( doesInt.first.first && doesInt.second.first ) rec11 += rec13;
@@ -810,12 +1243,135 @@ DipoleXSec::initialiseInteraction(const pair<DipolePtr, DipolePtr> inter,
   return ret;
 }
 
+DipoleXSec::RealInteraction
+DipoleXSec::initialiseInteraction(const DipoleInteraction & di,
+				  RealPartonStatePtr lrs, RealPartonStatePtr rrs) const {
+  RealInteraction ret;
+  const ImpactParameters & b = *di.b;
+
+  ret.lrs = lrs;
+  ret.rrs = rrs;
+
+  ret.d1 = di.dips.first;
+  ret.d2 = di.dips.second;
+
+  if ( ret.d1->partons().first == di.ints.first ) ret.p11 = lrs->getReal(di.ints.first);
+  if ( ret.d1->partons().second == di.ints.first ) ret.p12 = lrs->getReal(di.ints.first);
+  if ( ret.d2->partons().first == di.ints.second ) ret.p21 = rrs->getReal(di.ints.second);
+  if ( ret.d2->partons().second == di.ints.second ) ret.p22 = rrs->getReal(di.ints.second);
+
+  if ( ret.p11 && ret.p11->fluct != -1 && ret.p12 && ret.p12->fluct == ret.p11->fluct )
+    lrs->splitFluct(ret.p11, ret.p12);
+  if ( ret.p21 && ret.p21->fluct != -1 && ret.p22 && ret.p22->fluct == ret.p21->fluct )
+    rrs->splitFluct(ret.p21, ret.p22);
+
+  ret.range11 = sqrt(min(min(ret.d1->partons().first->dist2
+			     (*ret.d2->partons().first),
+			     ret.d1->partons().first->dist2
+			     (*ret.d2->partons().second)),
+			 ret.d1->partons().first->dist2
+			 (*ret.d1->partons().second)/4.0));
+  ret.range12 = sqrt(min(min(ret.d1->partons().second->dist2
+			     (*ret.d2->partons().first),
+			     ret.d1->partons().second->dist2
+			     (*ret.d2->partons().second)),
+			 ret.d1->partons().second->dist2
+			 (*ret.d1->partons().first)/4.0));
+  ret.range21 = sqrt(min(min(ret.d2->partons().first->dist2
+			     (*ret.d1->partons().first),
+			     ret.d2->partons().first->dist2
+			     (*ret.d1->partons().second)),
+			 ret.d2->partons().first->dist2
+			 (*ret.d2->partons().second)/4.0));
+  ret.range22 = sqrt(min(min(ret.d2->partons().second->dist2
+			     (*ret.d1->partons().first),
+			     ret.d2->partons().second->dist2
+			     (*ret.d1->partons().second)),
+			 ret.d2->partons().second->dist2
+			 (*ret.d2->partons().first)/4.0));
+
+  pair<bool, bool> ints(ret.d1->partons().first == di.ints.first,
+			ret.d2->partons().first == di.ints.second);
+  
+  InvEnergy2 range2 = b.dist2(*di.ints.first, *di.ints.second);
+  InvEnergy range = sqrt(range2);
+
+  ret.range11 = min(range, ret.d1->size()/2.0);
+  ret.range12 = min(range, ret.d1->size()/2.0);
+  ret.range21 = min(range, ret.d2->size()/2.0);
+  ret.range22 = min(range, ret.d2->size()/2.0);
+
+  if ( Current<DipoleEventHandler>()->emitter().rangeMode() == 1 ) {
+    ret.range11 = ret.d1->size()/2.0;
+    ret.range12 = ret.d1->size()/2.0; 
+    ret.range21 = ret.d2->size()/2.0;
+    ret.range22 = ret.d2->size()/2.0;
+  }
+
+  InvEnergy2 rr11 = (ret.p11 && ret.p21) ? ret.p11->theParton->dist2(*ret.p21->theParton):ZERO;
+  InvEnergy2 rr12 = (ret.p11 && ret.p22) ? ret.p11->theParton->dist2(*ret.p22->theParton):ZERO;
+  InvEnergy2 rr21 = (ret.p12 && ret.p21) ? ret.p12->theParton->dist2(*ret.p21->theParton):ZERO;
+  InvEnergy2 rr22 = (ret.p12 && ret.p22) ? ret.p12->theParton->dist2(*ret.p22->theParton):ZERO;
+
+  InvEnergy2 rm11 = (ret.p11 && ret.p11->mothers.first ?
+		    ret.p11->theParton->dist2(*ret.p11->mothers.first->theParton):ZERO);
+  InvEnergy2 rm12 = (ret.p12 && ret.p12->mothers.first ?
+		    ret.p12->theParton->dist2(*ret.p12->mothers.first->theParton):ZERO);
+  InvEnergy2 rm21 = (ret.p21 && ret.p21->mothers.first ?
+		    ret.p21->theParton->dist2(*ret.p21->mothers.first->theParton):ZERO);
+  InvEnergy2 rm22 = (ret.p22 && ret.p22->mothers.first ?
+		    ret.p22->theParton->dist2(*ret.p22->mothers.first->theParton):ZERO);
+
+  ret.max11 = rr11 < rm11 && rr11 < rm21;
+  ret.max12 = rr12 < rm11 && rr12 < rm22;
+  ret.max21 = rr21 < rm12 && rr21 < rm21;
+  ret.max22 = rr22 < rm12 && rr22 < rm22;
+
+  Energy2 den = ((ret.p11 ? 1./rr11:ZERO) + (ret.p12 ? 1./rr12:ZERO)
+		 + (ret.p21 ? 1./rr21:ZERO) + (ret.p22 ? 1./rr22:ZERO));
+  ret.P11 = ret.p11 ? (1./rr11)/den:ZERO;
+  ret.P12 = ret.p12 ? (1./rr12)/den:ZERO;
+  ret.P21 = ret.p21 ? (1./rr21)/den:ZERO;
+  ret.P22 = ret.p22 ? (1./rr22)/den:ZERO;
+
+  //look only at the new dipole pairs, the cross pairs get zero weight.
+  if ( theInteraction == 3 ) {
+    den = (1./rr12 + 1./rr21);
+    ret.P12 = (1./rr12)/den;
+    ret.P21 = (1./rr21)/den;
+    ret.P11 = 0.0;
+    ret.P22 = 0.0;
+  }
+
+  //set only the selected pair to weight 1, the others to 0.
+
+  ret.P11 = 0.0;
+  ret.P22 = 0.0;
+  ret.P21 = 0.0;
+  ret.P12 = 0.0;
+
+  if ( ints.first && ints.second ) ret.P11 = 1.0;
+  if ( ints.first && !ints.second ) ret.P12 = 1.0;
+  if ( !ints.first && ints.second ) ret.P21 = 1.0;
+  if ( !ints.first && !ints.second ) ret.P22 = 1.0;
+
+  return ret;
+}
+
 pair<pair<bool, bool>, pair<bool, bool> >
 DipoleXSec::doesInt(const pair<tPartonPtr, tPartonPtr> left,
 		    const pair<tPartonPtr, tPartonPtr> right,
 		    const ImpactParameters & b) const {
   //decide which of the 4 partons will end up on shell
-  return make_pair(make_pair(true, true), make_pair(true, true));
+
+  // if ( Current<DipoleEventHandler>()->eventFiller().compat ) {
+  //   pair<bool,bool> int0 =
+  //     int0Partons(left.first, left.second, right.first, right.second, b);
+  //   return make_pair(make_pair(int0.first, !int0.first),
+  // 		     make_pair(int0.second, !int0.second));
+  // } else {
+    return make_pair(make_pair(true, true), make_pair(true, true));
+  // }
 
   if ( Current<DipoleEventHandler>()->eventFiller().singleMother() ) {
     //when single mother not all are chosen
@@ -894,12 +1450,22 @@ pair<bool, bool> DipoleXSec::int0Partons(tcPartonPtr p11, tcPartonPtr p12,
   //chose partons (pseudo-)randomly
   InvEnergy2 rr11 = b.dist2(*p11, *p21);
   InvEnergy2 rr22 = b.dist2(*p12, *p22);
-    
   double dummy = (rr11 + rr22)*GeV2;
-
   while ( dummy > 100 ) dummy /= 10;
-  bool firstDipole = (1000000.0*dummy - long(1000000.0*dummy) > 0.5 );
-  bool secondDipole = (10000000.0*dummy - long(10000000.0*dummy) > 0.5 );
+
+  if ( Current<DipoleEventHandler>()->fudgeME() > 1 ) {
+    pair<bool, bool> ret = make_pair(true, true);
+    if ( p11->dipoles().second->colour() == p21->dipoles().second->colour() )
+      ret.second = false;
+    if ( 1000000.0*dummy - long(1000000.0*dummy) > 0.5 ) {
+      ret.first = !ret.first;
+      ret.second = !ret.second;
+    }
+    return ret;
+  }
+
+  bool firstDipole  = (  1000000.0*dummy -  long(1000000.0*dummy) > 0.5 );
+  bool secondDipole = ( 10000000.0*dummy - long(10000000.0*dummy) > 0.5 );
 
   return make_pair(firstDipole, secondDipole);
 }
@@ -1091,54 +1657,80 @@ bool DipoleXSec::doInteraction(InteractionRecoil recs, const FList::const_iterat
   return false;
 }
 
-bool DipoleXSec::checkInteractions(DipolePairVector & ints, RealPartonStatePtr lrs,
-				   RealPartonStatePtr rrs, const ImpactParameters & b) const {
+bool DipoleXSec::doInteraction(InteractionRecoil recs,
+			       const DipoleInteraction::List::const_iterator inter,
+			       RealPartonStatePtr lrs, RealPartonStatePtr rrs,
+			       pair<pair<bool, bool>, pair<bool, bool> > doesInt) const {
+  const ImpactParameters & b = *(inter->b);
 
-  bool ok = true;
-  list<pair<RealInteraction, pair<double, double> > > boostList;
-  for ( int i = 0; i < int(ints.size()); i++ ) {
-    RealInteraction RI = initialiseInteraction(ints[i]->second, lrs, rrs,
-					       make_pair(make_pair(true, true),make_pair(true, true)), b);
-    InteractionRecoil recs = recoil(ints[i]->second.first->partons(),
-				    ints[i]->second.second->partons(), b,
-				    make_pair(make_pair(true, true), make_pair(true, true)));
-    doTransverseRecoils(RI, recs);
-    updateMomenta(& RI);
-    pair<double, double> boosts = findBoosts(RI);
-    if ( boosts.first == 0.0 ) {
-      undoPTRecoils(RI);
-      ok = false;
-      break;
-    }
-    doBoosts(RI, boosts);
-    boostList.push_back(make_pair(RI, boosts));
-    if ( !ordered(RI, recs, b) ) {
-      ok = false;
-      break;
-    }
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+
+  if ( checkkinematics && lrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found at start of interaction!" << Exception::warning;
+  if ( checkkinematics && rrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found at start of interaction!" << Exception::warning;
+
+  RealInteraction RI = initialiseInteraction(*inter, lrs, rrs);
+
+  doTransverseRecoils(RI, recs);
+
+  if ( checkkinematics && lrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after transverse recoil in interaction!" << Exception::warning;
+  if ( checkkinematics && rrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after transverse recoil in interaction!" << Exception::warning;
+
+  if ( theRecoilReduction ) {
+    reduceRecoil(RI, recs);
   }
 
-  for ( list<pair<RealInteraction, pair<double, double> > >::iterator it = boostList.begin();
-	it != boostList.end(); it++ ) {
-    pair<double, double> inverse = make_pair(1.0/it->second.first, 1.0/it->second.second);
-    doBoosts(it->first, inverse);
-    undoPTRecoils(it->first);
+  if ( checkkinematics && lrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after recoil reduction in interaction!" << Exception::warning;
+  if ( checkkinematics && rrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after recoil reduction in interaction!" << Exception::warning;
+
+  updateMomenta(& RI);
+
+  if ( checkkinematics && lrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after update in interaction!" << Exception::warning;
+  if ( checkkinematics && rrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after update in interaction!" << Exception::warning;
+
+  pair<double, double> boosts = findBoosts(RI);
+  if ( boosts.first == 0.0 ) {
+    return false;
   }
 
-  return ok;
+  doBoosts(RI, boosts);
+
+  if ( checkkinematics && lrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after boost in interaction!" << Exception::warning;
+  if ( checkkinematics && rrs->checkForNegatives() )
+    Throw<InteractionKinematicException>()
+      << "negatives found after boost in interaction!" << Exception::warning;
+
+  if ( ordered(RI, recs, b) ) {
+    setOnShell(RI);
+    if ( checkkinematics && lrs->checkForNegatives() )
+      Throw<InteractionKinematicException>()
+	<< "negatives found at end of interaction!" << Exception::warning;
+    if ( checkkinematics && rrs->checkForNegatives() )
+      Throw<InteractionKinematicException>()
+	<< "negatives found at end of interaction!" << Exception::warning;
+    return true;
+  }
+  return false;
+
 }
 
-void DipoleXSec::undoPTRecoils(RealInteraction RI) const {
-  RI.p11->undoInteractionRecoils();
-  RI.p12->undoInteractionRecoils();
-  RI.p21->undoInteractionRecoils();
-  RI.p22->undoInteractionRecoils();
-}
-
-bool DipoleXSec::performInteractions(DipolePairVector & ints, RealPartonStatePtr lrs,
-				   RealPartonStatePtr rrs, const ImpactParameters & b) const {
-  return true;
-}
 
 bool DipoleXSec::ordered(RealInteraction i, InteractionRecoil recs,
 			 const ImpactParameters & b) const {
@@ -1216,68 +1808,6 @@ void DipoleXSec::setOnShell(RealInteraction i) const {
   if ( i.p22 ) i.p22->effectiveGiveMinus(i.range22, false);
 }
 
-bool DipoleXSec::checkOrderedInteraction(tRealPartonPtr p11, tRealPartonPtr p12,
-					 tRealPartonPtr p21, tRealPartonPtr p22) const {
-  InvEnergy range11 = sqrt(min(min(p11->theParton->dist2(*p21->theParton),
-				   p11->theParton->dist2(*p22->theParton)),
-  			       p11->theParton->dist2(*p12->theParton)/4.0));
-  InvEnergy range12 = sqrt(min(min(p12->theParton->dist2(*p21->theParton),
-				   p12->theParton->dist2(*p22->theParton)),
-  			       p12->theParton->dist2(*p11->theParton)/4.0));
-  InvEnergy range21 = sqrt(min(min(p21->theParton->dist2(*p11->theParton),
-				   p21->theParton->dist2(*p12->theParton)),
-  			       p21->theParton->dist2(*p22->theParton)/4.0));
-  InvEnergy range22 = sqrt(min(min(p22->theParton->dist2(*p11->theParton),
-				   p22->theParton->dist2(*p12->theParton)),
-  			       p22->theParton->dist2(*p21->theParton)/4.0));
-
-  pair<Energy, Energy> pm11 = p11->effectivePlusMinus(range11, true);
-  pair<Energy, Energy> pm12 = p12->effectivePlusMinus(range12, false);
-  pair<Energy, Energy> pm21 = p21->effectivePlusMinus(range21, true);
-  pair<Energy, Energy> pm22 = p22->effectivePlusMinus(range22, false);
-
-  InvEnergy2 rr11 = p11->theParton->dist2(*p21->theParton);
-  InvEnergy2 rr12 = p11->theParton->dist2(*p22->theParton);
-  InvEnergy2 rr21 = p12->theParton->dist2(*p21->theParton);
-  InvEnergy2 rr22 = p12->theParton->dist2(*p22->theParton);
-
-bool max11 = p11->mothers.first && rr11 < p11->theParton->dist2(*p11->mothers.first->theParton) &&
-  p21->mothers.first && rr11 < p21->theParton->dist2(*p21->mothers.first->theParton);
-bool max12 = p11->mothers.first && rr12 < p11->theParton->dist2(*p11->mothers.first->theParton) &&
-  p22->mothers.first && rr12 < p22->theParton->dist2(*p22->mothers.first->theParton);
-bool max21 = p12->mothers.first && rr21 < p21->theParton->dist2(*p21->mothers.first->theParton) &&
-  p21->mothers.first && rr21 < p21->theParton->dist2(*p21->mothers.first->theParton);
-bool max22 = p12->mothers.first && rr22 < p12->theParton->dist2(*p12->mothers.first->theParton) &&
-  p22->mothers.first && rr22 < p22->theParton->dist2(*p22->mothers.first->theParton);
-
-  Energy2 den = (1./rr11 + 1./rr12 + 1./rr21 + 1./rr22);
-  double P11 = (1./rr11)/den;
-  double P12 = (1./rr12)/den;
-  double P21 = (1./rr21)/den;
-  double P22 = (1./rr22)/den;
-  double PSInf = Current<DipoleEventHandler>()->emitter().PSInflation();
-
-  bool ordered = true;
-  //if p11-p22 is not a local pt max, check p+- ordering
-  if ( !max11 ) {
-    if ( pm11.first*PSInf/P11 < pm21.second )  ordered = false;
-    if ( P11*pm11.second/PSInf > pm21.first )  ordered = false;
-  }
-  if ( !max12 ) {
-    if ( pm11.first*PSInf/P12 < pm22.second )  ordered = false;
-    if ( P12*pm11.second/PSInf > pm22.first )  ordered = false;
-  }
-  if ( !max21 ) {
-    if ( pm12.first*PSInf/P21 < pm21.second )  ordered = false;
-    if ( P21*pm12.second/PSInf > pm21.first )  ordered = false;
-  }
-  if ( !max22 ) {
-    if ( pm12.first*PSInf/P22 < pm22.second )  ordered = false;
-    if ( P22*pm12.second/PSInf > pm22.first )  ordered = false;
-  }
-
-  return ordered;
-}
 
 bool DipoleXSec::reconnect(tDipolePtr d1, tDipolePtr d2) const {
 
@@ -1291,8 +1821,9 @@ bool DipoleXSec::reconnect(tDipolePtr d1, tDipolePtr d2) const {
   if ( !d1->children().first && !d2->children().first ) { //none has rescattered
     d1->swingDipole(d2);
     Current<DipoleEventHandler>()->swinger().recombine(*d1);
-    d1->children().first->interact(*d2->children().first);
-    d2->children().first->interact(*d1->children().first);
+    interact(*d1->children().first, *d2->children().first);
+    //    d1->children().first->interact(*d2->children().first);
+    //    d2->children().first->interact(*d1->children().first);
     return true;
   }
   tPartonPtr p11 = d1->partons().first;
@@ -1368,26 +1899,32 @@ bool DipoleXSec::reconnect(tDipolePtr d1, tDipolePtr d2) const {
   }
   swing1->swingDipole(swing2);
   Current<DipoleEventHandler>()->swinger().recombine(*swing1);
-  swing1->children().first->interact(*swing2->children().first);
-  swing2->children().first->interact(*swing1->children().first);
+  interact(*swing1->children().first, *swing2->children().first);
+  // swing1->children().first->interact(*swing2->children().first);
+  // swing2->children().first->interact(*swing1->children().first);
   return true;
 }
 
-  vector<pair<DipolePtr, DipolePtr> >
-  DipoleXSec::getColourExchanges(tRealPartonStatePtr lrs, tRealPartonStatePtr rrs) const {
-    vector<pair<DipolePtr, DipolePtr> > ret;
-    while ( ret.empty() ) {
-      list<tDipolePtr>::iterator rightDip = rrs->interactions.begin();
-      for ( list<tDipolePtr>::iterator leftDip = lrs->interactions.begin();
-	    leftDip != lrs->interactions.end(); leftDip++, rightDip++ ) {
+void DipoleXSec::interact(Dipole & d1, Dipole & d2) const {
+  d1.interact(d2, partonicInteraction());
+  d2.interact(d1, partonicInteraction());
+}
+
+vector<pair<DipolePtr, DipolePtr> >
+DipoleXSec::getColourExchanges(tRealPartonStatePtr lrs, tRealPartonStatePtr rrs) const {
+  vector<pair<DipolePtr, DipolePtr> > ret;
+  while ( ret.empty() ) {
+    list<tDipolePtr>::iterator rightDip = rrs->interactions.begin();
+    for ( list<tDipolePtr>::iterator leftDip = lrs->interactions.begin();
+	  leftDip != lrs->interactions.end(); leftDip++, rightDip++ ) {
       if ( unitarize(fij((*leftDip)->partons(), (*rightDip)->partons(),
 			 ImpactParameters(), false))*0.99
-	     < UseRandom::rnd() || true )
-	  ret.push_back(make_pair(*leftDip, *rightDip));
-      }
+	   < UseRandom::rnd() || true )
+	ret.push_back(make_pair(*leftDip, *rightDip));
     }
-    return ret;
   }
+  return ret;
+}
 
 pair< double, double> DipoleXSec::findBoosts(Energy intPlus1, Energy intPlus2,
 					     Energy intMinus1, Energy intMinus2,
@@ -1421,13 +1958,13 @@ double DipoleXSec::unitarize(double f) const {
 }
 
 void DipoleXSec::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theRMax, InvGeV) << theInteraction << theIntOrdering
-     << theRecoilReduction << checkOffShell;
+  os << ounit(theRMax, InvGeV) << theInteraction << sinFunction << usePartonicInteraction
+     << theIntOrdering << theRecoilReduction << checkOffShell;
 }
 
 void DipoleXSec::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theRMax, InvGeV) >> theInteraction >> theIntOrdering
-     >> theRecoilReduction >> checkOffShell;
+  is >> iunit(theRMax, InvGeV) >> theInteraction >> sinFunction >> usePartonicInteraction
+     >> theIntOrdering >> theRecoilReduction >> checkOffShell;
 }
 
 
@@ -1460,9 +1997,27 @@ void DipoleXSec::Init() {
      &DipoleXSec::theInteraction, 1, 1, 0, 0,
      true, false, Interface::lowerlim);
 
+
+  static Switch<DipoleXSec,int> interfaceSinFunction
+    ("SinFunction",
+     "Determine what approximation to the sine functions in the interaction strength "
+     "to use.",
+     &DipoleXSec::sinFunction, 0, true, false);
+  static SwitchOption interfaceSinFunctionExact
+    (interfaceSinFunction,
+     "Exact",
+     "The actual function.",
+     0);
+  static SwitchOption interfaceSinFunctionAverage
+    (interfaceSinFunction,
+     "Average",
+     "Average over angle of dipole and of the resulting bessel fuction.",
+     1);
+
   static Switch<DipoleXSec,int> interfaceIntOrdering
     ("IntOrdering",
-     "How the real state is found from the virtual cascade. Speed versus consistency.",
+     "How the real state is found from the virtual cascade. "
+     "Speed versus consistency.",
      &DipoleXSec::theIntOrdering, 0, true, false);
   static SwitchOption interfaceIntOrderingDefault
     (interfaceIntOrdering,
@@ -1479,9 +2034,21 @@ void DipoleXSec::Init() {
   static SwitchOption interfaceIntOrderingVeryOpen
     (interfaceIntOrdering,
      "VeryOpen",
-     "Only checks that there is enough energy to put the interaction recoil on shell."
-     " Does not care about ordering, or setting evolution pt on shell. Same as Emils code.",
+     "Only checks that there is enough energy to put the interaction recoil "
+     "on shell. Does not care about ordering, or setting evolution pt on "
+     "shell. Same as Emils code.",
      2);
+  static SwitchOption interfaceIntOrderingShadowOpen
+    (interfaceIntOrdering,
+     "ShadowOpen",
+     "Only checks that there is enough energy to put the interaction recoil "
+     "on shell.",
+     3);
+  static SwitchOption interfaceIntOrderingShadowColour
+    (interfaceIntOrdering,
+     "ShadowColour",
+     "Check that all partons on the same colour line are ordered.",
+     4);
 
   static Switch<DipoleXSec,int> interfaceRecoilReduction
     ("RecoilReduction",
@@ -1515,5 +2082,22 @@ void DipoleXSec::Init() {
      false);
 
 
+  static Switch<DipoleXSec,bool> interfacePartonicInteraction
+    ("PartonicInteraction",
+     "Flag determining if only one parton in each dipole is considered interacting or both.",
+     &DipoleXSec::usePartonicInteraction, false, true, false);
+  static SwitchOption interfacePartonicInteractionDipole
+    (interfacePartonicInteraction,
+     "Dipole",
+     "The both partons in a dipole interact.",
+     false);
+  static SwitchOption interfacePartonicInteractionParton
+    (interfacePartonicInteraction,
+     "Parton",
+     "Only one parton in a dipole interacts.",
+     true);
+
 }
 
+vector<int> DipoleInteraction::ofail(18, 0);
+vector<int> DipoleInteraction::o1fail(18, 0);

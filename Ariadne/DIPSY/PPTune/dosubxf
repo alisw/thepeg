@@ -1,0 +1,38 @@
+#! /usr/bin/tcsh
+
+if ( ! $# ) then
+    echo "Usage: $0 [tag] {[basetag]}"
+    exit(1)
+endif
+
+make ${1}XF
+if  ( $status ) then
+    echo "Make failed"
+    exit(1)
+endif
+
+set xsecruns = ""
+
+if ( -e ${1}/PPXF01.run ) then
+    set xsecruns = "$xsecruns, ${1}/PPXF01"
+endif
+
+if ( -e ${1}/PPXF05.run ) then
+    set xsecruns = "$xsecruns, ${1}/PPXF05"
+endif
+
+if ( -e ${1}/PPXF18.run ) then
+    set xsecruns = "$xsecruns, ${1}/PPXF18"
+endif
+
+if ( -e ${1}/PPXF7O.run ) then
+    set xsecruns = "$xsecruns, ${1}/PPXF7O"
+endif
+
+if ( -e ${1}/PPXF02.run && -e ${1}/PPXF28.run && -e ${1}/PPXF09.run && -e ${1}/PPXF70.run ) then
+    sub.pl runtag ./runThePEG, ${1}/PPXF02, ${1}/PPXF09_1-50, ${1}/PPXF09_51-100, ${1}/PPXF28_1-25, ${1}/PPXF28_26-50, ${1}/PPXF28_51-75, ${1}/PPXF28_76-100, ${1}/PPXF70_1-20, ${1}/PPXF70_21-40, ${1}/PPXF70_41-60, ${1}/PPXF70_61-80, ${1}/PPXF70_81-100 $xsecruns
+else
+    echo "Could not find all run files"
+    exit(1)
+endif
+

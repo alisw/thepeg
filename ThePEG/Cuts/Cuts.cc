@@ -88,12 +88,24 @@ bool Cuts::initSubProcess(Energy2 shat, double yhat, bool mirror) const {
   theSubMirror = mirror;
   theCurrentSHat = shat;
   theCurrentYHat = yhat;
-  if ( shat <= sHatMin() || shat > sHatMax()*(1.0 + 1000.0*Constants::epsilon) ) return false;
-  if ( yhat <= yHatMin() || yhat >= yHatMax() ) return false;
+  if ( shat <= sHatMin() || shat > sHatMax()*(1.0 + 1000.0*Constants::epsilon) ) {
+    theCutWeight = 0.0;
+    return false;
+  }
+  if ( yhat <= yHatMin() || yhat >= yHatMax() ) {
+    theCutWeight = 0.0;
+    return false;
+  }
   double x1 = min(1.0, sqrt(shat/SMax())*exp(yhat));
-  if ( x1 <= x1Min() || x1 > x1Max() ) return false;
+  if ( x1 <= x1Min() || x1 > x1Max() ) {
+    theCutWeight = 0.0;
+    return false;
+  }
   double x2 = min(1.0, sqrt(shat/SMax())*exp(-yhat));
-  if ( x2 <= x2Min() || x2 > x2Max() ) return false;
+  if ( x2 <= x2Min() || x2 > x2Max() ) {
+    theCutWeight = 0.0;
+    return false;
+  }
   return true;
 }
 
@@ -146,8 +158,10 @@ bool Cuts::passCuts(const tcPDVector & ptype, const vector<LorentzMomentum> & p,
       pass &= theOneCuts[j]->passCuts(this, ptype[i], p[i]);
       theCutWeight *= theLastCutWeight;
       theLastCutWeight = 1.0;
-      if ( !pass )
+      if ( !pass ) {
+	theCutWeight = 0.0;
 	return false;
+      }
     }
 
   for ( int i1 = 0, N1 = p.size() - 1; i1 < N1; ++i1 )
@@ -157,16 +171,20 @@ bool Cuts::passCuts(const tcPDVector & ptype, const vector<LorentzMomentum> & p,
 					p[i1], p[i2]);
 	theCutWeight *= theLastCutWeight;
 	theLastCutWeight = 1.0;
-	if ( !pass )
+	if ( !pass ) {
+	  theCutWeight = 0.0;
 	  return false;
+	}
       }
 
   for ( int j = 0, M = theMultiCuts.size(); j < M; ++j ) {
     pass &= theMultiCuts[j]->passCuts(this, ptype, p);
     theCutWeight *= theLastCutWeight;
     theLastCutWeight = 1.0;
-    if ( !pass )
+    if ( !pass ) {
+      theCutWeight = 0.0;
       return false;
+    }
   }
 
   if ( t1 ) {
@@ -178,8 +196,10 @@ bool Cuts::passCuts(const tcPDVector & ptype, const vector<LorentzMomentum> & p,
 					true, false);
 	theCutWeight *= theLastCutWeight;
 	theLastCutWeight = 1.0;
-	if ( !pass )
+	if ( !pass ) {
+	  theCutWeight = 0.0;
 	  return false;
+	}
       }
   }
 
@@ -192,8 +212,10 @@ bool Cuts::passCuts(const tcPDVector & ptype, const vector<LorentzMomentum> & p,
 					false, true);
 	theCutWeight *= theLastCutWeight;
 	theLastCutWeight = 1.0;
-	if ( !pass )
+	if ( !pass ) {
+	  theCutWeight = 0.0;
 	  return false;
+	}
       }
   }
 

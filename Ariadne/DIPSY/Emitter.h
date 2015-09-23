@@ -29,12 +29,21 @@ class Emitter: public HandlerBase {
 
 public:
 
+  /** Convenietn typedef. */
+  typedef Parton::Point Point;
+
+public:
+
   /** @name Standard constructors and destructors. */
   //@{
   /**
    * The default constructor.
    */
-  inline Emitter();
+  inline Emitter()
+    : testingPS(false), fixY(0.0), thePSInflation(1.0), thePMinusOrdering(1.0),
+      thePTScale(1.0), theRScale(1.0*InvGeV), theRMax(0.0*InvGeV),
+      theBothOrderedEvo(true), theBothOrderedInt(true), theBothOrderedFS(true),
+      theRangeMode(0),theMinusOrderingMode(0), thestMode(false) {}
 
   /**
    * The destructor.
@@ -55,18 +64,24 @@ public:
   /**
    * if pT is 1/r or 2/r.
    */
-  inline double pTScale() const;
+  inline double pTScale() const {
+    return thePTScale;
+  }
 
   /**
    * Alpha bar = alphas*Nc/pi /CF
    */
-  inline double alphaBar(InvEnergy r) const;
+  inline double alphaBar(InvEnergy r) const {
+    return alphaS(r)*3.0/M_PI;
+  }
 
   /**
    * Sets the shape of the overestimate in the genreation.
    * The cross section does not (should not) depend on rScale. /CF
    */
-  inline void rScale(InvEnergy rScale);
+  inline void rScale(InvEnergy rScale) {
+    theRScale = rScale;
+  }
 
   /**
    * Get bothordered.
@@ -84,22 +99,30 @@ public:
   /**
    * Set PSInfaltion
    */
-  inline void PSInflation(double PSInflation);
+  inline void PSInflation(double PSInflation) {
+    thePSInflation = PSInflation;
+  }
 
   /**
    * Get PSInfaltion
    */
-  inline double PSInflation() const;
+  inline double PSInflation() const {
+    return thePSInflation;
+  }
 
   /**
-   * Set PSInfaltion
+   * Set PMinusOrdering
    */
-  inline void PMinusOrdering(double PMinusOrdering);
+  inline void PMinusOrdering(double x) {
+    thePMinusOrdering = x;
+  }
 
   /**
-   * Get PSInfaltion
+   * Get PMinusOrdering
    */
-  inline double PMinusOrdering() const;
+  inline double PMinusOrdering() const {
+    return thePMinusOrdering;
+  }
 
   /**
    * get the rangeMode
@@ -127,11 +150,23 @@ public:
   virtual void generate(Dipole & dipole, double miny, double maxy) const;
 
   /**
+   * Generate a possible emission or a swing from a given dipole using
+   * shadows in the given rapidity interval [\a miny,\a maxy].
+   */
+  virtual void generateWithShadows(Dipole & dipole, double miny, double maxy) const;
+
+  /**
    * Perform the emission previously generated for the given \a
    * dipole. If no emission has been generated a runtime_error is
    * thrown.
    */
    virtual void emit(Dipole & dipole) const;
+  /**
+   * Perform the emission previously generated for the given \a
+   * dipole using shadows. If no emission has been generated a runtime_error is
+   * thrown.
+   */
+   virtual void emitWithShadows(Dipole & dipole) const;
   //@}
 
 protected:
@@ -139,7 +174,12 @@ protected:
   /**
    * Internal function.
    */
-  virtual bool OEVeto(DipolePtr dip, double y0, Parton::Point p) const;
+  virtual bool OEVeto(DipolePtr dip, double y0, Point p) const;
+
+  /**
+   * Internal function.
+   */
+  virtual bool OEVeto(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2, double y0, Point p) const;
 
   /**
    * Internal function.
@@ -149,12 +189,29 @@ protected:
   /**
    * Internal function.
    */
+  virtual bool YVeto(double y, DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2,
+		     double Coe, double rateOE) const;
+
+  /**
+   * Internal function.
+   */
   virtual double generateY(DipolePtr dip, double ymin, double ymax) const;
 
   /**
    * Internal function.
    */
-  virtual Parton::Point generateXT(DipolePtr dip, double y0) const;
+  virtual double generateY(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2,
+			   double ymin, double ymax) const;
+
+  /**
+   * Internal function.
+   */
+  virtual Point generateXT(DipolePtr dip, double y0) const;
+
+  /**
+   * Internal function.
+   */
+  virtual Point generateXT(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2, double y0) const;
 
 public:
   /**
@@ -197,13 +254,17 @@ protected:  //@{
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 
@@ -261,15 +322,14 @@ protected:
    */
   bool thestMode;
 
-private:
+public:
 
-#ifndef THEPEG_NEW_CLASS_DESCRIPTION
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Exception class.
    */
-  static ClassDescription<Emitter> initEmitter;
-#endif
+  struct EmitterException: public Exception {};
+
+private:
 
   /**
    * The assignment operator is private and must never be called.
@@ -319,7 +379,5 @@ struct ClassTraits<DIPSY::Emitter>
 }
 
 #endif
-
-#include "Emitter.icc"
 
 #endif /* DIPSY_Emitter_H */

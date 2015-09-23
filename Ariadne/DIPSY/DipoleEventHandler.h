@@ -225,8 +225,16 @@ public:
    * high-pt tail according to an approximate matrix element
    * correction.
    */
-  inline bool fudgeME() const {
+  inline int fudgeME() const {
     return theFudgeME;
+  }
+
+  /**
+   * Indicate whether an additional fudge factor should be included to tame the
+   * high-pt tail in the interactions.
+   */
+  inline double fudgeFactorME() const {
+    return theFudgeFactorME;
   }
 
   /**
@@ -473,9 +481,17 @@ private:
 
   /**
    * Indicate whether a fudge factor should be included to tame the
-   * high-pt tail according to an approximate matrix element correction.
+   * high-pt tail according to an approximate matrix element correction,
+   * and, if so, should the dipole colours be taken into account.
    */
-  bool theFudgeME;
+  int theFudgeME;
+
+  /**
+   * Indicate whether an extra fudge factor should be included to tame
+   * the high-pt tail in the interactions according to an approximate
+   * matrix element correction.
+   */
+  double theFudgeFactorME;
 
   /**
    * The number of collisions to analyze in the presampling.

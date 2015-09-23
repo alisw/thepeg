@@ -7,16 +7,243 @@
 
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "DipoleXSec.fh"
-#include "Dipole.fh"
+#include "Dipole.h"
 #include "DipoleState.fh"
 #include "ImpactParameters.h"
 #include "RealPartonState.fh"
 #include "RealParton.fh"
 #include "EffectiveParton.h"
+#include "ShadowParton.h"
 
 namespace DIPSY {
 
 using namespace ThePEG;
+
+/**
+ * A dipole-dipole interaction used for book keeping.
+ */
+struct DipoleInteraction {
+
+  /**
+   * Enumerate the resons for an interaction not working.
+   */
+  enum Status {
+    UNKNOWN = -1, /**< Not yet checked. */
+    ACCEPTED = 0, /**< Interaction is OK */
+    PROPFAIL = 1, /**< Kinematics of incoming propagators failed. */
+    KINEFAIL = 2, /**< Kinematics of interaction failed. */
+    ORDERING = 3 /**< Ordering of interation failed. */
+  };
+
+  /**
+   * Constructor taking two dipoles.
+   */
+  DipoleInteraction(Dipole & dlin, Dipole & drin,
+		    const ImpactParameters &  bin, int ordering);
+
+  /**
+   * Prepare an interactions to be checked for the first time.
+   */
+  void prepare() const;
+
+  /**
+   * Check that the interaction can be performed. If \a mode >= 0 also
+   * flag shadow partons on-shell. If \a mode > 0 also propagate
+   * momenta to original partons.
+   */
+  Status check(int mode) const;
+
+  /**
+   * Accept the interaction.
+   */
+  void accept() const;
+
+  /**
+   * Reject this interaction.
+   */
+  void reject() const;
+
+  /**
+   * The two dipoles.
+   */
+  pair<tDipolePtr,tDipolePtr> dips;
+
+  /**
+   * The two dipoles next to these.
+   */
+  pair<tDipolePtr,tDipolePtr> dnext;
+
+  /**
+   * The two dipoles previous to these.
+   */
+  pair<tDipolePtr,tDipolePtr> dprev;
+
+  /**
+   * A pointer to the impact parameter object.
+   */
+  const ImpactParameters * b;
+
+  /**
+   * Which partons are actually interacting?
+   */
+  pair<tPartonPtr,tPartonPtr> ints;
+
+  /**
+   * Which partons are merely spectators
+   */
+  pair<tPartonPtr,tPartonPtr> spec;
+
+  /**
+   * Which partons are actually interacting?
+   */
+  mutable pair<tSPartonPtr,tSPartonPtr> sints;
+
+  /**
+   * The distance between the interacting partons.
+   */
+  InvEnergy2 d2;
+
+  /**
+   * The interaction strength (times two for total xsec).
+   */
+  double f2;
+
+  /**
+   * The unitarized interaction strength.
+   */
+  double uf2;
+
+  /**
+   * The transverse momentum recoil associated with the interaction.
+   */
+  TransverseMomentum rec;
+
+  /**
+   * Set to true if the two partons which interacts has already received a recoil.
+   */
+  mutable bool norec;
+
+  /**
+   * The transverse momentum scale associated with the interactions.
+   */
+  Energy kt;
+
+  /**
+   * The number of this interaction in the order of tried interactions.
+   */
+  mutable int id;
+
+  /**
+   * Current status of this interaction.
+   */
+  mutable Status status;
+
+  /**
+   * Ordering scheme for interactions
+   */
+  int intOrdering;
+
+  /**
+   * Check if the given parton is ordered wrt. the given light-cone
+   * momenta.
+   */
+  bool disorder(bool doit, tcSPartonPtr p, Energy plus, Energy minus) const {
+    return ( doit && ( p->plus() < plus || p->minus() > minus ) );
+  }
+  bool disorder(bool doit, Energy plus, Energy minus, tcSPartonPtr p) const {
+    return ( doit && ( plus < p->plus() || minus > p->minus() ) );
+  }
+
+  /**
+   * Check that the two scattered partons are ordered.
+   */
+  bool disorder(bool doit) const {
+    return disorder(doit, sints.first,
+		    sints.second->minus(), sints.second->plus());
+  }
+
+  /**
+   * Return true if the given scales are ascending of decanding.
+   */
+  bool cending(Energy2 ptl, Energy2 ptm, Energy2 ptr) const {
+    return ( ( ptl > ptm && ptm > ptr ) || ( ptl < ptm && ptm < ptr ));
+  }
+
+  /**
+   * Return true if the interaction fails any of the ordering requirements.
+   */
+  bool orderfail(const ShadowParton::Propagator & ppl,
+		 const ShadowParton::Propagator & ppr) const;
+
+  void checkShadowMomentum(const LorentzMomentum & pin = LorentzMomentum()) const;
+
+  /**
+   * Print out sum of on-shell momenta.
+   */
+  void debug() const;
+
+  /** Struct for ordering by dipoles. */
+  struct DipoleOrder {
+    /** Main operator */
+    bool operator()(const DipoleInteraction & i1,
+		    const DipoleInteraction & i2) const {
+      return i1.dips.first < i2.dips.first ||
+	( i1.dips.first == i2.dips.first &&
+	  i1.dips.second < i2.dips.second );
+    }
+  };
+
+  /** Struct for ordering by dipoles. */
+  struct StrengthOrder {
+    /** Main operator */
+    bool operator()(const DipoleInteraction & i1,
+		    const DipoleInteraction & i2) const {
+      return i1.f2 > i2.f2;
+    }
+  };
+
+  /**
+   * A settype used to store an ordered list of potential interactions
+   * between dipoles in colliding dipole systems. Ordered in
+   * decreasing interaction strength.
+   */
+  typedef multiset<DipoleInteraction,DipoleInteraction::StrengthOrder> List;
+  
+  /** Struct for ordering by scale. */
+  struct PTOrder {
+    /** Main operator */
+    bool operator()(const List::const_iterator & i1,
+		    const List::const_iterator & i2) const {
+      return i1->kt > i2->kt;
+    }
+  };
+
+  /**
+   * A settype used to store an ordered list of potential interactions
+   * between dipoles in colliding dipole systems. Ordered in
+   * decreasing interaction strength.
+   */
+  typedef multiset<List::const_iterator,PTOrder> PTSet;
+
+  /**
+   * A settype used to store a list of potential interactions
+   * between dipoles in colliding dipole systems.
+   */
+  typedef set<DipoleInteraction,DipoleInteraction::DipoleOrder> DipList;
+
+  /**
+   * Check which orderings fail the most (for debugging).
+   */
+  static vector<int> ofail, o1fail;
+
+  void fail(int i ) const;
+
+  /**
+   * Exception class to signal bad kinematics.
+   */
+  struct InteractionKinematicException: public Exception {};
+
+};
 
 /**
  * DipoleXSec is the base class of all objects capable of calculating
@@ -58,6 +285,7 @@ public:
   typedef multimap<double,FList::const_iterator,std::greater<double> >
           DipolePairMap;
 
+
   /**
    * A interaction of RealPartons, with all needed information about the interaction.
    */
@@ -79,12 +307,18 @@ public:
   /**
    * The default constructor.
    */
-  inline DipoleXSec();
+  inline DipoleXSec()
+    : theRMax(0.0*InvGeV), theInteraction(0), sinFunction(0), usePartonicInteraction(false),
+      theIntOrdering(0), theRecoilReduction(0), checkOffShell(true) {}
 
   /**
    * The copy constructor.
    */
-  inline DipoleXSec(const DipoleXSec &);
+  inline DipoleXSec(const DipoleXSec & x)
+    : HandlerBase(x), theRMax(x.theRMax), theInteraction(x.theInteraction),
+      sinFunction(x.sinFunction), usePartonicInteraction(x.usePartonicInteraction),
+      theIntOrdering(x.theIntOrdering),theRecoilReduction(x.theRecoilReduction),
+      checkOffShell(x.checkOffShell) {}
 
   /**
    * The destructor.
@@ -115,6 +349,13 @@ public:
 		     bool veto = true) const;
 
   /**
+   * Calculate the scattering probability for the two given dipoles
+   * using the given ImpactParameters.
+   */
+  virtual DipoleInteraction fij(const ImpactParameters &  b, Dipole &, Dipole &,
+				bool veto = true) const;
+
+  /**
    * Return false if an interaction would be kinematically forbidden.
    */
   virtual bool kinematicsVeto(const pair<tPartonPtr, tPartonPtr>,
@@ -130,11 +371,23 @@ public:
 			      const pair<bool,bool> & ints) const;
 
   /**
+   * Return false if an interaction would be kinematically forbidden.
+   */
+  virtual bool kinematicsVeto(const DipoleInteraction &) const;
+
+  /**
    * Calculate the total scattering probability for the two given
    * dipole systems using the given ImpactParameters.
    */
   virtual double sumf(const DipoleState &, const DipoleState &,
 		      const ImpactParameters &) const;
+
+  /**
+   * Calculate the total scattering probability for the two given
+   * dipole systems using the given ImpactParameters.
+   */
+  virtual double sumf(const ImpactParameters &,
+		      const DipoleState &, const DipoleState &) const;
 
   /**
    * Calculate the total scattering probability all dipole pairs 
@@ -146,10 +399,10 @@ public:
   /**
    * Calculate the total scattering probability all dipole pairs 
    * the two given dipole systems using the given ImpactParameters.
-   * This version backtrack vetoed dipoles pairs and checks the parents.
    */
-  virtual FList effectiveFlist(const DipoleState &, const DipoleState &,
-			       const ImpactParameters &) const;
+  virtual DipoleInteraction::List flist(const ImpactParameters &,
+				const DipoleState &, const DipoleState &) const;
+
 
   /**
    * Return a unitarized scattering probability, given the
@@ -180,6 +433,13 @@ public:
 	 make_pair(make_pair(true, true), make_pair(true, true))) const;
 
   /**
+   * Returns the recoils the interaction would like to give the 4 involved partons.
+   * Assumes the states are not yet rotated.
+   */
+  virtual InteractionRecoil
+  recoil(const DipoleInteraction &) const;
+
+  /**
    * Does the transverse recoil on the four partons.
    */
 void doTransverseRecoils(RealInteraction i, InteractionRecoil recs) const;
@@ -192,6 +452,13 @@ void doTransverseRecoils(RealInteraction i, InteractionRecoil recs) const;
 			RealPartonStatePtr lrs, RealPartonStatePtr rrs,
 			pair<pair<bool, bool>, pair<bool, bool> > doesInt,
 			const ImpactParameters & b) const;
+
+  /**
+   * creates and initialises a RealInteraction with realpartons, ranges and max.
+   */
+  virtual RealInteraction
+  initialiseInteraction(const DipoleInteraction & di,
+			RealPartonStatePtr lrs, RealPartonStatePtr rrs) const;
 
   /**
    * Decides which of the four partons actually interact.
@@ -231,32 +498,24 @@ void doTransverseRecoils(RealInteraction i, InteractionRecoil recs) const;
 			     const ImpactParameters & b) const;
 
   /**
-   * Tests the provided interactions in the same way doInteraction does, but
-   * without transfering any momenta between the states.
+   * Does the transverse recoil on the real partons with the pT supplied in recs.
+   * Does the p+ alt. p- transfer of neededPlus nad neededMinus to put the
+   * other state on shell. If not consistent, return false.
+   * Also updates p_mu for the 4 effective partons. Assumes all are rightmoving.
    */
-  virtual bool checkInteractions(DipolePairVector & ints, RealPartonStatePtr lrs,
-				 RealPartonStatePtr rrs, const ImpactParameters & b) const;
+  virtual bool doInteraction(InteractionRecoil recs, 
+			     const DipoleInteraction::List::const_iterator inter,
+			     RealPartonStatePtr lrs, RealPartonStatePtr rrs,
+			     pair<pair<bool, bool>, pair<bool, bool> > doesInt) const;
+
 
   /**
-   * undoes the recoils to the other state stored in all partons involved in the
-   * interaction. Note that the p+- boosts are stored as recoils against themselves, and 
-   * does not trigger here.
-   **/
-  virtual void undoPTRecoils(RealInteraction RI) const;
-
-  /**
-   * Performs the interactions provided. Returns false if something goes wrong.
+   * reconnects the colour flow in an interaction, taking care that rescatterings are
+   * treated properly.
    */
-  virtual bool performInteractions(DipolePairVector & ints, RealPartonStatePtr lrs,
-				   RealPartonStatePtr rrs, const ImpactParameters & b) const;
-
-  /**
-   * checks if the four interacting partns are ordered.
-   * It is assumed that p2 not yet is mirrored in y=0.
-   * The booleans indicate if the parton pairs are local max in pT.
-   **/
-  virtual bool checkOrderedInteraction(tRealPartonPtr p11, tRealPartonPtr p12,
-				       tRealPartonPtr p21, tRealPartonPtr p22) const;
+  bool reconnect(const DipoleInteraction &di) const {
+    return reconnect(di.dips.first, di.dips.second);
+  }
 
   /**
    * reconnects the colour flow in an interaction, taking care that rescatterings are
@@ -272,13 +531,32 @@ void doTransverseRecoils(RealInteraction i, InteractionRecoil recs) const;
   getColourExchanges(tRealPartonStatePtr lrs, tRealPartonStatePtr rrs) const;
 
   /**
+   * Mark two dipoles as having interacted with eachother.
+   */
+  virtual void interact(Dipole & d1, Dipole & d2) const;
+
+  //@}
+
+  /**
+   * Return the value of the sine-interaction strength.
+   */
+  double fSinFn(const Parton::Point & rho1, const Parton::Point & rho2,
+		const TransverseMomentum & pt) const;
+
+  /**
    * Return the interaction
    **/
   inline int interaction() const {
     return theInteraction;
   }
 
-  //@}
+  /**
+   * Flag determining if only one parton in each dipole is considered
+   * interacting or both.
+   */
+  inline bool partonicInteraction() const {
+    return usePartonicInteraction;
+  }
 
   /**
    * The confinement scale.
@@ -289,6 +567,11 @@ void doTransverseRecoils(RealInteraction i, InteractionRecoil recs) const;
    * for debugging
    */
   mutable int Nfij;
+  mutable int nIAccepted;
+  mutable int nIBelowCut;
+  mutable int nIPropFail;
+  mutable int nIKineFail;
+  mutable int nIOrdering;
   mutable int NScalVeto;
   mutable int NBVeto;
   mutable double scalVeto;
@@ -368,13 +651,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 
@@ -401,6 +688,18 @@ private:
   int theInteraction;
 
   /**
+   * Flag determining which approximation to the sine-functions in the
+   * interaction strength to use.
+   */
+  int sinFunction;
+
+  /**
+   * Flag determining if only one parton in each dipole is considered
+   * interacting or both.
+   */
+  bool usePartonicInteraction;
+
+  /**
    * What kind of kinematical ordering is requeired in the interaction.
    */
   int theIntOrdering;
@@ -424,7 +723,5 @@ private:
 };
 
 }
-
-#include "DipoleXSec.icc"
 
 #endif /* DIPSY_DipoleXSec_H */

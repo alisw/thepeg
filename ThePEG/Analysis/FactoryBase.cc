@@ -71,8 +71,8 @@ void FactoryBase::doinitrun() {
   Interfaced::doinitrun();
   string file = filename();
   if ( file == "" ) file = generator()->filename();
+  else if ( file[0] != '/' ) file = generator()->path() + "/" + file;
   file += "." + suffix();
-  if ( file[0] != '/' ) file = generator()->path() + "/" + file;
   theTree = analysisFactory().createTreeFactory()->create
     (file, storeType(), false, true);
   theTree->setOverwrite(false);

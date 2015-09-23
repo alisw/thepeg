@@ -45,7 +45,7 @@ SimpleProtonState(const DipoleEventHandler & eh, Energy plus, Energy minus,
   generateColourIndex(d2);
   generateColourIndex(d3);
 
-  double phi1 = UseRandom::rnd()*2.0*Constants::pi/3.0;
+  double phi1 = UseRandom::rnd()*2.0*Constants::pi;
   double phi2 = phi1 + 2.0*Constants::pi/3.0 + UseRandom::rndGauss(angleWidth,0.0);
   //  double phi3 = phi2 + 2.0*Constants::pi/3.0 + UseRandom::rndGauss(angleWidth,0.0);
   InvEnergy r = wfi->r()/sqrt(3.0);

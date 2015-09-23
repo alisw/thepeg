@@ -19,6 +19,7 @@ cp Generator PAGenerator
 set PAGenerator:EventHandler PAEventHandler
 set PAGenerator:NumberOfEvents 0
 set PAGenerator:EventHandler:EventFiller:PTCut 0.6
+set PAGenerator:Path PAXSec
 set PAEventHandler:BGen:Width 10
 set PAEventHandler:EffectivePartonMode Colours
 

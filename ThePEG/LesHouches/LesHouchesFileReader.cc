@@ -20,6 +20,8 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <sstream>
+#include <iostream>
 
 using namespace ThePEG;
 
@@ -49,6 +51,10 @@ bool LesHouchesFileReader::preInitialize() const {
 
 void LesHouchesFileReader::doinit() {
   LesHouchesReader::doinit();
+  //cout << "theDecayer->fullName() = " << theDecayer->fullName() << endl;
+  //if(theDecayer) {
+  //  cout << "DECAYER RETURNS TRUE" << endl;
+  // }
   // are we using QNUMBERS
   if(!theQNumbers) return;
   // parse the header block and create 
@@ -459,6 +465,9 @@ void LesHouchesFileReader::initialize(LesHouchesEventHandler & eh) {
       << "properly sampled." << Exception::warning;
 }
 
+//vector<string> LesHouchesFileReader::optWeightNamesFunc() { return optionalWeightsNames; }
+vector<string> LesHouchesFileReader::optWeightsNamesFunc() { return optionalWeightsNames; }
+
 void LesHouchesFileReader::open() {
   if ( filename().empty() )
     throw LesHouchesFileError()
@@ -477,21 +486,99 @@ void LesHouchesFileReader::open() {
   map<string,string> attributes =
     StringUtils::xmlAttributes("LesHouchesEvents", cfile.getline());
   LHFVersion = attributes["version"];
+  //cout << LHFVersion << endl;
   if ( LHFVersion.empty() ) return;
 
   bool readingHeader = false;
   bool readingInit = false;
   headerBlock = "";
+  
+//  char (cwgtinfo_weights_info[250][15]);
+  string hs;
+//  int cwgtinfo_nn(0);
 
   // Loop over all lines until we hit the </init> tag.
-  while ( cfile.readline() && !cfile.find("</init>") ) {
+  bool readingInitWeights = false, readingInitWeights_sc = false;
+  string weightinfo;
+  while ( cfile.readline() ) {
+    
+    // found the init block for multiple weights
+    if(cfile.find("<initrwgt")) { /*cout << "reading weights" << endl;*/ readingInitWeights = true; }
+    
+     // found end of init block for multiple weights: end the while loop
+    if(cfile.find("</initrwgt")) { readingInitWeights = false; readingInitWeights_sc = false; continue;}
+
+    // found the end of init block
+    if(cfile.find("</init")) { readingInit = false; break; } 
+
+    /* read the weight information block 
+     * optionalWeightNames will contain information about the weights
+     * this will be appended to the weight information
+     */ 
+    if(readingInitWeights) {
+      string scalename = "";
+      if(cfile.find("<weightgroup")) {
+	/* we found a weight group
+	 * start reading the information 
+	 * within it
+	 */
+	readingInitWeights_sc = true;
+	weightinfo = cfile.getline();
+	/* to make it shorter, erase some stuff
+	 */
+	string str_weightgroup = "<weightgroup";
+	string str_arrow = ">";
+	string str_newline = "\n";
+	erase_substr(weightinfo, str_weightgroup);
+	erase_substr(weightinfo, str_arrow);
+	erase_substr(weightinfo, str_newline);
+      }
+      /* if we are reading a new weightgroup, go on 
+       * until we find the end of it
+       */
+      if(readingInitWeights_sc && !cfile.find("</weightgroup")) {
+	hs = cfile.getline();
+	istringstream isc(hs);
+	int ws = 0;
+	/* get the name that will be used to identify the scale 
+	 */
+	do {
+	  string sub; isc >> sub;
+	  if(ws==1) { string str_arrow =  ">"; erase_substr(sub, str_arrow); scalename = sub; }
+	  ++ws;
+	} while (isc);
+	/* now get the relevant information
+	 * e.g. scales or PDF sets used
+	 */
+	string startDEL = "'>"; //starting delimiter
+	string stopDEL = "</weight>"; //end delimiter
+	unsigned firstLim = hs.find(startDEL); //find start of delimiter
+//	unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+	string scinfo = hs.substr(firstLim); //define the information for the scale
+	erase_substr(scinfo,stopDEL);
+	erase_substr(scinfo,startDEL);
+	scinfo = weightinfo + scinfo;
+	/* fill in the map 
+	 * indicating the information to be appended to each scale
+	 * i.e. scinfo for each scalname
+	 */
+	scalemap[scalename] = scinfo.c_str();
+	string str_id = "id=";
+	string str_prime = "'";
+	erase_substr(scalename, str_id);
+	erase_substr(scalename, str_prime);
+	optionalWeightsNames.push_back(scalename);
+      }
+    }
+   
     if ( cfile.find("<header") ) {
       // We have hit the header block, so we should dump this and all
       // following lines to headerBlock until we hit the end of it.
       readingHeader = true;
       headerBlock = cfile.getline() + "\n";
     }
-    else if ( cfile.find("<init ") || cfile.find("<init>") ) {
+    if ( (cfile.find("<init ") && !cfile.find("<initrwgt")) || cfile.find("<init>") ) {
+      //cout << "found init block" << endl;
       // We have hit the init block, so we should expect to find the
       // standard information in the following. But first check for
       // attributes.
@@ -508,7 +595,6 @@ void LesHouchesFileReader::open() {
 	return;
       }
       heprup.resize();
-
       for ( int i = 0; i < heprup.NPRUP; ++i ) {
 	cfile.readline();
 	if ( !( cfile >> heprup.XSECUP[i] >> heprup.XERRUP[i]
@@ -519,24 +605,24 @@ void LesHouchesFileReader::open() {
 	}
       }
     }
-    else if ( cfile.find("</header") ) {
+    if ( cfile.find("</header") ) {
       readingHeader = false;
       headerBlock += cfile.getline() + "\n";
     }
-    else if ( readingHeader ) {
-      // We are in the process of reading the header block. Dump the
-	// line to headerBlock.
+    if ( readingHeader ) {
+      /* We are in the process of reading the header block. Dump the
+	 line to headerBlock.*/
       headerBlock += cfile.getline() + "\n";
     }
-    else if ( readingInit ) {
+    if ( readingInit ) {
       // Here we found a comment line. Dump it to initComments.
       initComments += cfile.getline() + "\n";
     }
-    else {
-      // We found some other stuff outside the standard tags.
-      outsideBlock += cfile.getline() + "\n";
-    }
   }
+  string central = "central";
+  optionalWeightsNames.push_back(central);
+
+  //  cout << "reading init finished" << endl;
   if ( !cfile ) {
     heprup.NPRUP = -42;
     LHFVersion = "";
@@ -553,6 +639,8 @@ bool LesHouchesFileReader::doReadEvent() {
   outsideBlock = "";
   hepeup.NUP = 0;
   hepeup.XPDWUP.first = hepeup.XPDWUP.second = 0.0;
+  optionalWeights.clear();
+  optionalWeightsTemp.clear();
 
   // Keep reading lines until we hit the next event or the end of
   // the event block. Save any inbetween lines. Exit if we didn't
@@ -562,6 +650,29 @@ bool LesHouchesFileReader::doReadEvent() {
 
   // We found an event. First scan for attributes.
   eventAttributes = StringUtils::xmlAttributes("event", cfile.getline());
+
+  /* information necessary for FxFx merging:
+   * the npLO and npNLO tags
+   */
+  istringstream ievat(cfile.getline());
+  int we(0), npLO(-99), npNLO(-99);
+  do {
+    string sub; ievat >> sub;
+    if(we==2) { npLO = atoi(sub.c_str()); }
+    if(we==5) { npNLO = atoi(sub.c_str()); }
+    ++we;
+  } while (ievat);
+  optionalnpLO = npLO;
+  optionalnpNLO = npNLO;
+  std::stringstream npstringstream;
+  npstringstream << "np " << npLO << " " << npNLO;
+  std::string npstrings = npstringstream.str();
+  /* the FxFx merging information 
+   * becomes part of the optionalWeights, labelled -999 
+   * for future reference
+   */
+  optionalWeights[npstrings.c_str()] = -999; 
+
   if ( !cfile.readline()  ) return false;
 
   // The first line determines how many subsequent particle lines we
@@ -580,6 +691,8 @@ bool LesHouchesFileReader::doReadEvent() {
 	          >> hepeup.PUP[i][3] >> hepeup.PUP[i][4]
         	  >> hepeup.VTIMUP[i] >> hepeup.SPINUP[i] ) )
       return false;
+    //print momenta for debugging
+    // cout << hepeup.PUP[i][0] << " " << hepeup.PUP[i][1] << " " << hepeup.PUP[i][2] << " " << hepeup.PUP[i][3] << " " << hepeup.PUP[i][4] << endl;
     if(isnan(hepeup.PUP[i][0])||isnan(hepeup.PUP[i][1])||
        isnan(hepeup.PUP[i][2])||isnan(hepeup.PUP[i][3])||
        isnan(hepeup.PUP[i][4])) 
@@ -596,42 +709,109 @@ bool LesHouchesFileReader::doReadEvent() {
   }
 
   // Now read any additional comments and named weights.
-  optionalWeights.clear();
-  while ( cfile.readline() && !cfile.find("</event>") ) {
-    // parse weightinfo elements
-    if ( cfile.find("<weightinfo") ) {
-      map<string,string> weightAttributes =
-	StringUtils::xmlAttributes("weightinfo",cfile.getline());
-      if ( !cfile.readline() ) return false;
-      double weightValue; cfile >> weightValue;
-      if ( !cfile.readline() ) return false;
-      if ( !cfile.find("</weightinfo>") ) {
-	throw LesHouchesFileError()
-	  << "error while parsing weight information in "
-	  << theFileName << Exception::eventerror;
-      }
-      // ignore the single unnamed weight, but warn if multiple of the
-      // same name
-      map<string,string>::const_iterator weightName = weightAttributes.find("name");
-      if ( weightName != weightAttributes.end() ) {
-	map<string,double>::iterator wit =
-	  optionalWeights.find(weightName->second);
-	if ( wit == optionalWeights.end() ) {
-	  optionalWeights[weightName->second] = weightValue;
-	} else {
-	  throw LesHouchesFileError()
-	    << "multiple weights of the same name in "
-	    << theFileName << Exception::eventerror;
-	}
-      }
-      continue;
+  // read until the end of rwgt is found
+  bool readingWeights = false, readingaMCFast = false, readingMG5ClusInfo = false;
+  while ( cfile.readline() && !cfile.find("</event>")) {
+    
+    if(cfile.find("</applgrid")) { readingaMCFast=false; } //aMCFast weights end
+    if(cfile.find("</rwgt")) { readingWeights=false; } //optional weights end
+    if(cfile.find("</clustering")) { readingMG5ClusInfo=false; } // mg5 mclustering scale info end
+    
+    /* reading of optional weights
+     */
+    if(readingWeights) { 
+      if(!cfile.find("<wgt")) { continue; }
+      istringstream iss(cfile.getline());
+      int wi = 0;
+      double weightValue(0);
+      string weightName = "";
+      // we need to put the actual weight value into a double
+      do {
+	string sub; iss >> sub;
+	if(wi==1) { string str_arrow = ">" ; erase_substr(sub, str_arrow); weightName = sub; }
+	if(wi==2) weightValue = atof(sub.c_str());
+	++wi;
+      } while (iss);
+      // store the optional weights found in the temporary map
+      optionalWeightsTemp[weightName] = weightValue; 
     }
-    eventComments += cfile.getline() + "\n";
-  }
+    
+    /* reading of aMCFast weights
+     */
+    if(readingaMCFast) {
+      std::stringstream amcfstringstream;
+      amcfstringstream << "aMCFast " << cfile.getline();
+      std::string amcfstrings = amcfstringstream.str();
+      string str_newline = "\n";
+      erase_substr(amcfstrings,str_newline);
+      optionalWeights[amcfstrings.c_str()] = -111; //for the aMCFast we give them a weight -111 for future identification
+    }
 
+    /* read additional MG5 Clustering information 
+     * used in LO merging
+     */
+    if(readingMG5ClusInfo) {
+      string hs = cfile.getline();
+      string startDEL = "<clus scale="; //starting delimiter
+      string stopDEL = "</clus>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL); //find start of delimiter
+      //   unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+      string mg5clusinfo = hs.substr(firstLim); //define the information for the scale
+      erase_substr(mg5clusinfo,stopDEL);
+      erase_substr(mg5clusinfo,startDEL);
+      string str_arrow = ">";
+      erase_substr(mg5clusinfo,str_arrow);
+      string str_quotation = "\"";
+      erase_substr(mg5clusinfo,str_quotation);
+      optionalWeights[mg5clusinfo.c_str()] = -222; //for the mg5 scale info weights we give them a weight -222 for future identification
+    }
+    
+    //store MG5 clustering information 
+    if(cfile.find("<scales")) {
+      string hs = cfile.getline();
+      string startDEL = "<scales"; //starting delimiter
+      string stopDEL = "</scales>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL); //find start of delimiter
+      //    unsigned lastLim = hs.find(stopDEL); //find end of delimitr
+      string mg5scinfo = hs.substr(firstLim); //define the information for the scale
+      erase_substr(mg5scinfo,stopDEL);
+      erase_substr(mg5scinfo,startDEL);
+      string str_arrow = ">";
+      erase_substr(mg5scinfo,str_arrow);
+      optionalWeights[mg5scinfo.c_str()] = -333; //for the mg5 scale info weights we give them a weight -333 for future identification
+    }
+
+    //determine start of aMCFast weights
+    if(cfile.find("<applgrid")) { readingaMCFast = true;}
+    //determine start of optional weights
+    if(cfile.find("<rwgt")) { readingWeights = true; }
+    //determine start of MG5 clustering scale information
+    if(cfile.find("<clustering")) { readingMG5ClusInfo = true;}
+  }
+  // loop over the optional weights and add the extra information as found in the init
+  for (map<string,double>::const_iterator it=optionalWeightsTemp.begin(); it!=optionalWeightsTemp.end(); ++it){
+    for (map<string,string>::const_iterator it2=scalemap.begin(); it2!=scalemap.end(); ++it2){
+      //find the scale id in the scale information and add this information
+      if(it->first==it2->first) { 
+	string info = it2->second + " " + it->first;
+	string str_newline = "\n";
+	erase_substr(info, str_newline);
+	//set the optional weights
+	optionalWeights[info] = it->second;
+	/*cout << "info = " << info << endl;
+	  std::cout << it->first << "  => " << it->second << '\n';*/
+	}
+    }
+  }
+  /* additionally, we set the "central" scale
+   * this is actually the default event weight 
+   */
+  string central = "central";
+  optionalWeights[central] = hepeup.XWGTUP;
+  
   if ( !cfile ) return false;
   return true;
-
+  
 }
 
 void LesHouchesFileReader::close() {
@@ -641,7 +821,7 @@ void LesHouchesFileReader::close() {
 void LesHouchesFileReader::persistentOutput(PersistentOStream & os) const {
   os << neve << LHFVersion << outsideBlock << headerBlock << initComments
      << initAttributes << eventComments << eventAttributes << theFileName
-     << theQNumbers << theDecayer;
+     << theQNumbers << theDecayer ;
 }
 
 void LesHouchesFileReader::persistentInput(PersistentIStream & is, int) {
@@ -699,3 +879,9 @@ void LesHouchesFileReader::Init() {
 
 }
 
+void LesHouchesFileReader::erase_substr(std::string& subject, const std::string& search) {
+    size_t pos = 0;
+    while((pos = subject.find(search, pos)) != std::string::npos) {
+      subject.erase( pos, search.length() );
+    }
+}

@@ -28,12 +28,22 @@ public:
   /**
    * The default constructor.
    */
-  inline VirtualPhoton();
+  inline VirtualPhoton()
+    : theQ2(0.0*GeV2), theShrinkR(0.0*InvGeV),thePolarisation(0),
+      theVMDLightA(0.0), theVMDLightR(0.0*InvGeV),
+      theVMDLightW(0.0*InvGeV), theVMDCharmA(0.0), theVMDCharmR(0.0*InvGeV),
+      theVMDCharmW(0.0*InvGeV), rMax(ZERO), r2Psi2Int(ZERO), r2Psi2Max(ZERO) {}
 
   /**
    * The copy constructor.
    */
-  inline VirtualPhoton(const VirtualPhoton &);
+  inline VirtualPhoton(const VirtualPhoton & x)
+    : VectorMesonBase(x), theQ2(x.theQ2), theShrinkR(x.theShrinkR),
+      thePolarisation(x.thePolarisation), theVMDLightA(x.theVMDLightA),
+      theVMDLightR(x.theVMDLightR), theVMDLightW(x.theVMDLightW),
+      theVMDCharmA(x.theVMDCharmA), theVMDCharmR(x.theVMDCharmR),
+      theVMDCharmW(x.theVMDCharmW), rMax(x.rMax),
+      r2Psi2Int(x.r2Psi2Int), r2Psi2Max(x.r2Psi2Max) {}
 
   /**
    * The destructor.
@@ -98,7 +108,9 @@ public:
   /**
    * The virtuality of the photon.
    */
-  inline Energy2 Q2() const;
+  inline Energy2 Q2() const {
+    return theQ2;
+  }
 
   /**
    * The confinement range.
@@ -196,13 +208,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 
@@ -263,7 +279,5 @@ private:
 };
 
 }
-
-#include "VirtualPhoton.icc"
 
 #endif /* DIPSY_VirtualPhoton_H */

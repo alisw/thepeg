@@ -16,10 +16,10 @@ html-clean:
 html-local: refman-html
 
 AllInterfaces.h: MakeDocs.in
-	$(top_builddir)/src/setupThePEG --init --exitonerror -L$(top_builddir)/lib $(srcdir)/MakeDocs.in
+	$(top_builddir)/src/setupThePEG --init --exitonerror -L$(top_builddir)/lib $(builddir)/MakeDocs.in
 
 MoreInterfaces.h: MakeDocs.in
-	$(top_builddir)/src/setupThePEG --init --exitonerror -L$(top_builddir)/lib $(srcdir)/MakeDocs.in
+	$(top_builddir)/src/setupThePEG --init --exitonerror -L$(top_builddir)/lib $(builddir)/MakeDocs.in
 
 refman-html: refman.conf refman.h AllInterfaces.h MoreInterfaces.h
 	$(builddir)/fixinterfaces.pl AllInterfaces.h

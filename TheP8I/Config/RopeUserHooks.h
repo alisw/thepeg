@@ -30,12 +30,8 @@ typedef map<tcPPtr,DipMass> FlavourEnd;
   }
 
   virtual bool doChangeFragPar(Pythia8::StringFlav* flavPtr, Pythia8::StringZ* zPtr, Pythia8::StringPT * pTPtr, int endFlavour, double m2Had, vector<int> iParton) {
-  	// Not in use here!
-  	return false;
-	}
-
-  virtual bool doChangeFragPar(Pythia8::StringFlav* flavPtr, Pythia8::StringZ* zPtr, Pythia8::StringPT * pTPtr, int endFlavour, double m2Had) {
-    
+    // We're not using it here
+    (void) iParton;
     // Get new parameters
     PytPars newPar = fetchParameters(endFlavour,m2Had);
     if(newPar.find("null") != newPar.end()) {

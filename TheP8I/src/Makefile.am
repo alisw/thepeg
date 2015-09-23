@@ -34,7 +34,7 @@ done-all-links:
 @EMPTY@endif
 
 TheP8IParticles.in: $(builddir)/P8Particles.pl
-	$(builddir)/P8Particles.pl @PYTHIA8_DIR@/xmldoc/ParticleData.xml > TheP8IParticles.in
+	$(builddir)/P8Particles.pl @PYTHIA8_XMLDIR@/ParticleData.xml > TheP8IParticles.in
 
 TheP8IDefaults.rpo: done-all-links TheP8IDefaults.in TheP8IParticles.in ../lib/libTheP8I.so  $(THEPEGLIB)/ThePEGDefaults.rpo
 	$(SETUPTHEPEG) -L../lib -L$(THEPEGLIB) --exitonerror --init -r $(THEPEGLIB)/ThePEGDefaults.rpo -o TheP8IDefaults.rpo TheP8IDefaults.in

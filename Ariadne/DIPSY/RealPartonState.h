@@ -129,6 +129,12 @@ public:
 		      Energy rec1 = ZERO, Energy rec2 = ZERO);
 
   /**
+   * Adds an interaction to the state, updating all partons and toCheck.
+   */
+  void newInteraction(tDipolePtr intDip, tDipolePtr otherIntDip, tPartonPtr parton,
+		      const TransverseMomentum & recoil);
+
+  /**
    * Adds a real parton to the state, and to toCheck.
    * Recurs if it has no previous interactions.
    */
@@ -324,6 +330,12 @@ public:
 			      bool firstInt, bool secondInt, Energy rec1 = ZERO, Energy rec2 = ZERO);
 
   /**
+   * Adds the interacting dipole and remakes the consistency check
+   * from the start.
+   */
+  bool singleControlEvolution(tDipolePtr intDip, tDipolePtr otherIntDip,
+			      tPartonPtr parton, const TransverseMomentum & recoil);
+  /**
    * Finds an evolution by eliminating one parton at a time.
    */
   bool nonRecursiveControlEvolution(tDipolePtr intDip, tDipolePtr otherIntDip);
@@ -334,6 +346,8 @@ public:
    */
   bool fullControlEvolution(tDipolePtr intDip, tDipolePtr otherIntDip,
 			    bool firstInt, bool secondInt, Energy rec1 = ZERO, Energy rec2 = ZERO);
+
+
 
   /**
    * adds all partons which have at least one inteaction to the partons to be checked.

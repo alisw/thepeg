@@ -1,6 +1,6 @@
 
 debug:
-	$(MAKE) CXXFLAGS=-g SHOWCOMMAND=1
+	$(MAKE) CXXFLAGS=-g V=1
 
 libdebug: debug
 	cd ../lib; $(MAKE)

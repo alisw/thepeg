@@ -5,6 +5,7 @@
 //
 
 #include "Parton.h"
+#include "ShadowParton.h"
 #include "DipoleState.h"
 #include "DipoleEventHandler.h"
 #include "Dipole.h"
@@ -28,6 +29,7 @@ Ariadne5::ClonePtr Parton::clone() const {
 void Parton::rebind(const TranslationMap & trans) {
   theParents.first = trans.translate(theParents.first);
   theParents.second = trans.translate(theParents.second);
+  theMainParent = trans.translate(theMainParent);
   theDipoles.first = trans.translate(theDipoles.first);
   theDipoles.second = trans.translate(theDipoles.second);
   set<tPartonPtr> kids;
@@ -35,9 +37,13 @@ void Parton::rebind(const TranslationMap & trans) {
   trans.translate(inserter(theChildren), kids.begin(), kids.end());
 }
 
-void Parton::interact() {
+void Parton::interact(bool onegluon) {
   if ( interacted() ) return;
   hasInteracted = true;
+  if ( onegluon && mainParent() ) {
+    mainParent()->interact(true);
+    return;
+  }
   if ( parents().first ) parents().first->interact();
   if ( parents().second ) parents().second->interact();
 }
@@ -71,13 +77,13 @@ int Parton::nOnShellInChain() const {
   DipolePtr d = dipoles().first;
   if ( onShell() ) ret++;
   while ( d && d != dipoles().second ) {
-    if ( d->partons().first->onShell() ) ret++;
+    if ( d->partons().first->onShell() && ++ret > 1 ) return ret;;
     d = d->neighbors().first;
   }
   if ( !d ) {
     d = dipoles().second;
     while ( d ) {
-      if ( d->partons().second->valence() ) ret++;
+      if ( d->partons().second->valence() && ++ret > 1 ) return ret;;
       d = d->neighbors().second;
     }
   }
@@ -210,6 +216,7 @@ void Parton::coutData() {
        << ", theFlavour: " << theFlavour
        << ", theParents1: " << theParents.first
        << ", theParents2: " << theParents.second
+       << ", theMainParent: " << theMainParent
        << ", theChildren: ";
   for( set<tPartonPtr>::iterator it = theChildren.begin();
        it != theChildren.end();it++)
@@ -228,18 +235,18 @@ void Parton::persistentOutput(PersistentOStream & os) const {
   os << ounit(thePosition, InvGeV) << ounit(thePlus, GeV) << theOriginalY
      << ounit(thePT, GeV) << ounit(theValencePT, GeV)
      << ounit(theValencePlus, GeV) << ounit(theMinus, GeV) << theY
-     << isRightMoving << theFlavour << theParents << theDipoles
+     << isRightMoving << theFlavour << theParents << theMainParent << theDipoles
      << hasInteracted << isOrdered << isOnShell << isValence
-     << ounit(theMass, GeV);
+     << ounit(theMass, GeV) << theShadow;
 }
 
 void Parton::persistentInput(PersistentIStream & is, int) {
   is >> iunit(thePosition, InvGeV) >> iunit(thePlus, GeV) >> theOriginalY
      >> iunit(thePT, GeV) >> iunit(theValencePT, GeV)
      >> iunit(theValencePlus, GeV) >> iunit(theMinus, GeV) >> theY
-     >> isRightMoving >> theFlavour >> theParents >> theDipoles
+     >> isRightMoving >> theFlavour >> theParents >> theMainParent >> theDipoles
      >> hasInteracted >> isOrdered >> isOnShell >> isValence
-     >> iunit(theMass, GeV);
+     >> iunit(theMass, GeV) >> theShadow;
 }
 
 DescribeClass<Parton,Ariadne5::CloneBase>

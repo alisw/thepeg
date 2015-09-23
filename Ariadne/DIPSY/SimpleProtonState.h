@@ -23,7 +23,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SimpleProtonState();
+  inline SimpleProtonState() {}
 
   /**
    * The standard constructor.
@@ -35,7 +35,8 @@ public:
   /**
    * The copy constructor.
    */
-  inline SimpleProtonState(const SimpleProtonState &);
+  inline SimpleProtonState(const SimpleProtonState & x)
+    : DipoleState(x) {}
 
   /**
    * The destructor.
@@ -64,7 +65,5 @@ private:
 };
 
 }
-
-#include "SimpleProtonState.icc"
 
 #endif /* DIPSY_SimpleProtonState_H */

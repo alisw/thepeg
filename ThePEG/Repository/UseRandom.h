@@ -113,9 +113,25 @@ public:
   }
 
   /**
+   * Return a true with probability \a p (default 0.5). Uses push_back
+   * to reuse random number.
+   */
+  static bool prndbool(double p = 0.5) {
+    return current().rndbool(p);
+  }
+
+  /**
    * Return a true with probability \a p1/(\a p1+\a p2).
    */
   static bool rndbool(double p1, double p2) {
+    return current().rndbool(p1, p2);
+  }
+
+  /**
+   * Return a true with probability \a p1/(\a p1+\a p2). Uses
+   * push_back to reuse random number.
+   */
+  static bool prndbool(double p1, double p2) {
     return current().rndbool(p1, p2);
   }
 
@@ -124,6 +140,14 @@ public:
    * p3.
    */
   static int rndsign(double p1, double p2, double p3) {
+    return current().rndsign(p1, p2, p3);
+  }
+
+  /**
+   * Return -1, 0, or 1 with relative probabilities \a p1, \a p2, \a
+   * p3. Uses push_back to reuse random number.
+   */
+  static int prndsign(double p1, double p2, double p3) {
     return current().rndsign(p1, p2, p3);
   }
 

@@ -4,7 +4,7 @@
 // functions of the RivetAnalysis class.
 //
 
-#include "RivetAnalysis.h"
+#include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -16,6 +16,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "HepMC/GenEvent.h"
+#include "RivetAnalysis.h"
 #include "Rivet/AnalysisHandler.hh"
 #include "Rivet/Tools/RivetPaths.hh"
 #include "Rivet/Tools/Logging.hh"
@@ -121,9 +122,11 @@ void RivetAnalysis::dofinish() {
 
     string fname = filename;
 #if ThePEG_RIVET_VERSION == 1
-    if ( fname.empty() ) fname = generator()->runName() + ".aida";
+    if ( fname.empty() )
+      fname = generator()->path() + "/" + generator()->runName() + ".aida";
 #elif ThePEG_RIVET_VERSION > 1
-    if ( fname.empty() ) fname = generator()->runName() + ".yoda";
+    if ( fname.empty() )
+      fname = generator()->path() + "/" + generator()->runName() + ".yoda";
 #else
 #error "Unknown ThePEG_RIVET_VERSION"
 #endif

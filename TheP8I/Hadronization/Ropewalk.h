@@ -248,7 +248,7 @@ public:
    * The default constructor.
    */
   Ropewalk(const vector<ColourSinglet> & singlets, Length width,
-	   Energy scale, double jDC, bool throwaway = true, bool deb = false);
+	   Energy scale, double jDC, bool throwaway = true, bool rapidityOverlap = true, bool deb = false);
 
   /**
    * The destructor.
@@ -399,6 +399,11 @@ private:
    */
   DipoleMap stringdipoles;
 
+
+  /**
+   * Do rapidity overlap=
+   */
+  bool rapidityOverlap;
   /**
    * Debug flag.
    */

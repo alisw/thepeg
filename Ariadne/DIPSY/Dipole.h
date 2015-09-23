@@ -50,12 +50,28 @@ public:
   /**
    * The default constructor.
    */
-  inline Dipole();
+  inline Dipole()
+    : theDipoleState(tDipoleStatePtr()), thePartons(PartonPair()),
+      theNeighbors(tDipolePair()),
+      theChildren(tDipolePair()), theGeneratedGluon(PartonPtr()),
+      theSwingDipole(tDipolePtr()), theGeneratedY(Constants::MaxRapidity),
+      theColour(-1),
+      theInteracted(tDipolePtr()), theGLAPsafe(false), isParticipating(true),
+      isRecoilSwing(false), isTouched(true), isOn(true), swingCache(-1.0/GeV2),
+      effmap(0) {}
 
   /**
    * The copy constructor.
    */
-  inline Dipole(const Dipole &);
+  inline Dipole(const Dipole & x)
+    : theDipoleState(x.theDipoleState), thePartons(x.thePartons),
+      theNeighbors(x.theNeighbors),
+      theChildren(x.theChildren), theGeneratedGluon(x.theGeneratedGluon),
+      theSwingDipole(x.theSwingDipole), theGeneratedY(x.theGeneratedY),
+      theColour(x.theColour), theInteracted(x.theInteracted),
+      theGLAPsafe(x.theGLAPsafe), isParticipating(x.isParticipating),
+      isRecoilSwing(x.isRecoilSwing), isTouched(true), isOn(x.isOn),
+      swingCache(x.swingCache), effmap(0) {}
 
   /**
    * The destructor.
@@ -101,101 +117,137 @@ public:
   /**
    * The DipoleState to which this Dipole belongs.
    */
-  inline DipoleState & dipoleState() const;
+  inline DipoleState & dipoleState() const {
+    return *theDipoleState;
+  }
 
   /**
    * Set the DipoleState to which this Dipole belongs.
    * added by CF to access from emitter.
    */
-  inline void dipoleState(tDipoleStatePtr);
+  inline void dipoleState(tDipoleStatePtr dipst) {
+    theDipoleState = dipst;
+  }
 
   /**
    */
-  inline const PartonPair & partons() const;
+  inline const PartonPair & partons() const {
+    return thePartons;
+  }
 
   /**
    * Get the effective parton.
    */
   inline const pair< EffectivePartonPtr, EffectivePartonPtr > &
-  effectivePartons() const;
+  effectivePartons() const {
+    return theEffectivePartons;
+  }
 
   /**
    * Get an effective parton corresponding to one of the partons in
    * the original dipole given a range.
    */
-  tEffectivePartonPtr getEff(tPartonPtr p, InvEnergy range) const;
+  tEffectivePartonPtr getEff(tcPartonPtr p, InvEnergy range) const;
 
 
   /**
    * Set the effective parton.
    */
-  inline void effectivePartons( tEffectivePartonPtr, tEffectivePartonPtr );
+  inline void effectivePartons(tEffectivePartonPtr g1, tEffectivePartonPtr g2) {
+    theEffectivePartons = make_pair( g1, g2 );
+  }
 
   /**
    * controls if any of the effective partons have been changed by emissions.
    */
-  inline const bool effectivePartonsChanged() const;
+  inline const bool effectivePartonsChanged() const {
+    return (effectivePartons().first->changed() ||
+	    effectivePartons().second->changed());
+  }
 
   /**
    * Set the neighboring dipoles.
    */
-  inline const tDipolePair & neighbors() const;
+  inline const tDipolePair & neighbors() const {
+    return theNeighbors;
+  }
 
   /**
    * Get the child dipoles.
    */
-  inline const tDipolePair & children() const;
+  inline const tDipolePair & children() const {
+    return theChildren;
+  }
 
   /**
    * Get the child dipoles.
    */
-  inline tDipolePair & children();
+  inline tDipolePair & children() {
+    return theChildren;
+  }
 
   /**
    * Get the generated gluon to be emitted. Returns null if none has
    * been generated.
    */
-  inline tPartonPtr generatedGluon() const;
+  inline tPartonPtr generatedGluon() const {
+    return theGeneratedGluon;
+  }
 
   /**
    * Set the generated gluon to be emitted.
    * Added by CF to get access from emitter.
    */
-  inline void generatedGluon(tPartonPtr);
+  inline void generatedGluon(tPartonPtr p) {
+    theGeneratedGluon = p;
+  }
 
   /**
    * Get the dipole to swing with. Return null if no swing has been
    * generated.
    */
-  inline tDipolePtr swingDipole() const;
+  inline tDipolePtr swingDipole() const {
+    return theSwingDipole;
+  }
 
   /**
    * Set the dipole to swing with.
    * Aded by CF
    */
-  inline  void swingDipole(tDipolePtr);
+  inline  void swingDipole(tDipolePtr d) {
+    theSwingDipole = d;
+  }
 
   /**
    * Return true if this dipole has generated an emission or a swing.
    */
-  inline bool hasGen();
+  inline bool hasGen() {
+    return (generatedGluon() || swingDipole()) &&
+      !(swingDipole() && swingDipole()->children().first);
+  }
 
   /**
    * The rapidity of the generated emission or swing.
    */
-  inline double generatedY() const;
+  inline double generatedY() const {
+    return theGeneratedY;
+  }
 
   /**
    * Set the rapidity of the generated emission or swing.
    * Added by CF to access from emitter.
    */
-  inline void generatedY(double);
+  inline void generatedY(double y) {
+    theGeneratedY = y;
+  }
 
   /**
    * Get a pointer to a Dipole in another DipoleState with which this
    * Dipole has interacted. @return null if Dipole has not interacted.
    */
-  inline tDipolePtr interacted() const;
+  inline tDipolePtr interacted() const {
+    return theInteracted;
+  }
 
   /**
    * Returns the lengths that the new dipoles will have when it has
@@ -206,32 +258,45 @@ public:
   /**
    * Set the partons.
    */
-  inline void partons(PartonPair);
+  inline void partons(PartonPair x) {
+    thePartons = x;
+  }
 
   /**
    * Set the neighboring dipoles.
    */
-  inline void neighbors(tDipolePair);
+  inline void neighbors(tDipolePair x) {
+    theNeighbors = x;
+  }
 
   /**
    * Set the neighboring dipole.
    */
-  inline void firstNeighbor(tDipolePtr);
+  inline void firstNeighbor(tDipolePtr d) {
+    theNeighbors.first = d;
+  }
 
   /**
    * Set the neighboring dipole.
    */
-  inline void secondNeighbor(tDipolePtr);
+  inline void secondNeighbor(tDipolePtr d) {
+    theNeighbors.second = d;
+  }
 
   /**
    * Get the colour.
    */
-  inline int colour() const;
+  inline int colour() const {
+    return theColour;
+  }
 
   /**
    * Set the colour.
    */
-  inline void colour(int c, int sys = 0);
+  inline void colour(int c, int sys = 0) {
+    theColour = c;
+    if ( sys > 0 ) colourSystem(sys);
+  }
 
   /**
    * Get the colour system.
@@ -246,22 +311,30 @@ public:
   /**
    * says if the dipole is part of a DGLAP chain, and thus should not be absorbed.
    */
-  inline bool DGLAPsafe();
+  inline bool DGLAPsafe() {
+    return theGLAPsafe;
+  }
 
   /**
    * Sets if the dipole is part of a DGLAP chain or not.
    */
-  inline void DGLAPsafe(bool);
+  inline void DGLAPsafe(bool safe) {
+    theGLAPsafe = safe;
+  }
 
   /**
    * says if the (initial) dipole is participating in the interaction.
    */
-  inline bool participating();
+  inline bool participating() {
+    return isParticipating;
+  }
 
   /**
    * Sets if the (initial) dipole is participating in the interaction.
    */
-  inline void participating(bool);
+  inline void participating(bool b) {
+    isParticipating = b;
+  }
 
   /**
    * gets if the generated swing is a gluon exchange.
@@ -279,19 +352,40 @@ public:
 
   /**
    * Indicate that the Dipole has interacted with the given Dipole in
-   * another DipoleState.
+   * another DipoleState. If \a onegluon is true, only one of the
+   * gluons in this dipole is flagged as interacted.
    */
-  void interact(Dipole &);
+  void interact(Dipole &, bool onegluon = false);
+
+  /**
+   * Set the pointer to the dipole with which this dipole has
+   * interacted. Do not mark partons as interacted.
+   */
+  void interacted(tDipolePtr d) {
+    theInteracted = d;
+  }
 
   /**
    * Get the squared transverse size of this Dipole.
    */
-  inline InvEnergy2 size2() const;
+  inline InvEnergy2 size2() const {
+    return partons().first->dist2(*partons().second);
+  }
 
   /**
    * Get the transverse size of this Dipole.
    */
-  inline InvEnergy size() const;
+  inline InvEnergy size() const {
+    return sqrt(size2());
+  }
+
+  /**
+   * Get the direction and size of this dipole.
+   */
+  inline Parton::Point vSize() const {
+    return partons().first->position() - partons().second->position();
+  }
+
   //@}
 
   /** @name Functions for extracting final dipoles. */
@@ -303,7 +397,13 @@ public:
    * called instead.
    */
   template <typename OutputIterator>
-  void extract(OutputIterator it);
+  void extract(OutputIterator it) {
+    //an absorbed (dead end) dipole has only second child
+    if ( !children().first && children().second ) return;
+    if ( children().first ) children().first->extract(it);
+    if ( children().second ) children().second->extract(it);
+    if ( !children().first && !children().second ) *it++ = this;
+  }
 
   /**
    * Extract all undecayed dipoles into the vector according to colour
@@ -543,6 +643,11 @@ public:
    * Build the map of effective partons.
    */
   void buildEffMap() const;
+
+  /**
+   * Return a tag identifying this dipole.
+   */
+  string tag() const;
   
 private:
 
@@ -555,7 +660,5 @@ private:
 };
 
 }
-
-#include "Dipole.icc"
 
 #endif /* DIPSY_Dipole_H */

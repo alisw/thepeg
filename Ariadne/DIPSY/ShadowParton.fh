@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShadowParton class.
+//
+#ifndef DIPSY_ShadowParton_FH
+#define DIPSY_ShadowParton_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace DIPSY {
+
+class ShadowParton;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(DIPSY::ShadowParton,SPartonPtr);
+
+}
+
+#endif

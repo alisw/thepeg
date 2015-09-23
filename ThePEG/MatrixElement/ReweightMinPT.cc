@@ -14,6 +14,7 @@
 #include "ReweightMinPT.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -31,16 +32,17 @@ IBPtr ReweightMinPT::fullclone() const {
 double ReweightMinPT::weight() const {
   Energy minPt = Constants::MaxEnergy;
   for ( int i = 0, N = subProcess()->outgoing().size(); i < N; ++i )
-    minPt = min(minPt, subProcess()->outgoing()[i]->momentum().perp());
+    if ( !onlyColoured || subProcess()->outgoing()[i]->coloured() )
+      minPt = min(minPt, subProcess()->outgoing()[i]->momentum().perp());
   return pow(minPt/scale, power);
 }
 
 void ReweightMinPT::persistentOutput(PersistentOStream & os) const {
-  os << power << ounit(scale,GeV);
+  os << power << ounit(scale,GeV) << onlyColoured;
 }
 
 void ReweightMinPT::persistentInput(PersistentIStream & is, int) {
-  is >> power >> iunit(scale,GeV);
+  is >> power >> iunit(scale,GeV) >> onlyColoured;
 }
 
 ClassDescription<ReweightMinPT> ReweightMinPT::initReweightMinPT;
@@ -65,8 +67,26 @@ void ReweightMinPT::Init() {
      &ReweightMinPT::scale, GeV, 50.0*GeV, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
+
+  static Switch<ReweightMinPT,bool> interfaceOnlyColoured
+    ("OnlyColoured",
+     "Only consider coloured particles in the SubProcess when finding the minimum transverse momentum.",
+     &ReweightMinPT::onlyColoured, false, true, false);
+  static SwitchOption interfaceOnlyColouredTrue
+    (interfaceOnlyColoured,
+     "True",
+     "Use only coloured particles.",
+     true);
+  static SwitchOption interfaceOnlyColouredFalse
+    (interfaceOnlyColoured,
+     "False",
+     "Use all particles.",
+     false);
+
+
   interfacePower.rank(10);
   interfaceScale.rank(9);
+  interfaceOnlyColoured.rank(8);
 
 }
 

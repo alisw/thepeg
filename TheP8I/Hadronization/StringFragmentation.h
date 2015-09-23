@@ -217,12 +217,17 @@ private:
    */
   bool throwaway;
 
+  /**
+   * Do rap. overlap
+   **/
+  bool rapidityOverlap;
+  
   TheP8EventShapes * _eventShapes;
   /**
    * Use thrust axis to calculate rapidities; useful for LEP validation
    */
   int useThrustAxis;
-
+ 
   /**
    * Additional interfaces to Pythia8 objects in case the string
    * overlap model is to be used.

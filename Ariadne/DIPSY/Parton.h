@@ -10,6 +10,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Ariadne/Config/CloneBase.h"
 #include "Parton.fh"
+#include "ShadowParton.fh"
 #include "Dipole.fh"
 
 namespace DIPSY {
@@ -52,12 +53,25 @@ public:
   /**
    * The default constructor.
    */
-  inline Parton();
+  inline Parton()
+    : thePosition(Point()), thePlus(0.0*GeV), theOriginalY(0.0),
+      thePT(TransverseMomentum()),
+      theValencePT(TransverseMomentum()),theValencePlus(ZERO),
+      theMinus(0*GeV), theY(0), isRightMoving(true), theFlavour(ParticleID::g),
+      theParents(tPartonPair()), theDipoles(tDipolePair()), hasInteracted(false),
+      isOnShell(false), isValence(false), theMass(-1*GeV), theShadow(tSPartonPtr()) {}
 
   /**
    * The copy constructor.
    */
-  inline Parton(const Parton &);
+  inline Parton(const Parton & x)
+    : thePosition(x.thePosition), thePlus(x.thePlus),theOriginalY(x.theOriginalY), 
+      thePT(x.thePT), theValencePT(x.theValencePT),theValencePlus(x.theValencePlus),
+      theMinus(x.theMinus), theY(x.theY), isRightMoving(x.isRightMoving),
+      theFlavour(x.theFlavour),theParents(x.theParents),
+      theChildren(x.theChildren), theDipoles(x.theDipoles),
+      hasInteracted(x.hasInteracted), isOrdered(x.isOrdered), isOnShell(x.isOnShell),
+      isValence(x.isValence), theMass(x.theMass), theShadow(x.theShadow) {}
 
   /**
    * The destructor.
@@ -103,7 +117,9 @@ public:
   /**
    * Calculate the squared transverse distance to the given parton.
    */
-  inline InvEnergy2 dist2(const Parton &) const;
+  inline InvEnergy2 dist2(const Parton & p) const {
+    return (position() - p.position()).pt2();
+  }
 
   /**
    * Produce a ThePEG::Particle corresponding to this parton.
@@ -116,10 +132,38 @@ public:
   Energy mass() const;
 
   /**
+   * The scalar transverse momentum squared of this parton.
+   */
+  Energy2 pt2() const {
+    return pT().pt2();
+  }
+
+  /**
+   * The scalar transverse mass squared of this parton.
+   */
+  Energy2 mt2() const {
+    return pT().pt2() + sqr(mass());
+  }
+
+  /**
+   * The scalar transverse momentum of this parton.
+   */
+  Energy pt() const {
+    return sqrt(pt2());
+  }
+
+  /**
+   * The scalar transverse mass of this parton.
+   */
+  Energy mt() const {
+    return sqrt(mt2());
+  }
+
+  /**
    * The final-state momentum of this particle.
    */
   LorentzMomentum momentum() const {
-    return lightCone(plus(), (pT().pt2() + sqr(mass()))/plus(), pT());
+    return lightCone(plus(), minus(), pT());
   }
 
   /** @name Simple access functions. */
@@ -127,47 +171,76 @@ public:
   /**
    * Get the position in impact parameter space.
    */
-  inline const Point & position() const;
+  inline const Point & position() const {
+    return thePosition;
+  }
 
   /**
    * Get the positive light-cone momentum.
    */
-  inline Energy plus() const;
+  inline Energy plus() const {
+    return thePlus;
+  }
 
   /**
    * Get the transverse momentum.
    */
-  inline TransverseMomentum pT() const;
+  inline TransverseMomentum pT() const {
+    return thePT;
+  }
 
   /**
    * Get the transverse valence momentum. 0 if not a valence parton.
    */
-  inline TransverseMomentum valencePT() const;
+  inline TransverseMomentum valencePT() const {
+    if (isValence)
+      return theValencePT;
+    return TransverseMomentum();
+  }
 
   /**
    * Get the valence energy. 0 if not a valence parton.
    */
-  inline Energy valencePlus() const;
+  inline Energy valencePlus() const {
+    if (isValence)
+      return theValencePlus;
+    return ZERO;
+  }
 
   /**
    * Get the accumulated negative light-cone momentum deficit.
    */
-  inline Energy minus() const;
+  inline Energy minus() const {
+    return theMinus;
+  }
 
   /**
    * Get the rapidity.
    */
-  inline double y() const;
+  inline double y() const {
+    return theY;
+  }
 
   /**
    * Get the flavour of this parton.
    */
-  inline long flavour() const;
+  inline long flavour() const {
+    return theFlavour;
+  }
 
   /**
    * Get the parent partons.
    */
-  inline tPartonPair parents() const;
+  inline tPartonPair parents() const {
+    return theParents;
+  }
+
+  /**
+   * Get the main parent.
+   */
+  inline tPartonPtr mainParent() const {
+    return theMainParent;
+  }
 
   /**
    * Get the children partons.
@@ -193,37 +266,51 @@ public:
   /**
    * Get the connecting dipoles.
    */
-  inline tDipolePair dipoles() const;
+  inline tDipolePair dipoles() const {
+    return theDipoles;
+  }
 
   /**
    * Indicate if this parton has interacted.
    */
-  inline bool interacted() const;
+  inline bool interacted() const {
+    return hasInteracted;
+  }
 
   /**
    * Indicate if this parton is ordered.
    */
-  inline bool ordered() const;
+  inline bool ordered() const {
+    return isOrdered;
+  }
 
   /**
    * Set if this parton is ordered.
    */
-  inline void ordered(bool);
+  inline void ordered(bool b) {
+    isOrdered = b;
+  }
 
   /**
    * Return if this parton is on shell.
    */
-  inline bool onShell() const;
+  inline bool onShell() const {
+    return isOnShell;
+  }
 
   /**
    * Set if this parton is on shell.
    */
-  inline void onShell(bool);
+  inline void onShell(bool b) {
+    isOnShell = b;
+  }
 
   /**
    * Return if this parton is a valence parton.
    */
-  inline bool valence() const;
+  inline bool valence() const {
+    return isValence;
+  }
 
   /**
    * Returns true if the parton is absorbed.
@@ -233,82 +320,121 @@ public:
   /**
    * Set if this parton is a valence parton.
    */
-  inline void valence(bool);
+  inline void valence(bool b) {
+    isValence = b;
+  }
 
   /**
    * Set the position in impact parameter space.
    */
-  inline void position(const Point &);
+  inline void position(const Point & x) {
+    thePosition = x;
+  }
 
   /**
    * Set the positive light-cone momentum.
    */
-  inline void plus(Energy);
+  inline void plus(Energy x) {
+    thePlus = x;
+  }
 
   /**
    * Set the transverse momentum.
    */
-   inline void pT(TransverseMomentum);
+   inline void pT(TransverseMomentum x) {
+     thePT = x;
+   }
 
   /**
    * Set the transverse valence momentum, and set isValence to true.
    */
-   inline void valencePT(TransverseMomentum);
+   inline void valencePT(TransverseMomentum x) {
+     isValence = true;
+     theValencePT = x;
+   }
 
   /**
    * Set the valence energy.
    */
-   inline void valencePlus(Energy);
+   inline void valencePlus(Energy E) {
+     theValencePlus = E;
+   }
 
   /**
    * Set the accumulated negative light-cone momentum deficit.
    */
-  inline void minus(Energy);
+  inline void minus(Energy x) {
+    theMinus = x;
+  }
 
   /**
    * Set the rapidity.
    */
-  inline void y(double);
+  inline void y(double x) {
+    theY = x;
+  }
 
   /**
    * Set the flavour of this parton.
    */
-  inline void flavour(long);
+  inline void flavour(long x) {
+    theFlavour = (x == 0? ParticleID::g: x);
+  }
 
   /**
    * Set the parent partons.
    */
-  inline void parents(tPartonPair);
+  inline void parents(tPartonPair x) {
+    theParents = x;
+  }
+
+  /**
+   * Set the main parent parton.
+   */
+  inline void mainParent(tPartonPtr p) {
+    theMainParent = p;
+  }
 
   /**
    * Set the connecting dipoles.
    */
-  inline void dipoles(tDipolePair);
+  inline void dipoles(tDipolePair x) {
+    theDipoles = x;
+  }
 
   /**
    * Get the original emission rapidity.
    */
-  inline const double oY() const;
+  inline const double oY() const {
+    return theOriginalY;
+  }
 
   /**
    * Set the original emission rapidity.
    */
-  inline void oY(double);
+  inline void oY(double y) {
+    theOriginalY = y;
+  }
 
   /**
-   * Indicate that this parton has interacted.
+   * Indicate that this parton has interacted. If \a onegluon is true,
+   * only the main parent is recursively flagged as interacted.
    */
-  void interact();
+  void interact(bool onegluon = false);
 
   /**
    * Returns true if the parton comes from a rightmoving state.
    */
-  inline bool rightMoving() const;
+  inline bool rightMoving() const {
+    return isRightMoving;
+  }
 
   /**
    * Set the direction of the original state.
    */
-  inline void rightMoving(bool);
+  inline void rightMoving(bool rM) {
+    isRightMoving = rM;
+  }
 
   /**
    * Get and set the number of the parton.
@@ -316,6 +442,7 @@ public:
   inline int number() {
     return theNumber;
   }
+
   inline void number(int N) {
     theNumber = N;
   }
@@ -360,6 +487,12 @@ public:
     theMinus = thePT.pt()*exp(theY);
   }
 
+  inline void mirror(double y0) {
+    y(2.0*y0 - y());
+    swap(thePlus, theMinus);
+    rightMoving(!rightMoving());
+  }
+
   /**
    * Prints all the member variables to cout.
    */
@@ -369,6 +502,20 @@ public:
    * Returns the recoil this parton would get from the argument parton.
    */
   TransverseMomentum recoil(tPartonPtr) const;
+
+  /**
+   * Return the current shadow parton.
+   */
+  tSPartonPtr shadow() const {
+    return theShadow;
+  }
+
+  /**
+   * Return a new shadow parton.
+   */
+  void shadow(tSPartonPtr sp) {
+    theShadow = sp;
+  }
 
  //@}
 
@@ -460,6 +607,11 @@ private:
   tPartonPair theParents;
 
   /**
+   * The main parent parton.
+   */
+  tPartonPtr theMainParent;
+
+  /**
    * The children
    **/
   set<tPartonPtr> theChildren;
@@ -501,6 +653,11 @@ private:
    */
   mutable Energy theMass;
 
+  /**
+   * The current shadow parton.
+   */
+  tSPartonPtr theShadow;
+
 protected:
 
   /**
@@ -533,7 +690,5 @@ T & forceAt(std::vector<T,Alloc> & v,
 	    typename std::vector<T,Alloc>::size_type indx) {
   return expandToFit(v, indx)[indx];
 }
-
-#include "Parton.icc"
 
 #endif /* DIPSY_Parton_H */

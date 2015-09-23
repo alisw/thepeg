@@ -38,6 +38,10 @@ saverun TestppFS09orig LHCGenerator
 set /DIPSY/FSOrdering:OnlyOriginal AllEmissions
 set LHCLumi:Energy 7000.0
 saverun TestppFS70 LHCGenerator
+saverun TestppFS70cmp LHCGenerator
+set LHCGenerator:EventHandler:EffectivePartonMode Shadows
+saverun TestppFS70chk LHCGenerator
+set LHCGenerator:EventHandler:EffectivePartonMode Relatives
 
 set LHCGenerator:EventHandler:YFrametest 0.3
 set LHCLumi:Energy 900.0

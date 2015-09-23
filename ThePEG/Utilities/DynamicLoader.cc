@@ -105,18 +105,21 @@ bool DynamicLoader::load(string name) {
   if ( loaded.find(name) != loaded.end() ) return true;
   loaded.insert(name);
   bool success = false;
-  if ( name[0] == '/' ) success = loadcmd(name);
+  const string name_dylib = StringUtils::remsuf(name) + ".dylib";
+  if ( name[0] == '/' ) {
+    success = loadcmd(name) || loadcmd(name_dylib);
+  }
   else {
     for ( unsigned i = 0; i < paths.size(); ++i ) {
       string path = paths[i];
       if ( path[path.size() - 1] != '/' ) path += '/';
-      if ( loadcmd(path + name) ) {
+      if ( loadcmd(path + name) || loadcmd(path + name_dylib) ) {
 	success = true;
 	break;
       }
     }
   }
-  if ( success || loadcmd(name) ) {
+  if ( success || loadcmd(name) || loadcmd(name_dylib) ) {
     lastErrorMessage = "";
     return true;
   }

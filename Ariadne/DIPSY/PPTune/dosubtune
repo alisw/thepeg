@@ -1,0 +1,38 @@
+#! /usr/bin/tcsh
+
+if ( ! $# ) then
+    echo "Usage: $0 [tag] {[basetag]}"
+    exit(1)
+endif
+
+if ( -d $1 ) then
+
+make ${1}T
+if  ( $status ) then
+    echo "Make failed"
+    exit(1)
+endif
+
+if ( -e ${1}/PPT02.run && -e ${1}/PPT09.run && -e ${1}/PPT28.run && -e ${1}/PPT70.run && -e ${1}/PPT0202.run && -e ${1}/PPT0909.run && -e ${1}/PPT2828.run && -e ${1}/PPT7070.run ) then
+    sub runtag ./runThePEG, ${1}/PPT02, ${1}/PPT09, ${1}/PPT28, ${1}/PPT70, ${1}/PPT0202, ${1}/PPT0909, ${1}/PPT2828, ${1}/PPT7070
+else
+    echo "Could not find all run files"
+    exit(1)
+endif
+
+else
+
+make ${1}
+if  ( $status ) then
+    echo "Make failed"
+    exit(1)
+endif
+
+if ( -e ${1}02.run && -e ${1}09.run && -e ${1}28.run && -e ${1}70.run && -e ${1}0202.run && -e ${1}0909.run && -e ${1}2828.run && -e ${1}7070.run ) then
+    sub runtag ./runThePEG, ${1}02, ${1}09, ${1}28, ${1}70, ${1}0202, ${1}0909, ${1}2828, ${1}7070
+else
+    echo "Could not find all run files"
+    exit(1)
+endif
+
+endif

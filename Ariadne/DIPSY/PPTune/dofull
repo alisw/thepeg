@@ -1,0 +1,17 @@
+#! /usr/bin/tcsh
+
+if ( ! $# ) then
+    echo "Usage: $0 [tag] {[basedir]}"
+    exit(1)
+endif
+
+./dosubxf $1
+
+waitforfiles "$1/PPXF01.tex" "$1/PPXF02.tex" "$1/PPXF05.tex" "$1/PPXF09#1-50.tex" "$1/PPXF09#51-100.tex" "$1/PPXF28#1-25.tex" "$1/PPXF28#26-50.tex" "$1/PPXF28#51-75.tex" "$1/PPXF28#76-100.tex" "$1/PPXF70#1-20.tex" "$1/PPXF70#21-40.tex" "$1/PPXF70#41-60.tex" "$1/PPXF70#61-80.tex" "$1/PPXF70#81-100.tex" "$1/PPXF7O.tex"
+
+./domkprof $1
+
+waitforfiles $1/Tune00.prin $1/Tune09.prin $1/Tune28.prin $1/Tune70.prin $1/Tune02.prin
+
+./dosubtune $1
+

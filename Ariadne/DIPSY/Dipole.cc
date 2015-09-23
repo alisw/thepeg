@@ -8,12 +8,14 @@
 #include "DipoleState.h"
 #include "DipoleEventHandler.h"
 #include "ThePEG/Utilities/Current.h"
+#include "ThePEG/Utilities/ObjectIndexer.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "ThePEG/Utilities/Throw.h"
 #include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Utilities/DebugItem.h"
 
 using namespace DIPSY;
 
@@ -42,8 +44,23 @@ void Dipole::rebind(const TranslationMap & trans) {
   theSwingDipole = trans.translate(theSwingDipole);
 }
 
-void Dipole::interact(Dipole & x) {
+void Dipole::interact(Dipole & x, bool onegluon) {
   theInteracted = &x;
+  if ( onegluon && partons().first && partons().second ) {
+    InvEnergy2 d11 = x.partons().first?
+      partons().first->dist2(*x.partons().first): InvEnergy2();
+    InvEnergy2 d12 = x.partons().second?
+      partons().first->dist2(*x.partons().second): InvEnergy2();
+    InvEnergy2 d21 = x.partons().first?
+      partons().second->dist2(*x.partons().first): InvEnergy2();
+    InvEnergy2 d22 = x.partons().second?
+      partons().second->dist2(*x.partons().second): InvEnergy2();
+    if ( UseRandom::rndbool((d11 + d12)/(d11 + d12 + d21 + d22)) )
+      partons().first->interact(true);
+    else
+      partons().second->interact(true);
+    return;
+  }
   if ( partons().first ) partons().first->interact();
   if ( partons().second ) partons().second->interact();
 }
@@ -110,7 +127,7 @@ tDipolePtr Dipole::getEmitter(double miny, double maxy) {
   } else if ( children().second ) {
     return DipolePtr();
   }
-  if ( !hasGen() || effectivePartonsChanged() ) {
+  if ( !hasGen() || ( effectivePartons().first && effectivePartonsChanged() ) ) {
     generate(miny, maxy);
   }
   else {
@@ -162,8 +179,12 @@ void Dipole::absorb() {
 }
 
 void Dipole::emit() {
-  if ( swingDipole() ) {
+  static DebugItem trace("DIPSY::Trace", 9);
+  if ( tDipolePtr sd = swingDipole() ) {
+    if ( trace ) cerr << "Swing " << tag() << " & " << sd->tag();
     recombine();
+    if ( trace ) cerr << " -> " << children().first->tag()
+		      << " & " << sd->children().first->tag() << endl;
     return;
   }
 
@@ -208,9 +229,11 @@ void Dipole::splitDipole(double colsel) {
   if ( UseRandom::rndbool(colsel) ) {
     children().first->theColour = theColour;
     dipoleState().generateColourIndex(children().second);
+    generatedGluon()->mainParent(partons().second);
   } else {
     children().second->theColour = theColour;
     dipoleState().generateColourIndex(children().first);
+    generatedGluon()->mainParent(partons().first);
   }
 }
 
@@ -223,8 +246,12 @@ void Dipole::colourSystem(int sys) {
 	 sys*Current<DipoleEventHandler>()->nColours());
 }
 
-tEffectivePartonPtr Dipole::getEff(tPartonPtr p, InvEnergy range) const {
+tEffectivePartonPtr Dipole::getEff(tcPartonPtr p, InvEnergy range) const {
   tEffectivePartonPtr ret;
+  if ( Current<DipoleEventHandler>()->effectivePartonMode() < 0 )
+    Throw<Exception>()
+      << "Tried to use effective partons when we want the shadow strategy!"
+      << Exception::abortnow;
   if ( Current<DipoleEventHandler>()->effectivePartonMode() == 3 ) {
     if ( p == partons().first ) {
       effectivePartons().first->setRange(range);
@@ -311,6 +338,21 @@ void Dipole::persistentInput(PersistentIStream & is, int) {
      >> isOn >> iunit(swingCache, 1.0/GeV2);
 }
 
+string Dipole::tag() const {
+  static ObjectIndexer<int, const Dipole> di;
+  di(tcDipolePtr());
+  static ObjectIndexer<int, const Parton> pi;
+  pi(tcPartonPtr());
+  static ObjectIndexer<int, const ShadowParton> si;
+  si(tcSPartonPtr());
+  ostringstream os;
+  os << "D" << di(this) << "(P" << pi(partons().first);
+  if ( partons().first->shadow() ) os << "[S" << si(partons().first->shadow()) << "]";
+  os << ",P" << pi(partons().second);
+  if ( partons().second->shadow() ) os << "[S" << si(partons().second->shadow()) << "]";
+  os << ")";
+  return os.str();
+}
 
 // Static variable needed for the type description system in ThePEG.
 #include "ThePEG/Utilities/DescribeClass.h"

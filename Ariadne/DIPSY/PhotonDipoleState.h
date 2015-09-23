@@ -26,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PhotonDipoleState();
+  inline PhotonDipoleState() {}
 
   /**
    * The standard constructor taking an event handler, the total
@@ -38,7 +38,8 @@ public:
   /**
    * The copy constructor.
    */
-  inline PhotonDipoleState(const PhotonDipoleState &);
+  inline PhotonDipoleState(const PhotonDipoleState & x)
+    : DipoleState(x) {}
 
   /**
    * The destructor.
@@ -67,7 +68,5 @@ private:
 };
 
 }
-
-#include "PhotonDipoleState.icc"
 
 #endif /* DIPSY_PhotonDipoleState_H */

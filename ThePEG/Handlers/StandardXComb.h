@@ -258,6 +258,24 @@ public:
   CrossSection lastCrossSection() const { return theLastCrossSection; }
 
   /**
+   * Check if a reshuffling is required when constructing the hard
+   * subprocess.
+   */
+  void checkReshufflingNeeds();
+
+  /**
+   * Return true if a reshuffling is required when constructing the hard
+   * subprocess. 
+   */
+  bool needsReshuffling() const { return theNeedsReshuffling; }
+
+  /**
+   * Perform the reshuffling from hardProcessMass to mass values,
+   * given outgoing momenta
+   */
+  void reshuffle(vector<Lorentz5Momentum>&) const;
+
+  /**
    * Construct a sub-process object from the information available.
    */
   virtual tSubProPtr construct();
@@ -665,6 +683,22 @@ private:
    * The cut weight encountered from fuzzy cuts
    */
   double theCutWeight;
+
+  /**
+   * True if a reshuffling is required when constructing the hard
+   * subprocess.
+   */
+  bool theNeedsReshuffling;
+
+  /**
+   * Calculate the reshuffling equation given the coefficients
+   */
+  double reshuffleEquation(double, const vector<pair<Energy2,Energy2> >&, Energy2) const;
+
+  /**
+   * Solve the reshuffling equation given the coefficients
+   */
+  double solveReshuffleEquation(const vector<pair<Energy2,Energy2> >&, Energy2) const;
 
 private:
 

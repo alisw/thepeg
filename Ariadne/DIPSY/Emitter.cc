@@ -8,6 +8,7 @@
 
 #include "Emitter.h"
 #include "Parton.h"
+#include "ShadowParton.h"
 #include "Dipole.h"
 #include "DipoleState.h"
 #include "EffectiveParton.h"
@@ -17,6 +18,8 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/DebugItem.h"
 
 #include <iostream>
 
@@ -99,15 +102,81 @@ bool Emitter::OEVeto(DipolePtr dip, double y0, Parton::Point p) const {
                                    1.0/(sqr(R23)*(R23/theRScale+2.0)));
 
   //if the overestimate is ok, this should never happen.
-  //TODO: write a proper error message.
-  if(correctDist/overestimate>1.0) cout<<endl << "XT keep prob is " << correctDist/overestimate 
-<<endl << "r12 = " << R12*GeV << ", Rr13 = " << R13*GeV << ", r23 = " << R23*GeV << endl<< endl;
+  if( correctDist/overestimate > 1.0 )
+    Throw<EmitterException>()
+      << "In DIPSY::Emitter " << name() << ": XT keep prob is " << correctDist/overestimate 
+      << " (r12 = " << R12*GeV << ", Rr13 = " << R13*GeV << ", r23 = " << R23*GeV << ")"
+      << Exception::warning;
 
   //generate a random number and check if veto or not.
   if(correctDist/overestimate>UseRandom::rnd())
     return false;
   else
     return true;
+}
+
+/*
+ * The veto check for the overestimates done previously using shadows.
+ * This calculates the overestimated emission probability, and checks the
+ * actual probability it should have been in this point, and then returns
+ * true or false randomly depending on the ratio.
+ * Note that this is not the final distribution, as there are still more
+ * vetos done later.
+ */
+bool Emitter::OEVeto(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2,
+		     double y0, Parton::Point p) const {
+  //set up dipole sizes.
+  InvEnergy R13 = (dip->partons().first->position() - p).pt();
+  InvEnergy R23 = (dip->partons().second->position() - p).pt();
+  InvEnergy R12 = dip->size();
+
+  //Too large dipoles messes up the bessel functions, and will not make it
+  //through the p- veto anyways, so can be vetoed already now, to avoid
+  //errors from the bessel function.
+  if ( R13*GeV > 100.0 || R23*GeV > 100.0 ) return true;
+  if ( R12*GeV > 100.0 ) return false;
+
+  //some more set up.
+  double bess13 = gsl_sf_bessel_K1(R13/rMax());
+  double bess23 = gsl_sf_bessel_K1(R23/rMax());
+  
+  //this is the correct probability distribution used in the paper.
+  Energy2 correctDist = alphaBar(min(min(R13,R23),R12))/(M_PI*2.0*sqr(rMax()))*
+    (sqr(bess13) + sqr(bess23) - (sqr(R13) + sqr(R23) - sqr(R12))/
+     (R13*R23)*bess13*bess23);
+
+  // If we create dipoles which are larger than the original, the
+  // original partons will be distributed as dpt2/pt4. Here we may
+  // include an extra fudge factor to emulate a matrix element
+  // correction.
+  if ( R13 > R12 && R23 > R12 && Current<DipoleEventHandler>()->fudgeME() )
+    correctDist *= 1.0 - 1.0/(1.0 + cosh(dip->partons().first->y() -
+					 dip->partons().second->y()));
+
+  //Now calculate the overestimated distribution in the same way as it is done in gerateY() and generateXT().
+  double Coe = alphaBar(R12/2.0)/M_PI*
+    sqr(gsl_sf_bessel_K1(R12/(2.0*rMax())))*
+    sqr(R12/(2.0*rMax()))*
+    (R12/(2.0*theRScale)+2.0);
+  if(R12>2.0*rMax()) //double check that this is ok!!!!
+    Coe *= sqrt(R12/(2.0*rMax()))*
+      exp(R12/(rMax())-2.0);
+
+  //this is the overestime
+  Energy2 overestimate = Coe*(1.0/(sqr(R13)*(R13/theRScale+2.0)) + 
+                                   1.0/(sqr(R23)*(R23/theRScale+2.0)));
+
+  //if the overestimate is ok, this should never happen.
+  //TODO: write a proper error message.
+  if ( correctDist/overestimate > 1.0 )
+    Throw<EmitterException>()
+      << "In DIPSY::Emitter " << name() << ": XT keep prob is " << correctDist/overestimate 
+      << " (r12 = " << R12*GeV << ", Rr13 = " << R13*GeV << ", r23 = " << R23*GeV << ")"
+      << Exception::warning;
+
+  //generate a random number and check if veto or not.
+  return !UseRandom::rndbool(correctDist/overestimate);
+
 }
 
 /*
@@ -141,6 +210,30 @@ bool Emitter::YVeto(double y,DipolePtr dip, double Coe, double rateOE) const {
     return false; 				//keep
   else
     return true;					//else veto
+}
+
+/*
+ * This corrects the overestimated emission probability in Y used in generateY().
+ * The correct emission rate is calculated for the rapidity in question and
+ * compared to the overestimate rate used in generateY().
+ * Note that this is not the final correct y-distribution, as there are still several
+ * vetos to be checked, it is just a step closer to the correct distribution.
+ */
+bool Emitter::YVeto(double y, DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2,
+		    double Coe, double rateOE) const {
+  //calculate the correct rate at the rapidity y in question.
+  //TODO: member calculating cutoff, interface before/after recoil.
+  //Before recoil corresponds to order wrt propagator, after wrt final gluon.
+  InvEnergy cutoff = 0.99*0.5*
+    min(pTScale()/(sp1->plus0()*exp(y) + sp1->pT0().pt()/2.0),
+    min(pTScale()/(sp2->plus0()*exp(y) + sp2->pT0().pt()/2.0),
+        dip->size()/4.0));
+
+  //calculate overestimated rate according the what is used in generateY().
+  double rate = 2.0*M_PI*Coe*log(1.0 + 2.0*theRScale/cutoff);
+
+  return !UseRandom::rndbool(rate/rateOE);
+
 }
 
 /*
@@ -202,6 +295,57 @@ generateY(DipolePtr dip, double ymin, double ymax) const {
  }
 
 /*
+ * Generates a rapidity for the next emission using shadows.
+ * The distribution f(y) in this member is using is an overestimate, and will be
+ * vetoed down to correct distribution in the checks of the x_T distribution.
+ *
+ * Already the overestimate f(y) is too messy to generate directly though,
+ * so it has to be done through a further overestimate g(y) > f(y) which is
+ * then vetoed (only depending on y) down to f(y) with YVeto().
+ * Look at the writeup for more details on f() and g().
+ */
+double Emitter::generateY(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2,
+			  double ymin, double ymax) const {
+  //set up shorter names.
+  InvEnergy r = dip->size();
+
+  //To large dipoles will mess up the bessel function, so just shut them
+  // off by emitting after the maximum y.
+  if ( r*GeV > 100.0 ) return ymax + 1.0;
+
+  //Calculate the cutoff in transverse distance. See writeup for details.
+  InvEnergy cutoff = 0.99*0.5*
+    min(pTScale()/(sp1->plus0()*exp(ymin) + sp1->pT0().pt()/2.0),
+	min(pTScale()/(sp2->plus0()*exp(ymin) + sp2->pT0().pt()/2.0), r/4.0));
+
+  //Calculate the overestimated coefficient. See writeup for details.
+  double Coe = alphaBar(r/2.0)/M_PI*
+    sqr(gsl_sf_bessel_K1(r/(2.0*rMax())))*
+    sqr(r/(2.0*rMax()))*
+    (r/(2.0*theRScale)+2.0);
+
+  //For assymptotically large dipoles, the overestimated emission rate grows
+  //faster than Coe, so add an extra factor for large dipoles.
+  //this will have to be removed in the veto.
+  if(r>2.0*rMax()) //double check that this is ok!!!
+    Coe *= sqrt(r/(2.0*rMax()))*
+      exp(r/(rMax())-2.0);
+
+  //calculate the overestimated rate of emission (per unit rapidity).
+  double rateOE = 2.0*M_PI*Coe*log(1.0 + 2.0*theRScale/cutoff);
+
+  //generate the rapidity. (see writeup for details.)
+  double y = ymin + log(1.0-log(UseRandom::rnd())/rateOE);
+
+  //veto to get to correct distribution, recur if vetoed.
+  if( YVeto(y, dip, sp1, sp2, Coe, rateOE*exp(y-ymin)) && y < ymax )
+    return generateY(dip, sp1, sp2, y, ymax);
+
+  return y;
+
+ }
+
+/*
  * Generate the transverse position. First generate the distance r
  * larger than the cutoff used in generateY(), then decide around which
  * parton, and then the angle. Distributions found in writeup.
@@ -242,11 +386,49 @@ Parton::Point Emitter::generateXT(DipolePtr dip, double y0) const {
 }
 
 /*
+ * Generate the transverse position. First generate the distance r
+ * larger than the cutoff used in generateY(), then decide around which
+ * parton, and then the angle. Distributions found in writeup.
+ */
+Parton::Point
+Emitter::generateXT(DipolePtr dip, tSPartonPtr sp1, tSPartonPtr sp2, double y0) const {
+
+  //Calculate the cutoff.
+  //TODO: make cutoff member, taking dipole and y as arguments.
+  InvEnergy cutoff = 0.99*0.5*
+    min(pTScale()/(sp1->plus0()*exp(y0) + sp1->pT0().pt()/2.0),
+    min(pTScale()/(sp2->plus0()*exp(y0) + sp2->pT0().pt()/2.0),
+        dip->size()/4.0)); //if ordered AFTER recoil
+
+  //The normalisation. See writeup for details.
+  double C2 = 2.0/log(1.0 + 2.0*theRScale/cutoff);	//normalises g(z)
+
+  //Generate the distance.
+  InvEnergy r = 2.0*theRScale/(exp(2.0*UseRandom::rnd()/C2)-1.0);
+  //tested to give correct distribution C2/(r^3/theRScale+2r^2)
+
+  //generate the angle.
+  double phi = 2.0*M_PI*UseRandom::rnd();
+
+  //decide which parton, and create the Point to be returned.
+  tPartonPtr pp =
+    UseRandom::rndbool()? dip->partons().first: dip->partons().second;
+    return Point(pp->position().first + cos(phi)*r,
+		 pp->position().second + sin(phi)*r);
+
+}
+
+/*
 * the main function to be called from outside. Other functions are mainly to help
 * this one. To get the emission right, several layers of overestimates and vetoes
 * are used.
 */
 void Emitter::generate(Dipole & dip, double ymin, double ymax) const {
+
+  if ( dip.partons().first->shadow() ) {
+    generateWithShadows(dip, ymin, ymax);
+    return;
+  }
 
   //Lowest allowed emission rapidity. Not before any of the partons
   //in the dipole, and not before the supplied ymin.
@@ -289,8 +471,7 @@ void Emitter::generate(Dipole & dip, double ymin, double ymax) const {
 
     //generate a transverse position, using an overestimated
     //phase space.
-    Parton::Point p;
-    p = generateXT(& dip, y0);
+    Parton::Point p = generateXT(& dip, y0);
 
     //Bring down the overestimate in the distribution
     //to get the right amplitude. After this, only phase space limitations
@@ -395,9 +576,12 @@ void Emitter::generate(Dipole & dip, double ymin, double ymax) const {
     if ( min(r13, r23) < min(2.0/3.0*pTScale()/(p1->plus()*exp(y0)),
 			 min(2.0/3.0*pTScale()/(p2->plus()*exp(y0)),
 			     dip.size()/4.0)) )
-      cout << "emission below r-cutoff passed vetos!!!!!!!!!!!!!!!!!!!1!!!" << endl
-	   << "r12 = " << r12*GeV << ", r13 = " << r13*GeV << ", r23 = " << r23*GeV << endl
-	   << "v1/pt = " << min(v1.pt(), v2.pt())/pt.pt() << endl;
+      Throw<EmitterException>()
+	<< "In DIPSY::Emitter " << name() << ": Emission below r-cutoff passed vetos!"
+	<< " (r12 = " << ounit(r12, InvGeV) << ", r13 = " << ounit(r13, InvGeV)
+	<< ", r23 = " << ounit(r23, InvGeV)
+	<< "v1/pt = " << double(min(v1.pt(), v2.pt())/pt.pt()) << ")"
+	<< Exception::warning;
     
     // passed. Set up a new parton for the dipole with the information of the emission.
     PartonPtr gluon = new_ptr(Parton());
@@ -411,11 +595,136 @@ void Emitter::generate(Dipole & dip, double ymin, double ymax) const {
 }
 
 /*
+* the main function to be called from outside when using
+* shadows. Other functions are mainly to help this one. To get the
+* emission right, several layers of overestimates and vetoes are used.
+*/
+void Emitter::generateWithShadows(Dipole & dip, double ymin, double ymax) const {
+
+  static DebugItem trace("DIPSY::Trace", 9);
+
+  if ( trace ) cerr << "Gen  " << dip.tag() << endl;
+
+  // Handy pointers to the partons.
+  tPartonPtr p1 = dip.partons().first;
+  tPartonPtr p2 = dip.partons().second;
+
+  //First check how far down the history we must consider previous shadows.
+  tSPartonPtr sp1 =
+    dip.partons().first->shadow()->resolve(dip.size2()/4.0, dip.partons().second);
+  tSPartonPtr sp2 =
+    dip.partons().second->shadow()->resolve(dip.size2()/4.0, dip.partons().first);
+
+  //Lowest allowed emission rapidity. Not before any of the partons
+  //in the dipole, and not before the supplied ymin.
+  double y0 = max(ymin, max(p1->y(), p2->y()));
+
+  //We will go through the while loop until something passes all the vetoes
+  //or pass the maximum allowed rapidity ymax. However, put a limit
+  //on the number of trials not to get stuck. So define the count to keep
+  //track. Possibly a for loop would be more appropriate at this point...
+  while ( true ) {
+    //generate a rapidity, according to an overestimate.
+    y0 = generateY(&dip, sp1, sp2, y0, ymax);
+
+
+    //if the generated rapidity is above the limit, return an empty pointer
+    if ( y0 > ymax ) {
+      dip.generatedGluon(new_ptr(Parton()));
+      dip.generatedY(y0);
+      return;
+    }
+
+    //generate a transverse position, using an overestimated
+    //phase space.
+    Parton::Point p = generateXT(&dip, sp1, sp2, y0);
+
+    //Bring down the overestimate in the distribution
+    //to get the right amplitude. After this, only phase space limitations
+    //left.
+    if ( OEVeto(&dip, sp1, sp2, y0, p) ) {
+      continue;
+    }
+
+    //Set up notation.
+    InvEnergy2 r13 = (p1->position() - p).pt2();
+    InvEnergy2 r23 = (p2->position() - p).pt2();
+    InvEnergy2 r12 = dip.size2();
+
+    // We need to already here decide which parton is emitting.
+    bool firstsplit = UseRandom::rndbool(r23/(r23 + r13));
+    tPartonPtr pe = firstsplit? p1: p2;
+    tPartonPtr pr = firstsplit? p2: p1;
+    tSPartonPtr spe = firstsplit? sp1: sp2;
+    InvEnergy2 re3 = firstsplit? r13: r23;
+
+    // The emitting parton may be further resolved by the emission.
+    tSPartonPtr spre =  re3 < r12/4.0? pe->shadow()->resolve(re3, pr): spe;
+
+    //The transverse momentum of the new parton from the emitter.
+    TransverseMomentum pt = pTScale()*(p - pe->position())/re3;
+    Energy pplus = pt.pt()*exp(-y0);
+    Energy pminus = pt.pt2()/pplus;
+
+    //check that there's enough p+
+    if ( pplus > spre->plus0() ) continue;
+
+    //calculate the new 4-momenta of the recoiled parents.
+    TransverseMomentum pte = spre->pT() - pt;
+    Energy pluse = spre->plus0() - pplus;
+
+    double ye = log(pte.pt()/pluse);
+    Energy minuse = pte.pt2()/pluse;
+    if ( theMinusOrderingMode >= 2 ) {
+      ShadowParton::Propagator prop =
+	spre->propagator(min(re3, r12/4.0), pr, -1);
+      if ( prop.fail ) continue;
+      pluse = prop.p.plus() - pplus;
+      if ( pluse <= ZERO ) continue;
+      pte = TransverseMomentum(prop.p) - pt;
+      ye = log(pte.pt()/pluse);
+      minuse = pte.pt2()/pluse;
+      if ( theMinusOrderingMode >= 3 ) {
+	if ( firstsplit ) {
+	  if ( pplus > prop.colpos || pminus < prop.colneg ) continue;
+	} else {
+	  if ( pplus > prop.acopos || pminus < prop.aconeg ) continue;
+	}
+      }
+
+      // *** TODO *** fix masses!
+    }
+    else if ( theMinusOrderingMode == 1 )
+      minuse = pte.pt()*exp(pe->y());
+
+    // Ensure approximate minus ordering.
+    if ( pminus*thePSInflation < minuse*thePMinusOrdering ) continue;
+
+    //check rapidity ordered with the two recoiled parents.
+    if ( ye > y0 ) continue;
+
+    // passed. Set up a new parton for the dipole with the information of the emission.
+    PartonPtr gluon = new_ptr(Parton());
+    gluon->position(p);
+    gluon->mainParent(pe);
+    dip.generatedGluon(gluon);
+    dip.generatedY(y0);
+
+    // And we're done!
+    return;
+  }
+}
+
+/*
  * Maked the dipole actually emit the dipole prepared in generate(), setting up
  * parents, children, changing 4-momenta etc.
  */
 void Emitter::emit(Dipole & d) const {
   //some notation.
+  if ( d.partons().first->shadow() ) {
+    emitWithShadows(d);
+    return;
+  }
   PartonPtr p = d.generatedGluon();
   InvEnergy r13 = (d.partons().first->position() - p->position()).pt();
   InvEnergy r23 = (d.partons().second->position() - p->position()).pt();
@@ -445,6 +754,55 @@ void Emitter::emit(Dipole & d) const {
   d.effectivePartons().second->recoil( v2, P2*p->plus() );
 }
 
+void Emitter::emitWithShadows(Dipole & d) const {
+  static DebugItem trace("DIPSY::Trace", 9);
+
+  if ( trace ) cerr << "Emit " << d.tag();
+
+  //some notation.
+  PartonPtr p = d.generatedGluon();
+
+  // Decide which parton is the emitter.
+  bool em1 = ( p->mainParent() == d.partons().first );
+  tPartonPtr emitter = em1? d.partons().first: d.partons().second;
+  tPartonPtr recoiler = em1? d.partons().second: d.partons().first;
+  InvEnergy2 res = emitter->dist2(*p);
+  tSPartonPtr sem = emitter->shadow()->resolve(min(res, d.size2()/4.0), recoiler);
+
+  TransverseMomentum rec =
+    pTScale()*(p->position() - emitter->position())/res;
+
+  //change the dipole structure, generate new colour etc.
+  d.splitDipole(em1? 0.0: 1.0);
+
+  //set 4-momenta for emission.
+  p->pT(rec);
+  p->y(d.generatedY());
+  p->plus(p->pT().pt()*exp(-d.generatedY()));
+  p->minus(p->pT().pt()*exp(d.generatedY()));
+  p->oY(p->y());
+
+  if ( theMinusOrderingMode >= 2 ) {
+    ShadowParton::Propagator prop =
+      sem->propagator(min(res, d.size2()/4.0), recoiler, -1);
+    emitter->pT(TransverseMomentum(prop.p) - rec);
+    emitter->plus(prop.p.plus()  - p->plus());
+    emitter->y(log(emitter->mt()/emitter->plus()));
+    emitter->minus(emitter->mt2()/emitter->plus());
+  } else {
+    emitter->pT(sem->pT() - rec);
+    emitter->plus(sem->plus() - p->plus());
+    emitter->y(log(emitter->pT().pt()/emitter->plus()));
+    emitter->minus(emitter->mt2()/emitter->plus());
+  }
+
+  emitter->shadow()->setupEmission(*emitter, *p, *recoiler);
+
+  if ( trace ) cerr << " -> " << d.children().first->tag()
+		    << " + " << d.children().second->tag() << endl;
+
+}
+
 void Emitter::persistentOutput(PersistentOStream & os) const {
   os << ounit(thePSInflation, 1.0)
      << ounit(thePMinusOrdering, 1.0)
@@ -472,15 +830,10 @@ void Emitter::persistentInput(PersistentIStream & is, int) {
 }
 
 
-#ifndef THEPEG_NEW_CLASS_DESCRIPTION
-ClassDescription<Emitter> Emitter::initEmitter;
-// Definition of the static class description member.
-#else
 // Static variable needed for the type description system in ThePEG.
 #include "ThePEG/Utilities/DescribeClass.h"
 DescribeClass<Emitter,HandlerBase> 
 describeDIPSYEmitter("DIPSY::Emitter", "libAriadne5.so libDIPSY.so");
-#endif
 
 void Emitter::Init() {
 
@@ -584,6 +937,18 @@ void Emitter::Init() {
      "EffectivePT",
      "Uses the pt of the effective parton, but the rapidity of the single emitting parton.",
      1);
+  static SwitchOption interfaceMinusOrderingModeTrueShadow
+    (interfaceMinusOrderingMode,
+     "TrueShadow",
+     "Use the full shadow mechanism for resolved emissions to get the "
+     "incoming propagator.",
+     2);
+  static SwitchOption interfaceMinusOrderingModeOrderedShadow
+    (interfaceMinusOrderingMode,
+     "OrderedShadow",
+     "Use the full shadow mechanism for resolved emissions to get the "
+     "incoming propagator and checking ordering with previous emissions.",
+     3);
 
 }
 

@@ -31,13 +31,17 @@ public:
   inline PhotonWFInfo(tcWaveFunctionPtr wfin = tcWaveFunctionPtr(),
 		      InvEnergy rini = 0.0*InvGeV, double zini = 0.0,
 		      int polini = 0, int hini = 0, int hbarini = 0,
-		      int flini = 0);
+		      int flini = 0)
+    : WFInfo(wfin, rini), theZ(zini), thePol(polini),
+      theH(hini), theHbar(hbarini), theFlav(flini) {}
 
   /**
    * The copy constructor.
    */
-  inline PhotonWFInfo(const PhotonWFInfo &);
-
+  inline PhotonWFInfo(const PhotonWFInfo & x)
+    : WFInfo(x), theZ(x.theZ), thePol(x.thePol),
+      theH(x.theH), theHbar(x.theHbar), theFlav(x.theFlav) {}
+  
   /**
    * The destructor.
    */
@@ -49,27 +53,37 @@ public:
   /**
    * The energy fraction of the quark.
    */
-  inline double z() const;
+  inline double z() const {
+    return theZ;
+  }
 
   /**
    * The polarization (-1, 0 or 1) of the photon.
    */
-  inline int pol() const;
+  inline int pol() const {
+    return thePol;
+  }
 
   /**
    * The helicity (+-1) of the quark.
    */
-  inline int h() const;
+  inline int h() const {
+    return theH;
+  }
 
   /**
    * The helicity (+-1) of the antiquark.
    */
-  inline int hbar() const;
+  inline int hbar() const {
+    return theHbar;
+  }
 
   /**
    * Get the flavour of the quark.
    */
-  inline int flav() const;
+  inline int flav() const {
+    return theFlav;
+  }
 
 public:
 
@@ -135,7 +149,5 @@ private:
 };
 
 }
-
-#include "PhotonWFInfo.icc"
 
 #endif /* DIPSY_PhotonWFInfo_H */

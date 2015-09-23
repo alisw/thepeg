@@ -1132,6 +1132,11 @@ private:
   bool useStdout;
 
   /**
+   * Whether to use a modified event number count.
+   */
+  bool theIntermediateOutput;
+
+  /**
    * The global libraries needed for objects used in this EventGenerator.
    */
   vector<string> theGlobalLibraries;

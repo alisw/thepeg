@@ -164,7 +164,15 @@ void SpinInfo::develop() const {
 void SpinInfo::redecay() const {
   if(!productionVertex()) return;
   if(productionVertex()->incoming().size()==1) {
-    tcSpinPtr parent = productionVertex()->incoming()[0];
+    tcSpinPtr parent;
+    if(productionVertex()->incoming()[0]->timelike())
+      parent = productionVertex()->incoming()[0];
+    else {
+      if(productionVertex()->outgoing()[0]!=this)
+	parent = productionVertex()->outgoing()[0];
+      else
+	parent = productionVertex()->outgoing()[1];
+    }
     parent->redecay();
   }
   _rhomatrix = productionVertex()->getRhoMatrix(_prodloc,true);

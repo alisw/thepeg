@@ -115,6 +115,89 @@ void RealPartonState::newInteraction(tDipolePtr intDip, tDipolePtr otherIntDip,
   }
 }
 
+void RealPartonState::
+newInteraction(tDipolePtr intDip, tDipolePtr otherIntDip,
+	       tPartonPtr parton, const TransverseMomentum & recoil) {
+  //The ancestors of the interacting partons, ie the partons that have
+  //been involved in making the interacting dipole. 
+  RealPartonSet ancestors;
+  bool firstInt = ( parton == intDip->partons().first );
+  bool secondInt = ( parton == intDip->partons().second );
+
+  //diagnostics
+  if ( Debug::level > 5 )
+    cout << "adding interaction " << intDip << " to " << this << endl;
+
+  //clear the partons to be checked in this interaction.
+  //Only partons involved in this interaction are checked,
+  //ther others are assumed to still be ok since last check.
+  toCheck.clear();
+
+  //Add interacting dipoles and which partons are interacting.
+  interactions.push_back(intDip);
+  doesInts.push_back(make_pair(firstInt, secondInt));
+
+  //Set up the real partons.
+  //Some settings only add one of partons in the interacting dipole,
+  //hence all the "if (firstInt )" etc.
+  //Note that addParton recursively calls the parents as well,
+  //so all new realparton instances needed are created.
+  RealPartonPtr rp1, rp2;
+  if ( firstInt ) {
+    if ( Debug::level > 5 ) cout << "calling first addparton for interacting parton " << intDip->partons().first->oY() << endl;
+    addParton(intDip->partons().first);
+    rp1 = getReal(intDip->partons().first);
+  }
+  if ( secondInt ) {
+    if ( Debug::level > 5 ) cout << "calling second addparton for interacting parton " << intDip->partons().second->oY() << endl;
+    addParton(intDip->partons().second);
+    rp2 = getReal(intDip->partons().second);
+  }
+
+  //Find the interaction distance of the interacting partons.
+  //This is needed when checking pT-ordering (or almost equivalently dipole-
+  //size ordering) later, and the last-before-interaction dipole needs
+  //to be checked. The picture here is to compare along the colour chains
+  //AFTER the interacting dipole has swinged, which is a more frame-
+  //independent approach, as otherwise we would have to compare the
+  //last-before-interacting dipole with a dipole that is not present in
+  //the final state.
+  //Also, since the interacting dipole has (roughly) the weight of a
+  //dipole that has emitted, it would mess up the weights if it entered
+  //the pT-max reweighting scheme.
+  if ( rp1 ) {
+    if ( !rp1->interacting ) {
+      rp1->intDist = rp1->theParton->pTScale()/recoil.pt();
+    } else {
+      rp1->intDist = min(rp1->intDist, rp1->theParton->pTScale()/recoil.pt());
+    }
+
+    //book keeping.
+    rp1->interacting = intDip;
+    rp1->secondInt = true;
+    RealPartonSet a1 = rp1->ancestors();
+    ancestors.insert(a1.begin(), a1.end());
+  }
+  if ( rp2 ) {
+    if ( !rp2->interacting ) {
+      rp2->intDist = rp2->theParton->pTScale()/recoil.pt();
+    } else {
+      rp2->intDist = min(rp2->intDist, rp2->theParton->pTScale()/recoil.pt());
+    }
+
+    //book keeping for future referens
+    rp2->interacting = intDip;
+    rp2->firstInt = true;
+    RealPartonSet a2 = rp2->ancestors();
+    ancestors.insert(a2.begin(), a2.end());
+  }
+
+  //and make all the ancestors remember that they contributed.
+  for ( RealPartonSet::iterator it = ancestors.begin(); it != ancestors.end(); it++ ) {
+    (*it)->interactions.insert(intDip);
+  }
+}
+
 tRealPartonPtr RealPartonState::getReal(tPartonPtr p) {
   //If the parton already exists in the real state, just retur
   //the real parton.
@@ -1177,6 +1260,66 @@ bool RealPartonState::singleControlEvolution(tDipolePtr intDip, tDipolePtr other
   unDGLAP = 0;	
   partonCalls = 0;
   newInteraction(intDip, otherIntDip, firstInt, secondInt, rec1, rec2);
+  reset();
+  checkAllInteracting();
+
+  for ( RealPartonSet::iterator it = toCheck.begin(); it != toCheck.end(); it++ )
+    if ( !(*it)->setYES() )  fixUnOrdered(*it);
+
+  if ( printstepdetails ) log << "<DIPSY> done with forward sweep." << endl;
+  if ( monitored ) plotState(true);
+
+  for ( RealPartonSet::reverse_iterator it = toCheck.rbegin(); it != toCheck.rend(); it++ )
+    checkFixDGLAP(*it);
+
+  if ( printstepdetails )
+    log << "<DIPSY> done with DGLAP corrections." << endl;
+  if ( monitored ) plotState(true);
+
+
+  for ( RealPartonSet::iterator it = toCheck.begin(); it != toCheck.end(); it++ ) {
+    if ( inFSRRegion(*it) )  {
+      if ( printstepdetails )
+	log << "<DIPSY> FSR conflict found (check) at " << (*it)->oY() << endl;
+      fixFSRDoubleCounting(*it);
+      if ( printstepdetails ) log << "      fixed, check." << endl;
+    }
+  }
+
+  if ( printstepdetails ) log << "<DIPSY> done with FSR matching" << endl;
+  if ( monitored ) plotState(true);
+
+  //make sure all fluctuations are collinear. In general not needed.
+  for ( int i = 0; i < int(flucts.size()); i++ ) {
+    makeCollinear(flucts[i]);
+  }
+
+
+  if ( checkkinematics && checkForNegatives() )
+    Throw<RealPartonKinematicException>()
+      << "negatives found at end of cascade evo!" << Exception::warning;
+  return true;
+}
+
+bool RealPartonState::
+singleControlEvolution(tDipolePtr intDip, tDipolePtr otherIntDip,
+		       tPartonPtr parton, const TransverseMomentum & recoil) {
+  ostream & log = CurrentGenerator::log();
+  static DebugItem printstepdetails("DIPSY::PrintStepDetails", 6);
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+  if ( failedInts.find(intDip) != failedInts.end() ) return false;
+  if ( intDip->interacted() )  {
+    if ( monitored )
+      cout << "  rescatter, autopass evolution" << endl;
+    rescatter = true;
+  }
+  else  rescatter = false;
+  if ( printstepdetails ) 
+    log << "<DIPSY> enter singlecontrolevolution." << endl;
+  unOrdered = 0;
+  unDGLAP = 0;	
+  partonCalls = 0;
+  newInteraction(intDip, otherIntDip, parton, recoil);
   reset();
   checkAllInteracting();
 

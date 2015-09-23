@@ -46,7 +46,7 @@ private:
   // sets of parameters, ordered in h
   map<double, PytPars> _parameters;
 
-  double a, b, rho, x, y, xi, sigma, m2;
+  double a, b, rho, x, y, xi, sigma;
   double a_eff, b_eff, rho_eff, x_eff, y_eff, xi_eff, sigma_eff;
   double  _m2, _bsparameter;
 };

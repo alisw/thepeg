@@ -28,6 +28,8 @@
 #include "ThePEG/Utilities/DynamicLoader.h"
 #include "ThePEG/Utilities/StringUtils.h"
 
+#include <iterator>
+
 #include <config.h>
 
 // readline options taken from
@@ -43,7 +45,7 @@
 #  elif defined(HAVE_READLINE_H)
 #    include <readline.h>
 #  else
-     extern "C" char *readline (const char *);
+extern "C" char *readline (const char *);
 #  endif
 #endif
 
@@ -53,7 +55,7 @@
 #  elif defined(HAVE_HISTORY_H)
 #    include <history.h>
 #  else
-     extern "C" void add_history (const char *);
+extern "C" void add_history (const char *);
 #  endif
 #endif
 
@@ -236,8 +238,8 @@ EGPtr Repository::makeRun(tEGPtr eg, string name) {
       allParticles.push_back(pit->second);
 
   for ( ParticleDataSet::iterator pit = particles().begin();
-	  pit != particles().end(); ++pit )
-      allParticles.push_back(*pit);
+	pit != particles().end(); ++pit )
+    allParticles.push_back(*pit);
 
   ParticleMap localParticles;
 
@@ -407,32 +409,43 @@ string Repository::read(string filename, ostream & os) {
   ifstream is;
   string file = filename;
   if ( file[0] == '/' ) {
-    if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= trying " << file << " =)" << endl;
+    if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= trying to open " << file << " =)" << endl;
     is.open(file.c_str());
   }
   else {
     vector<string> dirs(readDirs().rbegin(), readDirs().rend());
-    dirs.push_back(currentReadDirStack().top());
+    dirs.push_back(currentReadDirStack().top()); 
+    if ( ThePEG_DEBUG_LEVEL > 1 ) {
+      os << "(= search path order =)\n(== ";
+      std::copy(dirs.rbegin(), dirs.rend(), std::ostream_iterator<string>(os, " ==)\n(== "));
+      os << ")" << endl;
+    }
     while ( dirs.size() ) {
       string dir = dirs.back();
       if ( dir != "" && dir[dir.length() -1] != '/' ) dir += '/';
       file = dir + filename;
       is.clear();
-      if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= trying " << file << " =)" << endl;
+      if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= trying to open " << file << " =)" << endl;
       is.open(file.c_str());
       if ( is ) break;
+      if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= no, try next search path =)" << endl;
       dirs.pop_back();
     }
   }
   if ( !is ) {
     return "Error: Could not find input file '" + filename + "'";
   }
-  currentReadDirStack().push(StringUtils::dirname(file));
+  if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= yes =)" << endl;
+  const string dir = StringUtils::dirname(file);
+  if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= pushing <" << dir << "> to stack =)" << endl;
+  currentReadDirStack().push(dir);
   try {
     Repository::read(is, os);
+    if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= popping <" << currentReadDirStack().top() << "> from stack =)" << endl;
     currentReadDirStack().pop();
   }
   catch ( ... ) {
+    if ( ThePEG_DEBUG_LEVEL > 1 ) os << "(= popping <" << currentReadDirStack().top() << "> from stack =)" << endl;
     currentReadDirStack().pop();
     throw;
   }

@@ -1,0 +1,8 @@
+*.la
+*.lo
+.deps
+.libs
+.runThePEG.timer.TestAriadne.run
+Makefile
+Makefile.in
+old

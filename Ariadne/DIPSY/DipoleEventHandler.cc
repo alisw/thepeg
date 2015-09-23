@@ -43,7 +43,7 @@ DipoleEventHandler::DipoleEventHandler()
     doShowHistory(false), theLambdaQCD(0.22*GeV), theNF(0),
     theFixedAlphaS(0.0), theExternalAlphaS(ASPtr()),
     theWFR(WaveFunctionPtr()), theWFL(WaveFunctionPtr()),
-    theBGen(ImpactParameterGeneratorPtr()), theYFrame(0.5), theFudgeME(false),
+    theBGen(ImpactParameterGeneratorPtr()), theYFrame(0.5), theFudgeME(0), theFudgeFactorME(1.0),
     thePreSamples(1000), thePreSampleL(1), thePreSampleR(1), thePreSampleB(1),
     theXSecFn(DipoleXSecPtr()), theEmitter(EmitterPtr()),
 theSwinger(SwingerPtr()) {}
@@ -144,8 +144,13 @@ void DipoleEventHandler::presample() {
 	  DipoleStatePtr dl =vl[il];
 	  DipoleStatePtr dr =vr[ir];
 	  ImpactParameters b = vb[ib];
+	  double prob = 0;
 	  //Calculate interaction probability, and apply all the weights
-	  double prob = xSecFn().sumf(*dr, *dl, b);
+	  if ( eventFiller().mode() == 4 || effectivePartonMode() < 0 )
+	    prob = xSecFn().sumf(b, *dr, *dl);
+	  else
+	    prob = xSecFn().sumf(*dr, *dl, b);
+	    
 	  probs[il][ir][ib] = prob;
 	  CrossSection weight = sqr(hbarc)*dr->weight()*dl->weight()*b.weight()*jac;
 	  //This is the contribution to the non-diffractive
@@ -596,7 +601,7 @@ void DipoleEventHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(theCoherenceRange, InvGeV)
      << theEffectivePartonMode << theCollisionType << doShowHistory
      << ounit(theLambdaQCD, GeV) << theNF << theFixedAlphaS << theExternalAlphaS
-     << theWFR << theWFL << theBGen << theYFrame << theFudgeME << thePreSamples << thePreSampleL
+     << theWFR << theWFL << theBGen << theYFrame << theFudgeME << theFudgeFactorME << thePreSamples << thePreSampleL
      << thePreSampleR << thePreSampleB << theXSecFn << theEmitter << theSwinger
      << theEventFiller << analyses << stats;
 }
@@ -606,7 +611,7 @@ void DipoleEventHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(theCoherenceRange, InvGeV)
      >> theEffectivePartonMode >> theCollisionType >> doShowHistory
      >> iunit(theLambdaQCD, GeV) >> theNF >> theFixedAlphaS >> theExternalAlphaS
-     >> theWFR >> theWFL >> theBGen >> theYFrame >> theFudgeME >> thePreSamples >> thePreSampleL
+     >> theWFR >> theWFL >> theBGen >> theYFrame >> theFudgeME >> theFudgeFactorME >> thePreSamples >> thePreSampleL
      >> thePreSampleR >> thePreSampleB >> theXSecFn >> theEmitter >> theSwinger
      >> theEventFiller >> analyses >> stats;
 }
@@ -680,6 +685,11 @@ void DipoleEventHandler::Init() {
      "correct, but makes the emissions depend on the history"
      ", not only current state.",
      1);
+  static SwitchOption interfaceEffectivePartonModeShadows
+    (interfaceEffectivePartonMode,
+     "Shadows",
+     "Don't use Effective partons, use shadow partons instead.",
+     -1);
 
   static Switch<DipoleEventHandler,int> interfaceCollisionType
     ("CollisionType",
@@ -755,21 +765,35 @@ void DipoleEventHandler::Init() {
      true, false, Interface::nolimits);
 
 
-  static Switch<DipoleEventHandler,bool> interfaceFudgeME
+  static Switch<DipoleEventHandler,int> interfaceFudgeME
     ("FudgeME",
      "Indicate whether a fudge factor should be included to tame the high-pt tail "
      "according to an approximate matrix element correction.",
-     &DipoleEventHandler::theFudgeME, false, true, false);
+     &DipoleEventHandler::theFudgeME, 0, true, false);
   static SwitchOption interfaceFudgeMEFudge
     (interfaceFudgeME,
      "Fudge",
      "Include fudge factor",
-     true);
+     1);
+  static SwitchOption interfaceFudgeMEFudgeC
+    (interfaceFudgeME,
+     "Fudge",
+     "Include fudge factor and make cross section dependent on the colour "
+     "indices of the colliding dipoles",
+     2);
   static SwitchOption interfaceFudgeMENoFudge
     (interfaceFudgeME,
      "NoFudge",
      "Do not include fudge factor",
-     false);
+     0);
+
+
+  static Parameter<DipoleEventHandler,double> interfaceFudgeFactorME
+    ("FudgeFactorME",
+     "Extra factor to be applied for high-pt scattering in interactions.",
+     &DipoleEventHandler::theFudgeFactorME, 1.0, 0.0, 0,
+     true, false, Interface::lowerlim);
+
 
   static Parameter<DipoleEventHandler,int> interfacePreSamples
     ("PreSamples",

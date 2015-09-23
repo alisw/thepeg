@@ -14,7 +14,7 @@ To compile and install ThePEG follow these steps:
 
    If the LHAPDF library is installed under /usr/local/lib it will be
    used. If it is installed elsewhere, use
-   --with-LHAPDF=/Path/to/library to specify where.
+   --with-lhapdf=/Path/to/library to specify where.
 
    If a standard Sun java compiler is available a java GUI called 'thepeg'
    will be installed. To avoid this use --without-javagui.

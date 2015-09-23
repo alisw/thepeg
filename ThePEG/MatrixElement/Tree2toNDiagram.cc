@@ -43,8 +43,8 @@ construct(SubProPtr sp, const StandardXComb & xc, const ColourLines & cl) const 
   tPVector out;
   vector<Lorentz5Momentum> pout(xc.meMomenta().begin() + 2,
 				xc.meMomenta().end());
-//   Utilities::transform(pout.begin(), pout.end(),
-// 		       Utilities::getBoostFromCM(xc.lastPartons()));
+  if ( xc.needsReshuffling() )
+    xc.reshuffle(pout);
   tPPair in = xc.lastPartons();
   if ( xc.mirror() ) swap(in.first, in.second);
 

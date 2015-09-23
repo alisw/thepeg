@@ -35,7 +35,7 @@ set GaussianPt:Sigma 0.6
 set RemnantHandler:RemnantDecayer RemnantDecayer
 create ThePEG::LHAPDF CTEQ6l ThePEGLHAPDF.so
 set CTEQ6l:RemnantHandler RemnantHandler
-set CTEQ6l:PDFName cteq6l.LHpdf
+set CTEQ6l:PDFName cteq6l1.LHpdf
 set CTEQ6l:RangeException Freeze
 cp /TheP8I/Particles/p+ p+
 set p+:PDF CTEQ6l

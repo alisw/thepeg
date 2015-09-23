@@ -25,7 +25,7 @@ my @files = glob("$tag\[0-9\]*.log");
 
 foreach my $file ( @files ) {
 
-    if ( system("./seminc.pl $file") ) {
+    if ( system("../seminc.pl $file") ) {
 	next;
     }
     my $YF = 0;
@@ -87,7 +87,7 @@ foreach my $dir ( glob("$profdir/mc/$tag-*") ) {
     system("cd $dir; rm -f out.yoda; cat *.yoda > out.yoda; yoda2aida out.yoda out.aida");
 }
 
-system ("cd $profdir; ln -s ../refs ref");
+system ("cd $profdir; rm -f ref; ln -s ../../refs ref");
 
 
 if ( $weights ) {
@@ -108,5 +108,5 @@ if ( defined($opts{'t'}) ) {
 
 
 if ( defined($opts{'s'}) ) {
-    system("./profsum.pl $profdir/tunes/results.pkl");
+    system("../profsum.pl $profdir/tunes/results.pkl");
 }

@@ -124,11 +124,18 @@ private:
    * The bare distribution in dipole sizes.
    */
   FactoryBase::tH1DPtr dipsizes;
+  FactoryBase::tH1DPtr dipsizesl;
 
   /**
    * The bare distribution in gluon transverse momenta.
    */
   FactoryBase::tH1DPtr gluonpts;
+  FactoryBase::tH1DPtr gluonptsl;
+  FactoryBase::tH1DPtr gluonptsll;
+  FactoryBase::tH1DPtr gluonptsh;
+  FactoryBase::tH1DPtr gluonptsy;
+  FactoryBase::tH1DPtr gluonptav;
+  FactoryBase::tH1DPtr gluonptavn;
 
 private:
 

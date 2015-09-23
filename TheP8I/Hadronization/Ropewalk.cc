@@ -22,8 +22,8 @@
 using namespace TheP8I;
 
 Ropewalk::Ropewalk(const vector<ColourSinglet> & singlets, Length width,
-		   Energy scale, double jDP, bool throwaway, bool deb) 
-  : R0(width), m0(scale), junctionDiquarkProb(jDP), debug(deb),
+		   Energy scale, double jDP, bool throwaway, bool rap, bool deb) 
+  : R0(width), m0(scale), junctionDiquarkProb(jDP), rapidityOverlap(rap), debug(deb),
     strl0(0.0), strl(0.0), avh(0.0), avp(0.0), avq(0.0) {
   for ( int is = 0, Ns = singlets.size(); is < Ns; ++is ){
     stringdipoles[cloneToFinal(singlets[is])];
@@ -138,7 +138,8 @@ void Ropewalk::calculateOverlaps() {
       if ( dipoles[i2].s() <= sqr(m0) ) continue;
       OverlappingDipole od(dipoles[i2], R, this);
       // Ignore if not overlapping in rapidity.
-      if ( min(od.yc, od.ya) > yc1 || max(od.yc, od.ya) < ya1 || od.yc == od.ya )
+      if(rapidityOverlap)
+	if ( min(od.yc, od.ya) > yc1 || max(od.yc, od.ya) < ya1 || od.yc == od.ya )
 	continue;
       // Calculate rapidity overlap.
       double yomax = min(max(od.yc, od.ya), yc1);
@@ -149,6 +150,8 @@ void Ropewalk::calculateOverlaps() {
       double y = UseRandom::rnd(yomin, yomax);
       if ( !od.overlap(y, d1.ba + (d1.bc - d1.ba)*(y - ya1)/(yc1 - ya1), R0) )
 	yfrac = 0.0;
+      if(!rapidityOverlap)
+	yfrac = 1.0;
       // Sum overlaps.
       if ( od.dir > 0 ) {
 	n += yfrac;

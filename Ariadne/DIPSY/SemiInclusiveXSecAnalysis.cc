@@ -18,7 +18,7 @@
 
 using namespace DIPSY;
 
-SemiInclusiveXSecAnalysis::SemiInclusiveXSecAnalysis() {}
+SemiInclusiveXSecAnalysis::SemiInclusiveXSecAnalysis(): ntot(0) {}
 
 SemiInclusiveXSecAnalysis::~SemiInclusiveXSecAnalysis() {}
 

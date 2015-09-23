@@ -86,6 +86,10 @@ void EffectiveParton::checkCache() const {
 */
 
 EffectivePartonPtr EffectiveParton::create(Parton & p, InvEnergy range) {
+  if ( Current<DipoleEventHandler>()->effectivePartonMode() < 0 )
+    Throw<Exception>()
+      << "Tried to use effective partons when we want the shadow strategy!"
+      << Exception::abortnow;
   EffectivePartonPtr effp = new_ptr(EffectiveParton(p));
   effp->theOriginalParton = & p;
   if ( Current<DipoleEventHandler>()->effectivePartonMode() >= 2 )
@@ -216,6 +220,10 @@ void EffectiveParton::setupCache(InvEnergy maxrange) {
 }
 
 void EffectiveParton::addPartons( InvEnergy range ) {
+  if ( Current<DipoleEventHandler>()->effectivePartonMode() < 0 )
+    Throw<Exception>()
+      << "Tried to use effective partons when we want the shadow strategy!"
+      << Exception::abortnow;
   if ( range > Current<DipoleEventHandler>()->coherenceRange() )
     range = Current<DipoleEventHandler>()->coherenceRange();
   if ( Current<DipoleEventHandler>()->effectivePartonMode() == 1 )

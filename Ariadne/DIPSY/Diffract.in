@@ -46,7 +46,7 @@ insert AriadneCascade:Emitters[0] FSSwinger
 set LHCGenerator:EventHandler:CascadeHandler NULL
 set LHCGenerator:EventHandler:CascadeHandler AriadneCascade
 
-set LHCGenerator:EventHandler:FudgeME true
+set LHCGenerator:EventHandler:FudgeME 1
 
 set LHCEventHandler:EffectivePartonMode Colours
 set LHCEventHandler:CoherenceRange 2.5

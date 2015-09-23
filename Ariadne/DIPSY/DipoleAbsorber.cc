@@ -129,8 +129,8 @@ void DipoleAbsorber::swingLoop( DipolePtr d, DipoleState & state ) const {
   bool forward = true;
   while ( p != d->partons().first && (forward || p->dipoles().first) ) {
     if ( !(p->dipoles().second) ) {
-      cout << "found a quark in SmallDipoleAbsorber::absorbLoop!!!!!!!" << endl;
-      state.diagnosis(true);
+      //      cout << "found a quark in SmallDipoleAbsorber::absorbLoop!!!!!!!" << endl;
+      //      state.diagnosis(true);
       p = d->partons().first;
       partons.push_back(p);
       forward = false;

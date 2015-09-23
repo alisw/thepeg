@@ -39,12 +39,21 @@ public:
    * non-flat distribution an optional weight \a w can be supplied.
    */
   inline ImpactParameters(const Point & b = Point(), double angle = 0.0,
-			  InvEnergy2 w = 1.0/GeV2);
+			  InvEnergy2 w = 1.0/GeV2)
+    : theBVec(b), thePhi(angle), theCosPhi(cos(angle)),
+      theSinPhi(sin(angle)), theWeight(w) {}
 
   /**
    * The assignment operator
    */
-  inline ImpactParameters & operator=(const ImpactParameters &);
+  inline ImpactParameters & operator=(const ImpactParameters & x) {
+    theBVec = x.theBVec;
+    thePhi = x.thePhi;
+    theCosPhi = x.theCosPhi;
+    theSinPhi = x.theSinPhi;
+    theWeight = x.theWeight;
+    return *this;
+  }
   //@}
 
   /** @name Simple access functions. */
@@ -53,12 +62,16 @@ public:
    * The transverse displacement in impact parameter space of one
    * dipole system w.r.t. the other.
    */
-  inline const Point & bVec() const;
+  inline const Point & bVec() const {
+    return theBVec;
+  }
 
   /**
    * The azimuthal rotation of one dipole system w.r.t. the other.
    */
-  inline double phi() const;
+  inline double phi() const {
+    return thePhi;
+  }
 
   /**
    * The cosine of the azimuthal rotation of one dipole system w.r.t. the other.
@@ -77,7 +90,9 @@ public:
   /**
    * The weight associated with generating these ImpactParameters.
    */
-  inline InvEnergy2 weight() const;
+  inline InvEnergy2 weight() const {
+    return theWeight;
+  }
   //@}
 
   /**
@@ -85,17 +100,25 @@ public:
    * has been rotated and displaced according to these
    * ImpactParameters.
    */
-  inline InvEnergy2 dist2(const Parton &, const Parton &) const;
+  inline InvEnergy2 dist2(const Parton & pi, const Parton & pj) const {
+    return sqr(pi.position().x() - bVec().x()
+	       - pj.position().x()*cosPhi() - pj.position().y()*sinPhi()) +
+      sqr(pi.position().y() - bVec().y()
+	  - pj.position().y()*cosPhi() + pj.position().x()*sinPhi());
+  }
 
   /**
    * Calculate the squared distance between two partons, assuming the second
    * has been rotated and displaced according to these
    * ImpactParameters.
    */
-  inline InvEnergy dist(const Parton &, const Parton &) const;
+  inline InvEnergy dist(const Parton & pi, const Parton & pj) const {
+    return sqrt(dist2(pi, pj));
+  }
 
   /**
-   * Rotates the momentum with the azimuthal angle of the second system wrt the first.
+   * Rotates the momentum with the azimuthal angle of the second
+   * system wrt the first.
    */
   inline TransverseMomentum rotatePT(const TransverseMomentum p) const {
     return TransverseMomentum( p.x()*cosPhi() + p.y()*sinPhi(),
@@ -103,35 +126,52 @@ public:
   }
 
   /**
+   * Rotate and translate a point in the second system.
+   */
+  inline Point translate(const Point & p) const {
+    return rotate(p) + bVec();
+  }
+
+    /**
+     * Rotate and translate the given parton.
+     */
+  inline void translate(tPartonPtr p) const {
+    p->position(translate(p->position()));
+    p->pT(rotatePT(p->pT()));
+  }
+
+  /**
    * Rotates the point with the azimuthal angle of the second system wrt the first.
    */
-  inline Point rotate(const Point p) const {
-    return Point( p.x()*cosPhi() + p.y()*sinPhi(),
-		  -p.x()*sinPhi() + p.y()*cosPhi() );
+  inline Point rotate(const Point & p) const {
+    return Point(p.x()*cosPhi() + p.y()*sinPhi(),
+		 -p.x()*sinPhi() + p.y()*cosPhi());
   }
 
   /**
    * Rotates the momentum with the azimuthal angle of the first system wrt the second.
    */
-inline TransverseMomentum invRotatePT(const TransverseMomentum p) const {
-  return TransverseMomentum( p.x()*cosPhi() - p.y()*sinPhi(),
+    inline TransverseMomentum invRotatePT(const TransverseMomentum & p) const {
+      return TransverseMomentum( p.x()*cosPhi() - p.y()*sinPhi(),
 			     p.x()*sinPhi() + p.y()*cosPhi() );
-}
+    }
 
   /**
    * Rotates the momentum with the azimuthal angle of the first system wrt the second.
    */
-inline Point invRotate(const Point p) const {
-  return Point( p.x()*cosPhi() - p.y()*sinPhi(),
-		p.x()*sinPhi() + p.y()*cosPhi() );
-}
+  inline Point invRotate(const Point & p) const {
+    return Point( p.x()*cosPhi() - p.y()*sinPhi(),
+		  p.x()*sinPhi() + p.y()*cosPhi() );
+  }
 
 
   /**
    * Calculate the vector from the first to the second point, assuming the second
    * has been rotated and displaced according to these ImpactParamters.
    */
-  inline Point difference(const Point, const Point) const;
+  inline Point difference(const Point & pi, const Point & pj) const {
+    return translate(pj) - pi;
+  }
 
 private:
 
@@ -164,7 +204,5 @@ private:
 };
 
 }
-
-#include "ImpactParameters.icc"
 
 #endif /* DIPSY_ImpactParameters_H */

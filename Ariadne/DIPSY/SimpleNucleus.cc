@@ -160,7 +160,7 @@ string SimpleNucleus::setParameters(string cmd) {
     }
   }
 
-  if (  StringUtils::car(cmd) == "GLISSANDRO" ) {
+  if (  StringUtils::car(cmd) == "GLISSANDO" ) {
     R = (1.1*pow(double(A),1.0/3.0) - 0.656*pow(double(A),-1.0/3.0))*femtometer;
     a = 0.459*femtometer;
     Rn = -0.9*femtometer;

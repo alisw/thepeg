@@ -11,6 +11,8 @@ namespace DIPSY {
 
 class DipoleXSec;
 
+struct DipoleInteraction;
+
 }
 
 namespace ThePEG {

@@ -85,7 +85,7 @@ void RandomGenerator::setSize(size_type newSize) {
   nextNumber = theNumbers.begin() + pos;
 }
 
-bool RandomGenerator::rndbool(double p) {
+bool RandomGenerator::prndbool(double p) {
   if ( p >= 1.0 ) return true;
   if ( p <= 0.0 ) return false;
   double r = rnd();
@@ -99,6 +99,14 @@ bool RandomGenerator::rndbool(double p) {
 }
 
 int RandomGenerator::rndsign(double p1, double p2, double p3) {
+  double sum = p1 + p2 + p3;
+  double r = rnd()*sum;
+  if ( r < p1 )  return -1;
+  else if ( r < p1 + p2 ) return 0;
+  else return 1;
+}
+
+int RandomGenerator::prndsign(double p1, double p2, double p3) {
   double sum = p1 + p2 + p3;
   double r = rnd()*sum;
   if ( r < p1 ) {
@@ -116,19 +124,10 @@ int RandomGenerator::rndsign(double p1, double p2, double p3) {
 int RandomGenerator::rnd4(double p0, double p1, double p2, double p3) {
   double sum = p0 + p1 + p2 + p3;
   double r = rnd()*sum;
-  if ( r < p0 ) {
-    push_back(r/p0);
-    return 0;
-  } else if ( r < p0 + p1 ) {
-    push_back((r - p0)/p1);
-    return 1;
-  } else if ( r < p0 + p1 + p2 ) {
-    push_back((r - p0 - p1)/p2);
-    return 2;
-  } else {
-    push_back((r - p0 - p1 - p2)/p3);
-    return 3;
-  }
+  if ( r < p0 )  return 0;
+  else if ( r < p0 + p1 ) return 1;
+  else if ( r < p0 + p1 + p2 ) return 2;
+  else return 3;
 }
 
 long RandomGenerator::rndPoisson(double mean) {

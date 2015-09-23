@@ -372,17 +372,9 @@ tSubProPtr StdXCombGroup::construct() {
 
   newSubProcess(theMEGroup->subProcessGroups());
 
-  if ( !theMEGroup->subProcessGroups() ) {
-    if ( !cuts()->initSubProcess(lastSHat(), lastY()) ) throw Veto();
-    TmpTransform<tSubProPtr>
-      tmp(subProcess(), Utilities::getBoostToCM(subProcess()->incoming()));
-    if ( !cuts()->passCuts(*subProcess()) ) throw Veto();
-  }
-
   return subProcess();
 
 }
-
 
 void StdXCombGroup::Init() {}
 

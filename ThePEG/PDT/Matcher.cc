@@ -43,6 +43,7 @@ namespace ThePEG {
   THEPEG_MATCH_DESC(MatchNeutral)
   THEPEG_MATCH_DESC(MatchPositive)
   THEPEG_MATCH_DESC(MatchCharged)
+  THEPEG_MATCH_DESC(MatchNeutrino)
 }
 
 using namespace ThePEG;
@@ -62,6 +63,7 @@ void dummy() {
   static MatchNeutral m09;
   static MatchPositive m11;
   static MatchCharged m12;
+  static MatchNeutrino m13;
 }
 
 }

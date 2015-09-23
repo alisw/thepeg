@@ -40,7 +40,7 @@ LesHouchesReader::LesHouchesReader(bool active)
   : theNEvents(0), position(0), reopened(0), theMaxScan(-1), scanning(false),
     isActive(active), theCacheFileName(""), doCutEarly(true),
     preweight(1.0), reweightPDF(false), doInitPDFs(false),
-    theMaxMultCKKW(0), theMinMultCKKW(0), lastweight(1.0), maxFactor(1.0),
+    theMaxMultCKKW(0), theMinMultCKKW(0), lastweight(1.0), maxFactor(1.0), optionalnpLO(0), optionalnpNLO(0),
     weightScale(1.0*picobarn), skipping(false), theMomentumTreatment(0),
     useWeightWarnings(true),theReOpenAllowed(true), theIncludeSpin(true) {}
 
@@ -95,7 +95,7 @@ void LesHouchesReader::doinit() {
       << "No information about incoming particles were found in "
       << "LesHouchesReader '" << name() << "'." << Exception::warning;
   inData = make_pair(getParticleData(heprup.IDBMUP.first),
-		     getParticleData(heprup.IDBMUP.second));
+                     getParticleData(heprup.IDBMUP.second));
   if ( heprup.EBMUP.first <= 0.0 || heprup.EBMUP.second <= 0.0 )
     Throw<LesHouchesInitError>()
     << "No information about the energy of incoming particles were found in "
@@ -120,42 +120,42 @@ void LesHouchesReader::initPDFs() {
   if ( heprup.PDFSUP.first && !inPDF.first) {
     inPDF.first = dynamic_ptr_cast<PDFPtr>
       (generator()->preinitCreate("ThePEG::LHAPDF", fullName() + "/PDFA",
-				  "ThePEGLHAPDF.so"));
+                                  "ThePEGLHAPDF.so"));
     if ( !inPDF.first ) {
       Throw<InitException>()
-	<< "LesHouchesReader '" << name() << "' could not use information "
-	<< "about the PDFs used because the LHAPDF library was not properly "
-	"defined." << Exception::warning;
+        << "LesHouchesReader '" << name() << "' could not use information "
+        << "about the PDFs used because the LHAPDF library was not properly "
+        "defined." << Exception::warning;
       return;
     }
     remhname = fullName() + "/DummyRemH";
     generator()->preinitCreate("ThePEG::NoRemnants", remhname);
     generator()->preinitInterface(inPDF.first, "RemnantHandler",
-				  "set", remhname);
+                                  "set", remhname);
     if ( heprup.PDFGUP.first > 0 && heprup.PDFGUP.first < 10 ) {
       ostringstream os;
       os << heprup.PDFGUP.first << " " << heprup.PDFSUP.first;
       generator()->preinitInterface(inPDF.first, "PDFLIBNumbers",
-				    "set", os.str());
+                                    "set", os.str());
     } else {
       ostringstream os;
       os << heprup.PDFGUP.first*1000 + heprup.PDFSUP.first;
       generator()->preinitInterface(inPDF.first, "PDFNumber",
-				    "set", os.str());
+                                    "set", os.str());
     }
     generator()->preinitInterface(inPDF.first, "RangeException",
-				    "newdef", "Freeze");
+                                    "newdef", "Freeze");
   }
 
   if ( heprup.PDFSUP.second && !inPDF.second) {
     inPDF.second = dynamic_ptr_cast<PDFPtr>
       (generator()->preinitCreate("ThePEG::LHAPDF", fullName() + "/PDFB",
-				  "ThePEGLHAPDF.so"));
+                                  "ThePEGLHAPDF.so"));
     if ( !inPDF.second ) {
       Throw<InitException>()
-	<< "LesHouchesReader '" << name() << "' could not use information "
-	<< "about the PDFs used because the LHAPDF library was not properly "
-	"defined." << Exception::warning;
+        << "LesHouchesReader '" << name() << "' could not use information "
+        << "about the PDFs used because the LHAPDF library was not properly "
+        "defined." << Exception::warning;
       return;
     }
     if ( remhname == "" ) {
@@ -163,20 +163,20 @@ void LesHouchesReader::initPDFs() {
       generator()->preinitCreate("ThePEG::NoRemnants", remhname);
     }
     generator()->preinitInterface(inPDF.second, "RemnantHandler",
-				  "set", remhname);      
+                                  "set", remhname);      
     if ( heprup.PDFGUP.second > 0 && heprup.PDFGUP.second < 10 ) {
       ostringstream os;
       os << heprup.PDFGUP.second << " " << heprup.PDFSUP.second;
       generator()->preinitInterface(inPDF.second, "PDFLIBNumbers",
-				    "set", os.str());
+                                    "set", os.str());
     } else {
       ostringstream os;
       os << heprup.PDFGUP.second*1000 + heprup.PDFSUP.second;
       generator()->preinitInterface(inPDF.second, "PDFNumber",
-				    "set", os.str());
+                                    "set", os.str());
     }
     generator()->preinitInterface(inPDF.second, "RangeException",
-				    "newdef", "Freeze");
+                                    "newdef", "Freeze");
   }
   
   if ( ! ( inPDF.first && inPDF.second ) ) Throw<InitException>()
@@ -214,7 +214,7 @@ void LesHouchesReader::initialize(LesHouchesEventHandler & eh) {
 
   Energy emax = 2.0*sqrt(heprup.EBMUP.first*heprup.EBMUP.second)*GeV;
   theCuts->initialize(sqr(emax),
-		      0.5*log(heprup.EBMUP.first/heprup.EBMUP.second));
+                      0.5*log(heprup.EBMUP.first/heprup.EBMUP.second));
   if ( Smax > ZERO && ( Smax != cuts().SMax() || Y != cuts().Y() ) )
     Throw<LesHouchesInitError>()
       << "The LesHouchesReader '" << name() << "' uses the same Cuts object "
@@ -228,19 +228,11 @@ void LesHouchesReader::initialize(LesHouchesEventHandler & eh) {
   for ( int i = 0, N = partonBins().size(); i < N; ++i ) {
     theXCombs[partonBins()[i]] =
       new_ptr(XComb(emax, inData, &eh, partonExtractor(), CKKWHandler(),
-		    partonBins()[i], theCuts));
+                    partonBins()[i], theCuts));
     partonExtractor()->nDims(partonBins()[i]);
   }
   outPDF = make_pair(partonExtractor()->getPDF(inData.first),
-		     partonExtractor()->getPDF(inData.second));
-
-  // SP: re-interpret 3/4 -> 1/2; see discussion w/ Leif and Keith at LH 2013
-
-  if ( abs(heprup.IDWTUP) == 3 )
-    heprup.IDWTUP = heprup.IDWTUP < 0 ? -1 : 1;
-
-  if ( abs(heprup.IDWTUP) == 4 )
-    heprup.IDWTUP = heprup.IDWTUP < 0 ? -2 : 2;
+                     partonExtractor()->getPDF(inData.second));
 
   close();
 
@@ -307,37 +299,45 @@ long LesHouchesReader::scan() {
     vector<double> newmax;
     vector<long> oldeve;
     vector<long> neweve;
+    vector<double> sumlprup;
+    vector<double> sumsqlprup;  
+    vector<long> nscanned;
     for ( int i = 0; ( maxScan() < 0 || i < maxScan() ) && readEvent(); ++i ) {
       if ( !checkPartonBin() ) Throw<LesHouchesInitError>()
-	<< "Found event in LesHouchesReader '" << name()
-	<< "' which cannot be handeled by the assigned PartonExtractor '"
-	<< partonExtractor()->name() << "'." << Exception::runerror;
+        << "Found event in LesHouchesReader '" << name()
+        << "' which cannot be handeled by the assigned PartonExtractor '"
+        << partonExtractor()->name() << "'." << Exception::runerror;
       vector<int>::iterator idit =
-	find(lprup.begin(), lprup.end(), hepeup.IDPRUP);
+        find(lprup.begin(), lprup.end(), hepeup.IDPRUP);
       int id = lprup.size();
       if ( idit == lprup.end() ) {
-	lprup.push_back(hepeup.IDPRUP);
-	newmax.push_back(0.0);
-	neweve.push_back(0);
-	oldeve.push_back(0);
+        lprup.push_back(hepeup.IDPRUP);
+        newmax.push_back(0.0);
+        neweve.push_back(0);
+        oldeve.push_back(0);
+        sumlprup.push_back(0.);
+        sumsqlprup.push_back(0.);
+        nscanned.push_back(0);
       } else {
-	id = idit - lprup.begin();
+        id = idit - lprup.begin();
       }
       ++neve;
       ++oldeve[id];
       oldsum += hepeup.XWGTUP;
+      sumlprup[id] += hepeup.XWGTUP;
+      sumsqlprup[id] += sqr(hepeup.XWGTUP);
+      ++nscanned[id];
       if ( cacheFile() ) {
- 	if ( eventWeight() == 0.0 ) {
- 	  ++cuteve;
-	  continue;
- 	}
-	cacheEvent();
+        if ( eventWeight() == 0.0 ) {
+          ++cuteve;
+          continue;
+        }
+        cacheEvent();
       }
       ++neweve[id];
       newmax[id] = max(newmax[id], abs(eventWeight()));
       if ( eventWeight() < 0.0 ) negw = true;
-    }
-
+    } //end of scanning events
     xSecWeights.resize(oldeve.size(), 1.0);
     for ( int i = 0, N = oldeve.size(); i < N; ++i )
       if ( oldeve[i] ) xSecWeights[i] = double(neweve[i])/double(oldeve[i]);
@@ -346,18 +346,18 @@ long LesHouchesReader::scan() {
 
     if ( lprup.size() == heprup.LPRUP.size() ) {
       for ( int id = 0, N = lprup.size(); id < N; ++id ) {
-	vector<int>::iterator idit =
-	  find(heprup.LPRUP.begin(), heprup.LPRUP.end(), hepeup.IDPRUP);
-	if ( idit == heprup.LPRUP.end() ) {
-	  Throw<LesHouchesInitError>()
-	    << "When scanning events, the LesHouschesReader '" << name()
-	    << "' found undeclared processes."  << Exception::warning;
-	  heprup.NPRUP = 0;
-	  break;
-	}
-	int idh = idit - heprup.LPRUP.begin();
-	heprup.XMAXUP[idh] = newmax[id];
-      }	
+        vector<int>::iterator idit =
+          find(heprup.LPRUP.begin(), heprup.LPRUP.end(), hepeup.IDPRUP);
+        if ( idit == heprup.LPRUP.end() ) {
+          Throw<LesHouchesInitError>()
+            << "When scanning events, the LesHouschesReader '" << name()
+            << "' found undeclared processes."  << Exception::warning;
+          heprup.NPRUP = 0;
+          break;
+        }
+        int idh = idit - heprup.LPRUP.begin();
+        heprup.XMAXUP[idh] = newmax[id];
+      } 
     }
     if ( heprup.NPRUP == 0 ) {
       // No heprup block was supplied or something went wrong.
@@ -365,13 +365,20 @@ long LesHouchesReader::scan() {
       heprup.LPRUP.resize(lprup.size());
       heprup.XMAXUP.resize(lprup.size());
       for ( int id = 0, N = lprup.size(); id < N; ++id ) {
-	heprup.LPRUP[id] = lprup[id];
-	heprup.XMAXUP[id] = newmax[id];
+        heprup.LPRUP[id] = lprup[id];
+        heprup.XMAXUP[id] = newmax[id];
       }
-    } else if ( abs(heprup.IDWTUP) != 1 ) {
+    }
+    if ( abs(heprup.IDWTUP) != 1 ) {
       // Try to fix things if abs(heprup.IDWTUP) != 1.
       double sumxsec = 0.0;
-      for ( int id = 0; id < heprup.NPRUP; ++id ) sumxsec += heprup.XSECUP[id];
+      for ( int id = 0; id < heprup.NPRUP; ++id )  {
+        //set the cross section directly from the event weights read
+        heprup.XSECUP[id] = sumlprup[id]/nscanned[id];
+        heprup.XERRUP[id] = sqrt( (sumsqlprup[id]/nscanned[id] - sqr(sumlprup[id]/nscanned[id])) / nscanned[id] );
+        heprup.XMAXUP[id] = newmax[id];
+        sumxsec += heprup.XSECUP[id];
+      }
       weightScale = picobarn*neve*sumxsec/oldsum;
     }
   }
@@ -379,7 +386,7 @@ long LesHouchesReader::scan() {
   if ( cacheFile() ) closeCacheFile();
 
   if ( negw ) heprup.IDWTUP = min(-abs(heprup.IDWTUP), -1);
-
+ 
   return neve;
 
 }
@@ -425,7 +432,7 @@ tXCombPtr LesHouchesReader::getXComb() {
   theLastXComb = lastXC;
   lastXCombPtr()->subProcess(SubProPtr());
   lastXCombPtr()->setPartonBinInstances(partonBinInstances(),
-					sqr(hepeup.SCALUP)*GeV2);
+                                        sqr(hepeup.SCALUP)*GeV2);
   lastXCombPtr()->lastAlphaS(hepeup.AQCDUP);
   lastXCombPtr()->lastAlphaEM(hepeup.AQEDUP);
   return lastXCombPtr();
@@ -437,7 +444,7 @@ tSubProPtr LesHouchesReader::getSubProcess() {
   lastXCombPtr()->subProcess(new_ptr(SubProcess(lastPartons(), tCollPtr(), this)));
   subProcess()->setOutgoing(outgoing().begin(), outgoing().end());
   subProcess()->setIntermediates(intermediates().begin(),
-				 intermediates().end());
+                                 intermediates().end());
   return subProcess();
 }
 
@@ -448,6 +455,7 @@ void LesHouchesReader::fillEvent() {
   colourIndex(0, tColinePtr());
   createParticles();
   createBeams();
+    
 }
 
 void LesHouchesReader::reopen() {
@@ -462,14 +470,14 @@ void LesHouchesReader::reopen() {
        generator()->N() - generator()->currentEventNumber() ) {
     if(theReOpenAllowed)
       generator()->logWarning(LesHouchesReopenWarning()
-			      << "Reopening LesHouchesReader '" << name()
-			      << "' after accessing " << stats.attempts() 
-			      << " events out of "
-			      << NEvents() << Exception::warning);
+                              << "Reopening LesHouchesReader '" << name()
+                              << "' after accessing " << stats.attempts() 
+                              << " events out of "
+                              << NEvents() << Exception::warning);
     else
       throw LesHouchesReopenWarning()
-	<< "More events requested than available in LesHouchesReader "
-	<< name() << Exception::runerror;
+        << "More events requested than available in LesHouchesReader "
+        << name() << Exception::runerror;
   }
   if ( cacheFile() ) {
     closeCacheFile();
@@ -501,14 +509,14 @@ bool LesHouchesReader::readEvent() {
 
   // If we are just skipping event we do not need to reweight or do
   // anything fancy.
-  if ( skipping ) return true;
+  if ( skipping ) { return true; }
 
-  if ( cacheFile() && !scanning ) return true;
+  if ( cacheFile() && !scanning ) { return true;  }
 
   // Reweight according to the re- and pre-weights objects in the
   // LesHouchesReader base class.
   lastweight = reweight();
-
+  
   if ( !reweightPDF && !cutEarly() ) return true;
   // We should try to reweight the PDFs or make early cuts here.
 
@@ -521,10 +529,10 @@ bool LesHouchesReader::readEvent() {
        inPDF.first && outPDF.first && inPDF.first != outPDF.first ) {
     if ( hepeup.XPDWUP.first <= 0.0 )
       hepeup.XPDWUP.first =
-	inPDF.first->xfx(inData.first, incoming().first->dataPtr(),
-			 sqr(hepeup.SCALUP*GeV), x1);
+        inPDF.first->xfx(inData.first, incoming().first->dataPtr(),
+                         sqr(hepeup.SCALUP*GeV), x1);
     double xf = outPDF.first->xfx(inData.first, incoming().first->dataPtr(),
-				  sqr(hepeup.SCALUP*GeV), x1);
+                                  sqr(hepeup.SCALUP*GeV), x1);
     lastweight *= xf/hepeup.XPDWUP.first;
     hepeup.XPDWUP.first = xf;
   }
@@ -536,19 +544,19 @@ bool LesHouchesReader::readEvent() {
        inPDF.second && outPDF.second && inPDF.second != outPDF.second ) {
     if ( hepeup.XPDWUP.second <= 0.0 )
       hepeup.XPDWUP.second =
-	inPDF.second->xfx(inData.second, incoming().second->dataPtr(),
-			 sqr(hepeup.SCALUP*GeV), x2);
+        inPDF.second->xfx(inData.second, incoming().second->dataPtr(),
+                         sqr(hepeup.SCALUP*GeV), x2);
     double xf =
       outPDF.second->xfx(inData.second, incoming().second->dataPtr(),
-			 sqr(hepeup.SCALUP*GeV), x2);
+                         sqr(hepeup.SCALUP*GeV), x2);
     lastweight *= xf/hepeup.XPDWUP.second;
     hepeup.XPDWUP.second = xf;
   }
 
   if ( cutEarly() ) {
     if ( !cuts().initSubProcess((incoming().first->momentum() +
-				 incoming().second->momentum()).m2(),
-				0.5*log(x1/x2)) ) lastweight = 0.0;
+                                 incoming().second->momentum()).m2(),
+                                0.5*log(x1/x2)) ) lastweight = 0.0;
     tSubProPtr sub = getSubProcess();
     TmpTransform<tSubProPtr> tmp(sub, Utilities::getBoostToCM(sub->incoming()));
     if ( !cuts().passCuts(*sub) ) lastweight = 0.0;
@@ -566,8 +574,7 @@ double LesHouchesReader::getEvent() {
   ++position;
 
   double max = maxWeights[hepeup.IDPRUP]*maxFactor;
-  return max != 0.0? eventWeight()/max: 0.0;
-
+  return max != 0.0? eventWeight()/max: 0.0; 
 }
 
 void LesHouchesReader::skip(long n) {
@@ -613,34 +620,34 @@ bool LesHouchesReader::checkPartonBin() {
     }
     else if ( hepeup.ISTUP[i] == -1 ) {
       if ( inc.first.size() &&
-	   hepeup.MOTHUP[i].first == inc.first.back() + 1 )
-	inc.first.push_back(i);
+           hepeup.MOTHUP[i].first == inc.first.back() + 1 )
+        inc.first.push_back(i);
       else if ( inc.second.size() &&
-		hepeup.MOTHUP[i].first == inc.second.back() + 1 )
-	inc.second.push_back(i);
+                hepeup.MOTHUP[i].first == inc.second.back() + 1 )
+        inc.second.push_back(i);
       else if ( inc.first.empty() ) {
-	inc.first.push_back(-1);
-	inc.first.push_back(i);
+        inc.first.push_back(-1);
+        inc.first.push_back(i);
       }
       else if ( inc.second.empty() ) {
-	inc.second.push_back(-1);
-	inc.second.push_back(i);
+        inc.second.push_back(-1);
+        inc.second.push_back(i);
       }
       else if ( inc.first.size() <= inc.second.size() )
-	inc.first.push_back(i);
+        inc.first.push_back(i);
       else
-	inc.second.push_back(i);
+        inc.second.push_back(i);
     }
   }
 
   // Now store the corresponding id numbers
   pair< vector<long>, vector<long> > ids;
   ids.first.push_back(inc.first[0] < 0? heprup.IDBMUP.first:
-		      hepeup.IDUP[inc.first[0]]);
+                      hepeup.IDUP[inc.first[0]]);
   for ( int i = 1, N = inc.first.size(); i < N; ++i )
     ids.first.push_back(hepeup.IDUP[inc.first[i]]);
   ids.second.push_back(inc.second[0] < 0? heprup.IDBMUP.second:
-		       hepeup.IDUP[inc.second[0]]);
+                       hepeup.IDUP[inc.second[0]]);
   for ( int i = 1, N = inc.second.size(); i < N; ++i )
     ids.second.push_back(hepeup.IDUP[inc.second[i]]);
 
@@ -655,10 +662,10 @@ bool LesHouchesReader::checkPartonBin() {
       --icurr;
     }
     if(!(!partonBins()[i].first->incoming() &&
-	 !partonBins()[i].first->particle() &&  
-	 partonBins()[i].first->parton()->id () == ids.first[0] &&
-	 ( inc.first.size()==1 ||
-	   (inc.first.size()==2 && ids.first[0]==ids.first[1]))) &&
+         !partonBins()[i].first->particle() &&  
+         partonBins()[i].first->parton()->id () == ids.first[0] &&
+         ( inc.first.size()==1 ||
+           (inc.first.size()==2 && ids.first[0]==ids.first[1]))) &&
        ( curr || icurr >= 0 ) ) continue;
 
     curr = partonBins()[i].second;
@@ -669,10 +676,10 @@ bool LesHouchesReader::checkPartonBin() {
       --icurr;
     }
     if(!(!partonBins()[i].second->incoming() &&
-	 !partonBins()[i].second->particle() &&  
-	 partonBins()[i].second->parton()->id () == ids.second[0] &&
-	 ( inc.second.size()==1 ||
-	   (inc.second.size()==2 && ids.second[0]==ids.second[1]))) &&
+         !partonBins()[i].second->particle() &&  
+         partonBins()[i].second->parton()->id () == ids.second[0] &&
+         ( inc.second.size()==1 ||
+           (inc.second.size()==2 && ids.second[0]==ids.second[1]))) &&
        ( curr || icurr >= 0 ) ) continue;
 
     pbp = partonBins()[i];
@@ -714,7 +721,7 @@ tcPBPair LesHouchesReader::createPartonBinInstances() {
   Direction<0> dir(true);
   thePartonBinInstances.first =
     new_ptr(PartonBinInstance(incoming().first, sel.first,
-			      -sqr(hepeup.SCALUP*GeV)));
+                              -sqr(hepeup.SCALUP*GeV)));
   if ( thePartonBinInstances.first->xi() > 1.00001 ) {
     Throw<LesHouchesInconsistencyError>()
       << "Found an event with momentum fraction larger than unity (x1="
@@ -725,7 +732,7 @@ tcPBPair LesHouchesReader::createPartonBinInstances() {
   dir.reverse();
   thePartonBinInstances.second =
     new_ptr(PartonBinInstance(incoming().second, sel.second,
-			      -sqr(hepeup.SCALUP*GeV)));
+                              -sqr(hepeup.SCALUP*GeV)));
 
   if ( thePartonBinInstances.second->xi() > 1.00001 ) {
     Throw<LesHouchesInconsistencyError>()
@@ -737,7 +744,7 @@ tcPBPair LesHouchesReader::createPartonBinInstances() {
   return sel;
 
 }
-		     
+                     
 
 void LesHouchesReader::createParticles() {
   theBeams = PPair();
@@ -747,33 +754,37 @@ void LesHouchesReader::createParticles() {
   for ( int i = 0, N = hepeup.IDUP.size(); i < N; ++i ) {
     if ( !hepeup.IDUP[i] ) continue;
     Lorentz5Momentum mom(hepeup.PUP[i][0]*GeV, hepeup.PUP[i][1]*GeV,
-			 hepeup.PUP[i][2]*GeV, hepeup.PUP[i][3]*GeV,
-			 hepeup.PUP[i][4]*GeV);
+                         hepeup.PUP[i][2]*GeV, hepeup.PUP[i][3]*GeV,
+                         hepeup.PUP[i][4]*GeV);
+    //   cout << hepeup.PUP[i][0] << " " << hepeup.PUP[i][1] << " " << hepeup.PUP[i][2] << " " << hepeup.PUP[i][3] << " " << hepeup.PUP[i][4] << endl;
     if(theMomentumTreatment == 1)      mom.rescaleEnergy();
     else if(theMomentumTreatment == 2) mom.rescaleMass();
+    // cout << hepeup.PUP[i][0] << " " << hepeup.PUP[i][1] << " " << hepeup.PUP[i][2] << " " << hepeup.PUP[i][3] << " " << hepeup.PUP[i][4] << endl;
     PDPtr pd = getParticleData(hepeup.IDUP[i]);
     if (!pd) {
       Throw<LesHouchesInitError>()
-	<< "LesHouchesReader '" << name() << "' found unknown particle ID "
-	<< hepeup.IDUP[i]
-	<< " in Les Houches common block structure.\n"
-	<< "You need to define the new particle in an input file.\n"
-	<< Exception::runerror;
+        << "LesHouchesReader '" << name() << "' found unknown particle ID "
+        << hepeup.IDUP[i]
+        << " in Les Houches common block structure.\n"
+        << "You need to define the new particle in an input file.\n"
+        << Exception::runerror;
     }
     if ( ! pd->coloured() 
-	 && ( hepeup.ICOLUP[i].first != 0 || hepeup.ICOLUP[i].second != 0 ) ) {
+         && ( hepeup.ICOLUP[i].first != 0 || hepeup.ICOLUP[i].second != 0 ) ) {
       Throw<LesHouchesInconsistencyError>()
-	<< "LesHouchesReader " << name() << ": " << pd->PDGName() 
-	<< " is not a coloured particle.\nIt should not have "
-	<< "(anti-)colour lines " << hepeup.ICOLUP[i].first
-	<< ' ' << hepeup.ICOLUP[i].second
-	<< " set; the event file needs to be fixed."
-	<< Exception::runerror;
+        << "LesHouchesReader " << name() << ": " << pd->PDGName() 
+        << " is not a coloured particle.\nIt should not have "
+        << "(anti-)colour lines " << hepeup.ICOLUP[i].first
+        << ' ' << hepeup.ICOLUP[i].second
+        << " set; the event file needs to be fixed."
+        << Exception::runerror;
     }
     PPtr p = pd->produceParticle(mom);
     if(hepeup.ICOLUP[i].first>=0 && hepeup.ICOLUP[i].second >=0) {
       tColinePtr c = colourIndex(hepeup.ICOLUP[i].first);
-      if ( c ) c->addColoured(p);
+      if ( c ) {
+        c->addColoured(p);
+      }
       c = colourIndex(hepeup.ICOLUP[i].second);
       if ( c ) c->addAntiColoured(p);
     }
@@ -781,12 +792,12 @@ void LesHouchesReader::createParticles() {
       tColinePtr c1 = colourIndex(abs(hepeup.ICOLUP[i].first ));
       tColinePtr c2 = colourIndex(abs(hepeup.ICOLUP[i].second));
       if(pd->hasColour()) {
-	c1->addColouredIndexed(p,1);
-	c2->addColouredIndexed(p,2);
+        c1->addColouredIndexed(p,1);
+        c2->addColouredIndexed(p,2);
       }
       else {
-	c1->addAntiColouredIndexed(p,1);
-	c2->addAntiColouredIndexed(p,2);
+        c1->addAntiColouredIndexed(p,1);
+        c2->addAntiColouredIndexed(p,2);
       }
     }
     particleIndex(i + 1, p);
@@ -795,19 +806,19 @@ void LesHouchesReader::createParticles() {
       if ( !theBeams.first ) theBeams.first = p;
       else if ( !theBeams.second ) theBeams.second = p;
       else Throw<LesHouchesInconsistencyError>()
-	<< "To many incoming beam particles in the LesHouchesReader '"
-	<< name() << "'." << Exception::runerror;
+        << "To many incoming beam particles in the LesHouchesReader '"
+        << name() << "'." << Exception::runerror;
       break;
     case -1:
       if ( !theIncoming.first ) theIncoming.first = p;
       else if ( !theIncoming.second ) theIncoming.second = p;
       else if ( particleIndex(theIncoming.first) == hepeup.MOTHUP[i].first )
-	theIncoming.first = p;
+        theIncoming.first = p;
       else if ( particleIndex(theIncoming.second) == hepeup.MOTHUP[i].first )
-	theIncoming.second = p;
+        theIncoming.second = p;
       else Throw<LesHouchesInconsistencyError>()
-	<< "To many incoming particles to hard subprocess in the "
-	<< "LesHouchesReader '"	<< name() << "'." << Exception::runerror;
+        << "To many incoming particles to hard subprocess in the "
+        << "LesHouchesReader '" << name() << "'." << Exception::runerror;
       p->scale(sqr(hepeup.SCALUP*GeV));
       break;
     case 1:
@@ -821,9 +832,9 @@ void LesHouchesReader::createParticles() {
       break;
     default:
       Throw<LesHouchesInconsistencyError>()
-	<< "Unknown status code (" << hepeup.ISTUP[i]
-	<< ") in the LesHouchesReader '" << name() << "'."
-	<< Exception::runerror;
+        << "Unknown status code (" << hepeup.ISTUP[i]
+        << ") in the LesHouchesReader '" << name() << "'."
+        << Exception::runerror;
     }
 
     // value 9 is defined as "Unknown or unpolarized particles"
@@ -832,25 +843,26 @@ void LesHouchesReader::createParticles() {
       spinup = 0.;
     if ( spinup < -1. || spinup > 1. ) {
       Throw<LesHouchesInconsistencyError>()
-	<< "Polarization must be between -1 and 1, not "
-	<< spinup << " as found in the "
-	<< "LesHouches event file.\nThe event file needs to be fixed." 
-	<< Exception::runerror;
+        << "Polarization must be between -1 and 1, not "
+        << spinup << " as found in the "
+        << "LesHouches event file.\nThe event file needs to be fixed." 
+        << Exception::runerror;
     }
     if( theIncludeSpin 
-	&& abs(pd->id()) == ParticleID::tauminus 
-	&& spinup !=0) {
+        && abs(pd->id()) == ParticleID::tauminus 
+        && spinup !=0) {
       if(pd->iSpin() == PDT::Spin1Half ) {
-	vector<Helicity::SpinorWaveFunction> wave;
-	Helicity::SpinorWaveFunction(wave,p,Helicity::outgoing,true);
-	RhoDMatrix rho(pd->iSpin(),true);
-	rho(0,0) = 0.5*(1.-spinup);
-	rho(1,1) = 0.5*(1.+spinup);
-	p->spinInfo()->rhoMatrix() = rho;
-	p->spinInfo()->  DMatrix() = rho;
+        vector<Helicity::SpinorWaveFunction> wave;
+        Helicity::SpinorWaveFunction(wave,p,Helicity::outgoing,true);
+        RhoDMatrix rho(pd->iSpin(),true);
+        rho(0,0) = 0.5*(1.-spinup);
+        rho(1,1) = 0.5*(1.+spinup);
+        p->spinInfo()->rhoMatrix() = rho;
+        p->spinInfo()->  DMatrix() = rho;
       }
     }
   }
+
   // check the colour flows, and if necessary create any sources/sinks
   // hard process
   // get the particles in the hard process
@@ -864,12 +876,12 @@ void LesHouchesReader::createParticles() {
     case 1: case 2: case 3:
       moth = hepeup.MOTHUP[i].first;
       if(moth!=0 && (hepeup.ISTUP[moth]==-1||hepeup.ISTUP[moth]==-2||
-		   hepeup.ISTUP[moth]==-9))
-	external.push_back(particleIndex.find(i+1));
+                   hepeup.ISTUP[moth]==-9))
+        external.push_back(particleIndex.find(i+1));
       moth = hepeup.MOTHUP[i].second;
       if(moth!=0 && (hepeup.ISTUP[moth]==-1||hepeup.ISTUP[moth]==-2||
-		     hepeup.ISTUP[moth]==-9))
-	external.push_back(particleIndex.find(i+1));
+                     hepeup.ISTUP[moth]==-9))
+        external.push_back(particleIndex.find(i+1));
       break;
     case -2: case -9: default: 
       break;
@@ -886,76 +898,78 @@ void LesHouchesReader::createParticles() {
       swap(col,anti);
     if(!col.empty()) {
       for(unsigned int ic1=0;ic1<col.size();++ic1) {
-	bool matched=false;
-	for(unsigned int iy=0;iy<external.size();++iy) {
-	  vector<tcColinePtr> col2;
-	  if(hepeup.ISTUP[particleIndex(external[iy])-1]<0) {
-	    if(external[iy]->colourInfo()->colourLines().empty()) continue;
-	    col2 = external[iy]->colourInfo()->colourLines();
-	  } 
-	  else if(hepeup.ISTUP[particleIndex(external[iy])-1]>0) {
-	    if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
-	    col2 = external[iy]->colourInfo()->antiColourLines();
-	  }
-	  for(unsigned int ic2=0;ic2<col2.size();++ic2) {
-	    if(col[ic1]==col2[ic2]) {
-	      matched=true;
-	      break;
-	    }
-	  }
-	  if(matched) break;
-	}
-	if(!matched) unMatchedColour.push_back(const_ptr_cast<tColinePtr>(col[ic1]));
+        bool matched=false;
+        for(unsigned int iy=0;iy<external.size();++iy) {
+          vector<tcColinePtr> col2;
+          if(hepeup.ISTUP[particleIndex(external[iy])-1]<0) {
+            if(external[iy]->colourInfo()->colourLines().empty()) continue;
+            col2 = external[iy]->colourInfo()->colourLines();
+          } 
+          else if(hepeup.ISTUP[particleIndex(external[iy])-1]>0) {
+            if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
+            col2 = external[iy]->colourInfo()->antiColourLines();
+          }
+          for(unsigned int ic2=0;ic2<col2.size();++ic2) {
+            if(col[ic1]==col2[ic2]) {
+              matched=true;
+              break;
+            }
+          }
+          if(matched) break;
+        }
+        if(!matched) unMatchedColour.push_back(const_ptr_cast<tColinePtr>(col[ic1]));
       }
     }
     if(!anti.empty()) {
       for(unsigned int ic1=0;ic1<col.size();++ic1) {
-	bool matched=false;
-	for(unsigned int iy=0;iy<external.size();++iy) {
-	  vector<tcColinePtr> anti2;
-	  if(hepeup.ISTUP[particleIndex(external[iy])-1]<0) {
-	    if(external[iy]->colourInfo()->colourLines().empty()) continue;
-	    anti2 = external[iy]->colourInfo()->antiColourLines();
-	  } 
-	  else if(hepeup.ISTUP[particleIndex(external[iy])-1]>0) {
-	    if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
-	    anti2 = external[iy]->colourInfo()->colourLines();
-	  }
-	  for(unsigned int ic2=0;ic2<anti2.size();++ic2) {
-	    if(col[ic1]==anti2[ic2]) {
-	      matched=true;
-	      break;
-	    }
-	  }
-	  if(matched) break;
-	}
-	if(!matched) unMatchedAntiColour.push_back(const_ptr_cast<tColinePtr>(anti[ic1]));
+        bool matched=false;
+        for(unsigned int iy=0;iy<external.size();++iy) {
+          vector<tcColinePtr> anti2;
+          if(hepeup.ISTUP[particleIndex(external[iy])-1]<0) {
+            if(external[iy]->colourInfo()->colourLines().empty()) continue;
+            anti2 = external[iy]->colourInfo()->antiColourLines();
+          } 
+          else if(hepeup.ISTUP[particleIndex(external[iy])-1]>0) {
+            if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
+            anti2 = external[iy]->colourInfo()->colourLines();
+          }
+          for(unsigned int ic2=0;ic2<anti2.size();++ic2) {
+            if(col[ic1]==anti2[ic2]) {
+              matched=true;
+              break;
+            }
+          }
+          if(matched) break;
+        }
+        if(!matched) unMatchedAntiColour.push_back(const_ptr_cast<tColinePtr>(anti[ic1]));
       }
     }
   }
+    
   // might have source/sink
   if( unMatchedColour.size() + unMatchedAntiColour.size() != 0) {
     if(unMatchedColour.size() == 3 ) {
       unMatchedColour[0]->setSourceNeighbours(unMatchedColour[1],
-					      unMatchedColour[2]);
+                                              unMatchedColour[2]);
     }
     else if(unMatchedColour.size() != 0 && ThePEG_DEBUG_LEVEL) {
       Throw<LesHouchesInconsistencyError>()
- 	<< "LesHouchesReader '" << name() << "' found inconsistent colour "
- 	<< "flow in Les Houches common block structure for hard process.\n"
- 	<< hepeup << Exception::runerror;
+        << "LesHouchesReader '" << name() << "' found inconsistent colour "
+        << "flow in Les Houches common block structure for hard process.\n"
+        << hepeup << Exception::runerror;
     }
     if(unMatchedAntiColour.size() == 3 ) {
       unMatchedAntiColour[0]->setSinkNeighbours(unMatchedAntiColour[1],
-						unMatchedAntiColour[2]);
+                                                unMatchedAntiColour[2]);
     }
     else if(unMatchedAntiColour.size() != 0 && ThePEG_DEBUG_LEVEL) {
       Throw<LesHouchesInconsistencyError>()
- 	<< "LesHouchesReader '" << name() << "' found inconsistent colour "
- 	<< "flow in Les Houches common block structure for hard process.\n"
- 	<< hepeup << Exception::runerror;
+        << "LesHouchesReader '" << name() << "' found inconsistent colour "
+        << "flow in Les Houches common block structure for hard process.\n"
+        << hepeup << Exception::runerror;
     }
   }
+
   // any subsequent decays
   for ( int i = 0, N = hepeup.IDUP.size(); i < N; ++i ) {
     if(hepeup.ISTUP[i] !=2 && hepeup.ISTUP[i] !=3) continue;
@@ -963,93 +977,94 @@ void LesHouchesReader::createParticles() {
     external.push_back(particleIndex.find(i+1));
     for ( int j = 0; j < N; ++j ) {
       if(hepeup.MOTHUP[j].first==i+1||  hepeup.MOTHUP[j].second==i+1)
-	external.push_back(particleIndex.find(j+1));
+        external.push_back(particleIndex.find(j+1));
     }
     // check the incoming/outgoing lines match
     vector<tColinePtr> unMatchedColour,unMatchedAntiColour;
     for(unsigned int ix=0;ix<external.size();++ix) {
       vector<tcColinePtr> 
-	col  = external[ix]->colourInfo()->    colourLines();
+        col  = external[ix]->colourInfo()->    colourLines();
       vector<tcColinePtr> 
-	anti = external[ix]->colourInfo()->antiColourLines();
+        anti = external[ix]->colourInfo()->antiColourLines();
       if(ix==0) swap(col,anti);
       if(!col.empty()) {
-	for(unsigned int ic1=0;ic1<col.size();++ic1) {
-	  bool matched=false;
-	  for(unsigned int iy=0;iy<external.size();++iy) {
-	    if(iy==ix) continue;
-	    vector<tcColinePtr> col2;
-	    if(iy==0) {
-	      if(external[iy]->colourInfo()->colourLines().empty()) continue;
-	      col2 = external[iy]->colourInfo()->colourLines();
-	    } 
-	    else {
-	      if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
-	      col2 = external[iy]->colourInfo()->antiColourLines();
-	    }
-	    for(unsigned int ic2=0;ic2<col2.size();++ic2) {
-	      if(col[ic1]==col2[ic2]) {
-		matched=true;
-		break;
-	      }
-	    }
-	    if(matched) break;
-	  }
-	  if(!matched) unMatchedColour.push_back(const_ptr_cast<tColinePtr>(col[ic1]));
-	}
+        for(unsigned int ic1=0;ic1<col.size();++ic1) {
+          bool matched=false;
+          for(unsigned int iy=0;iy<external.size();++iy) {
+            if(iy==ix) continue;
+            vector<tcColinePtr> col2;
+            if(iy==0) {
+              if(external[iy]->colourInfo()->colourLines().empty()) continue;
+              col2 = external[iy]->colourInfo()->colourLines();
+            } 
+            else {
+              if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
+              col2 = external[iy]->colourInfo()->antiColourLines();
+            }
+            for(unsigned int ic2=0;ic2<col2.size();++ic2) {
+              if(col[ic1]==col2[ic2]) {
+                matched=true;
+                break;
+              }
+            }
+            if(matched) break;
+          }
+          if(!matched) unMatchedColour.push_back(const_ptr_cast<tColinePtr>(col[ic1]));
+        }
       }
       if(!anti.empty()) {
-	for(unsigned int ic1=0;ic1<anti.size();++ic1) {
-	  bool matched=false;
-	  for(unsigned int iy=0;iy<external.size();++iy) {
-	    if(iy==ix) continue;
-	    vector<tcColinePtr> anti2;
-	    if(iy==0) {
-	      if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
-	      anti2 = external[iy]->colourInfo()->antiColourLines();
-	    } 
-	    else {
-	      if(external[iy]->colourInfo()->colourLines().empty()) continue;
-	      anti2 = external[iy]->colourInfo()->colourLines();
-	    }
-	    for(unsigned int ic2=0;ic2<anti2.size();++ic2) {
-	      if(anti[ic1]==anti2[ic2]) {
-		matched=true;
-		break;
-	      }
-	    }
-	    if(matched) break;
-	  }
-	  if(!matched) unMatchedAntiColour.push_back(const_ptr_cast<tColinePtr>(anti[ic1]));
-	}
+        for(unsigned int ic1=0;ic1<anti.size();++ic1) {
+          bool matched=false;
+          for(unsigned int iy=0;iy<external.size();++iy) {
+            if(iy==ix) continue;
+            vector<tcColinePtr> anti2;
+            if(iy==0) {
+              if(external[iy]->colourInfo()->antiColourLines().empty()) continue;
+              anti2 = external[iy]->colourInfo()->antiColourLines();
+            } 
+            else {
+              if(external[iy]->colourInfo()->colourLines().empty()) continue;
+              anti2 = external[iy]->colourInfo()->colourLines();
+            }
+            for(unsigned int ic2=0;ic2<anti2.size();++ic2) {
+              if(anti[ic1]==anti2[ic2]) {
+                matched=true;
+                break;
+              }
+            }
+            if(matched) break;
+          }
+          if(!matched) unMatchedAntiColour.push_back(const_ptr_cast<tColinePtr>(anti[ic1]));
+        }
       }
     }
     // might have source/sink
     if( unMatchedColour.size() + unMatchedAntiColour.size() != 0) {
       if(unMatchedColour.size() == 3 ) {
-	unMatchedColour[0]->setSourceNeighbours(unMatchedColour[1],
-						unMatchedColour[2]);
+        unMatchedColour[0]->setSourceNeighbours(unMatchedColour[1],
+                                                unMatchedColour[2]);
       }
       else if(unMatchedColour.size() != 0 && ThePEG_DEBUG_LEVEL) {
-	Throw<LesHouchesInconsistencyError>()
-	  << "LesHouchesReader '" << name() << "' found inconsistent colour "
-	  << "flow in Les Houches common block structure for decay of \n"
-	  << *external[0] << "\n"
-	  << hepeup << Exception::runerror;
+        Throw<LesHouchesInconsistencyError>()
+          << "LesHouchesReader '" << name() << "' found inconsistent colour "
+          << "flow in Les Houches common block structure for decay of \n"
+          << *external[0] << "\n"
+          << hepeup << Exception::runerror;
       }
       if(unMatchedAntiColour.size() == 3 ) {
-	unMatchedAntiColour[0]->setSinkNeighbours(unMatchedAntiColour[1],
-						  unMatchedAntiColour[2]);
+        unMatchedAntiColour[0]->setSinkNeighbours(unMatchedAntiColour[1],
+                                                  unMatchedAntiColour[2]);
       }
       else if(unMatchedAntiColour.size() != 0 && ThePEG_DEBUG_LEVEL) {
-	Throw<LesHouchesInconsistencyError>()
-	  << "LesHouchesReader '" << name() << "' found inconsistent colour "
-	  << "flow in Les Houches common block structure for decay of\n"
-	  << *external[0] << "\n"
-	  << hepeup << Exception::runerror;
+        Throw<LesHouchesInconsistencyError>()
+          << "LesHouchesReader '" << name() << "' found inconsistent colour "
+          << "flow in Les Houches common block structure for decay of\n"
+          << *external[0] << "\n"
+          << hepeup << Exception::runerror;
       }
     }
   }
+
 }
 
 void LesHouchesReader::createBeams() {
@@ -1062,8 +1077,8 @@ void LesHouchesReader::createBeams() {
     double m = theBeams.first->mass()/GeV;
     theBeams.first->set5Momentum
       (Lorentz5Momentum(ZERO, ZERO,
-			sqrt(sqr(heprup.EBMUP.first) - sqr(m))*GeV,
-			heprup.EBMUP.first*GeV, m*GeV));
+                        sqrt(sqr(heprup.EBMUP.first) - sqr(m))*GeV,
+                        heprup.EBMUP.first*GeV, m*GeV));
     hepeup.IDUP.push_back(heprup.IDBMUP.first);
     hepeup.ISTUP.push_back(-9);
     hepeup.MOTHUP.push_back(make_pair(0, 0));
@@ -1082,8 +1097,8 @@ void LesHouchesReader::createBeams() {
     double m = theBeams.second->mass()/GeV;
     theBeams.second->set5Momentum
       (Lorentz5Momentum(ZERO, ZERO,
-			-sqrt(sqr(heprup.EBMUP.second) - sqr(m))*GeV,
-			heprup.EBMUP.second*GeV, m*GeV));
+                        -sqrt(sqr(heprup.EBMUP.second) - sqr(m))*GeV,
+                        heprup.EBMUP.second*GeV, m*GeV));
     hepeup.IDUP.push_back(heprup.IDBMUP.second);
     hepeup.ISTUP.push_back(-9);
     hepeup.MOTHUP.push_back(make_pair(0, 0));
@@ -1102,7 +1117,7 @@ void LesHouchesReader::connectMothers() {
     if ( pi(hepeup.MOTHUP[i].first) ) 
       pi(hepeup.MOTHUP[i].first)->addChild(pi(i + 1));
     if ( pi(hepeup.MOTHUP[i].second) 
-	 && hepeup.MOTHUP[i].second != hepeup.MOTHUP[i].first ) 
+         && hepeup.MOTHUP[i].second != hepeup.MOTHUP[i].first ) 
       pi(hepeup.MOTHUP[i].second)->addChild(pi(i + 1));
   }
 }
@@ -1143,6 +1158,11 @@ void LesHouchesReader::cacheEvent() const {
   pos = mwrite(pos, hepeup.SPINUP[0], hepeup.NUP);
   pos = mwrite(pos, lastweight);
   pos = mwrite(pos, optionalWeights);
+  for(size_t ff = 0; ff < optionalWeightsNames.size(); ff++) {
+    pos = mwrite(pos, optionalWeightsNames[ff]);
+  }
+  pos = mwrite(pos, optionalnpLO);
+  pos = mwrite(pos, optionalnpNLO);
   pos = mwrite(pos, preweight);
   cacheFile().write(&buff[0], buff.size(), 1);
 }
@@ -1178,6 +1198,11 @@ bool LesHouchesReader::uncacheEvent() {
   pos = mread(pos, hepeup.SPINUP[0], hepeup.NUP);
   pos = mread(pos, lastweight);
   pos = mread(pos, optionalWeights);
+  for(size_t ff = 0; ff < optionalWeightsNames.size(); ff++) {
+    pos = mread(pos, optionalWeightsNames[ff]);
+  }
+  pos = mread(pos, optionalnpLO);
+  pos = mread(pos, optionalnpNLO);
   pos = mread(pos, preweight);
 
   // If we are skipping, we do not have to do anything else.
@@ -1208,7 +1233,7 @@ void LesHouchesReader::persistentOutput(PersistentOStream & os) const {
      << thePartonBinInstances
      << theBeams << theIncoming << theOutgoing << theIntermediates
      << reweights << preweights << preweight << reweightPDF << doInitPDFs
-     << theLastXComb << theMaxMultCKKW << theMinMultCKKW << lastweight << optionalWeights
+     << theLastXComb << theMaxMultCKKW << theMinMultCKKW << lastweight << optionalWeights << optionalnpLO << optionalnpNLO
      << maxFactor << ounit(weightScale, picobarn) << xSecWeights << maxWeights
      << theMomentumTreatment << useWeightWarnings << theReOpenAllowed
      << theIncludeSpin;
@@ -1229,7 +1254,7 @@ void LesHouchesReader::persistentInput(PersistentIStream & is, int) {
      >> thePartonBinInstances
      >> theBeams >> theIncoming >> theOutgoing >> theIntermediates
      >> reweights >> preweights >> preweight >> reweightPDF >> doInitPDFs
-     >> theLastXComb >> theMaxMultCKKW >> theMinMultCKKW >> lastweight >> optionalWeights
+     >> theLastXComb >> theMaxMultCKKW >> theMinMultCKKW >> lastweight >> optionalWeights >> optionalnpLO >> optionalnpNLO
      >> maxFactor >> iunit(weightScale, picobarn) >> xSecWeights >> maxWeights
      >> theMomentumTreatment >> useWeightWarnings >> theReOpenAllowed
      >> theIncludeSpin;
@@ -1322,7 +1347,7 @@ void LesHouchesReader::Init() {
 
   static Parameter<LesHouchesReader,string> interfaceCacheFileName
     ("CacheFileName",
-     "Name of file used to cache the events form the reader in a fast-readable "
+     "Name of file used to cache the events from the reader in a fast-readable "
      "form. If empty, no cache file will be generated.",
      &LesHouchesReader::theCacheFileName, "",
      true, false);
@@ -1492,6 +1517,8 @@ void LesHouchesReader::Init() {
      "No",
      "Don't use the spin information",
      false);
+
+
 
   interfaceCuts.rank(8);
   interfacePartonExtractor.rank(7);

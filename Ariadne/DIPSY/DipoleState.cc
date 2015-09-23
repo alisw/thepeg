@@ -21,6 +21,7 @@
 #include "ThePEG/Utilities/UtilityBase.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ParticleInfo.h"
+#include "Sum20Momentum.h"
 #include "CPUTimer.h"
 
 #include <stdio.h>
@@ -38,7 +39,10 @@ DipoleState::DipoleState(const DipoleState & x)
     theWFInfo(x.theWFInfo),
     theWeight(x.theWeight), doTakeHistory(x.doTakeHistory), theYmax(x.theYmax),
     theCollidingEnergy(x.theCollidingEnergy), theHistory(x.theHistory),
-    allDipoles(x.allDipoles), theIncoming(x.theIncoming), theProducedParticles(x.theProducedParticles) {
+    allDipoles(x.allDipoles), theIncoming(x.theIncoming),
+    theProducedParticles(x.theProducedParticles),
+    theIncomingShadows(x.theIncomingShadows),
+    theShadowPropagators(x.theShadowPropagators) {
   for ( set<DipolePtr>::iterator it = allDipoles.begin();
 	it != allDipoles.end(); ++it )
     (**it).theDipoleState = this;
@@ -97,6 +101,7 @@ DipoleStatePtr DipoleState::clone() {
 
   return copy;
 
+  // *** TODO *** fix shadows here
 }
 
 void DipoleState::sortDipolesFS() {
@@ -285,6 +290,8 @@ void DipoleState::sortDipole(Dipole & d){
 }
 
 void DipoleState::evolve(double ymin, double ymax) {
+  if ( Current<DipoleEventHandler>()->effectivePartonMode() < 0 && !hasShadows() )
+    setupShadows();
   save();
   for ( set<DipolePtr>::const_iterator it = allDipoles.begin(); it != allDipoles.end(); it++ ) {
     (*it)->reset();
@@ -894,6 +901,37 @@ bool DipoleState::forceSwing(PartonPtr p, double ymax1, double ymax2) {
   return false;
 }
 
+void DipoleState::checkFSMomentum() const {
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+  if ( ! checkkinematics ) return;
+  Sum20Momentum sum20(lightCone(thePlus, theMinus));
+  list<PartonPtr> pl = getPartons();
+  for ( list<PartonPtr>::iterator it = pl.begin(); it != pl.end(); ++it )
+    if ( (**it).onShell() ) sum20 -= (**it).momentum();
+
+  if ( !sum20 ) {
+    Throw<DipoleKinematicsException>()
+      << "DIPSY found energy-momentum non-conservation in final DipoleState."
+      << Exception::warning;
+    debugShadowTree();
+  }
+}
+
+void DipoleState::checkFSMomentum(const Step & step) const {
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+  if ( ! checkkinematics ) return;
+  Sum20Momentum sum20(step.collision()->incoming().first->momentum() +
+		      step.collision()->incoming().second->momentum());
+
+  tPVector fs = step.getFinalState();
+  for ( int i = 0, N = fs.size(); i < N; ++i ) sum20 -= fs[i]->momentum();
+
+  if ( !sum20 )
+    Throw<DipoleKinematicsException>()
+      << "DIPSY found energy-momentum non-conservation in initial Step."
+      << Exception::warning;
+}
+
 DipoleStatePtr DipoleState::merge(DipoleStatePtr otherState) {
  //reasign all other dipoles to belong to this state.
   for( set< DipolePtr >::iterator it = otherState->allDipoles.begin(); 
@@ -908,7 +946,9 @@ DipoleStatePtr DipoleState::merge(DipoleStatePtr otherState) {
   allDipoles.insert(otherState->allDipoles.begin(),otherState->allDipoles.end());
   theProducedParticles.insert(otherState->theProducedParticles.begin(),
 			      otherState->theProducedParticles.end());
-
+  theIncomingShadows.insert(theIncomingShadows.end(),
+			    otherState->theIncomingShadows.begin(),
+			    otherState->theIncomingShadows.end());
   //add up the original particles momenta
   thePlus += otherState->thePlus;
   theMinus += otherState->theMinus;
@@ -950,31 +990,22 @@ DipoleStatePtr DipoleState::collide( DipoleStatePtr otherState,
 
 void DipoleState::mirror(double y0) {
   for ( set< DipolePtr >::iterator it = allDipoles.begin(); 
-      it != allDipoles.end(); it++) {
+	it != allDipoles.end(); it++) {
     if ( !((*it)->children().first || (*it)->children().second) ) {
-      PartonPtr p = (*it)->partons().first;
-      p->y( 2.0*y0 - p->y() );
-      Energy plus = p->plus();
-      p->plus( p->minus() );
-      p->minus( plus );
-      p->rightMoving( !(p->rightMoving()) );
-      if ( !((*it)->neighbors().second) ) {
-        PartonPtr p2 = (*it)->partons().second;
-        p2->y( 2.0*y0 - p2->y() );
-        p2->plus( p2->pT().pt()*exp(-p2->y()) );
-        p2->minus( p2->pT().pt()*exp(p2->y()) );
-        p->rightMoving( !(p->rightMoving()) );
-      }
+      (*it)->partons().first->mirror(y0);
+      if ( !((*it)->neighbors().second) ) (*it)->partons().second->mirror(y0);
     }
   }
-  Energy x = thePlus;
-  thePlus = theMinus;
-  theMinus = x;
+
+  swap(thePlus, theMinus);
 
   for ( map<PPtr, vector<PartonPtr> >::iterator it = theIncoming.begin();
 	it != theIncoming.end(); ++it )
     it->first->setMomentum(lightCone(it->first->momentum().minus(),
 				     it->first->momentum().plus()));
+
+  for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+    theIncomingShadows[i]->mirror(y0);
 
 }
 
@@ -982,22 +1013,13 @@ void DipoleState::translate(const ImpactParameters & b) {
   for(set< DipolePtr >::iterator it = allDipoles.begin(); 
       it != allDipoles.end(); it++) {
     if( !((*it)->children().first || (*it)->children().second) ) {
-      (*it)->partons().first->position( Parton::Point
-       ((*it)->partons().first->position().x()*cos(b.phi()) + 
-        (*it)->partons().first->position().y()*sin(b.phi()) + b.bVec().x() , 
-        (*it)->partons().first->position().y()*cos(b.phi()) - 
-        (*it)->partons().first->position().x()*sin(b.phi()) + b.bVec().y() ) );
-      (*it)->partons().first->pT( b.rotatePT((*it)->partons().first->pT()));
-      if( !((*it)->neighbors().second) ) {
-      (*it)->partons().second->position( Parton::Point
-       ((*it)->partons().second->position().x()*cos(b.phi()) + 
-        (*it)->partons().second->position().y()*sin(b.phi()) + b.bVec().x() , 
-        (*it)->partons().second->position().y()*cos(b.phi()) - 
-        (*it)->partons().second->position().x()*sin(b.phi()) + b.bVec().y() ) );
-      (*it)->partons().second->pT( b.rotatePT((*it)->partons().second->pT()));
-      }
+      b.translate((*it)->partons().first);
+      if( !((*it)->neighbors().second) )
+	b.translate((*it)->partons().second);
     }
   }
+  for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+    theIncomingShadows[i]->translate(b);
 }
 
 void DipoleState::fixValence(Step & step) const {
@@ -1011,6 +1033,7 @@ void DipoleState::fixValence(Step & step) const {
       if ( !valence.back() ) valence.pop_back();
     }
     wfi->wf().fixValence(step, it->first, valence);
+    checkFSMomentum(step);
   }
   LorentzRotation Rshift = Utilities::boostToCM(step.collision()->incoming());
   Utilities::transform(step.particles(), Rshift);  
@@ -1138,17 +1161,29 @@ void DipoleState::makeOriginal() {
 }
 
 vector<DipoleState::String> DipoleState::strings() {
+  LorentzMomentum sum = lightCone(thePlus, theMinus);
   set< list<PartonPtr> > colourLoops = loops();
   vector<DipoleState::String> ret;
   for ( set< list<PartonPtr> >::const_iterator loop = colourLoops.begin();
 	loop != colourLoops.end(); loop++ ) {
     DipoleState::String s;
     for ( list<PartonPtr>::const_iterator p = (*loop).begin(); p != (*loop).end(); p++ ) {
+      if ( !(**p).onShell() ) cerr << "The FUCK?!? (loops()!)" << endl;
       s.push_back( *p );
+      sum -= (**p).momentum();
     }
     if ( Debug::level > 5 ) cout << "new string of size " << s.size() << endl;
     ret.push_back( s );
   }
+  static DebugItem checkkinematics("DIPSY::CheckKinematics", 6);
+  if ( ! checkkinematics ) return ret;
+
+  if ( abs(sum.plus()) > 0.001*MeV || abs(sum.minus()) > 0.001*MeV ||
+       abs(sum.x()) > 0.001*MeV || abs(sum.x()) > 0.001*MeV )
+    Throw<DipoleKinematicsException>()
+      << "DIPSY found energy-momentum non-conservation in final strings."
+      << Exception::warning;
+
   return ret;
 }
 
@@ -1375,15 +1410,65 @@ tPPtr DipoleState::getParticle(tcPartonPtr parton, bool nocreate) const {
 			    "y = " << parton->y() << endl;
   PPtr p = CurrentGenerator::current().getParticle(parton->flavour());
   p->setMomentum(parton->momentum());
-  p->setVertex(LorentzPoint(parton->position().x()*hbarc, parton->position().y()*hbarc,
+  p->setVertex(LorentzPoint(parton->position().x()*hbarc
+			    , parton->position().y()*hbarc,
 			    ZERO, ZERO));
   p->getInfo().push_back(new_ptr(ParticleInfo(parton)));
   theProducedParticles[parton] = p;
   
   return p;
 }
-  
 
+void DipoleState::setupShadows() {
+  set<tPartonPtr> valence;
+  for ( int i = 0, N = initialDipoles().size(); i < N ; ++i ) {
+    valence.insert(initialDipoles()[i]->partons().first);
+    valence.insert(initialDipoles()[i]->partons().second);
+  }
+  for ( set<tPartonPtr>::iterator it = valence.begin();
+	it != valence.end(); ++it ) {
+    theIncomingShadows.push_back(ShadowParton::createValence(**it));
+    LorentzMomentum prop = lightCone(plus(), minus(), TransverseMomentum());
+    for ( set<tPartonPtr>::iterator ito = valence.begin();
+	  ito != valence.end(); ++ito )
+      if ( ito != it ) prop -=  (**ito).momentum();
+    theShadowPropagators[theIncomingShadows.back()] = prop;
+  }
+}
+  
+void DipoleState::resetShadows() {
+  for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+    theIncomingShadows[i]->reset();
+}
+
+void DipoleState::resetInteractedShadows() {
+  for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+    theIncomingShadows[i]->resetInteracted();
+}
+
+LorentzMomentum DipoleState::incomingMomentum(tcSPartonPtr valence, int mode) {
+  if ( mode >= 0 ) {
+    for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+      if ( theIncomingShadows[i] != valence ) {
+	theIncomingShadows[i]->resetMomentum0();
+	theIncomingShadows[i]->setOnShell(mode);
+      }
+  }
+  return theShadowPropagators[valence];
+}
+
+void DipoleState::debugShadowTree() const {
+  cerr << "=== Shadow Tree Structure ===" << endl;
+    for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+      theIncomingShadows[i]->debugTree("");
+}
+
+void DipoleState::checkShadowMomentum(Sum20Momentum & sum20,
+				      const ImpactParameters * b) const {
+  sum20 += b? lightCone(theMinus, thePlus): lightCone(thePlus, theMinus);
+    for ( int i = 0, N = theIncomingShadows.size(); i < N; ++i )
+      theIncomingShadows[i]->checkMomentum(sum20, b);
+}
 
 
 void DipoleState::persistentOutput(PersistentOStream & os) const {
@@ -1392,7 +1477,7 @@ void DipoleState::persistentOutput(PersistentOStream & os) const {
      << theSwingCandidates << theTouchedSwingCandidates
      << theWFInfo << theWeight << doTakeHistory 
      << theYmax << ounit(theCollidingEnergy, GeV) << allDipoles << theIncoming
-     << theProducedParticles;
+     << theProducedParticles << theIncomingShadows;
 }
 
 void DipoleState::persistentInput(PersistentIStream & is, int) {
@@ -1401,7 +1486,7 @@ void DipoleState::persistentInput(PersistentIStream & is, int) {
      >> theSwingCandidates >> theTouchedSwingCandidates
      >> theWFInfo >> theWeight >> doTakeHistory 
      >> theYmax >> iunit(theCollidingEnergy, GeV) >> allDipoles >> theIncoming
-     >> theProducedParticles;
+     >> theProducedParticles >> theIncomingShadows;
 }
 
 

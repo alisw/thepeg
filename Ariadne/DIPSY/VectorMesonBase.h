@@ -28,12 +28,14 @@ public:
   /**
    * The default constructor.
    */
-  inline VectorMesonBase();
+  inline VectorMesonBase()
+    : theMaxFlav(4), qmass(7, -1.0*GeV) {}
 
   /**
    * The copy constructor.
    */
-  inline VectorMesonBase(const VectorMesonBase &);
+  inline VectorMesonBase(const VectorMesonBase & x)
+    : WaveFunction(x), theMaxFlav(x.theMaxFlav), qmass(x.qmass) {}
 
   /**
    * The destructor.
@@ -69,7 +71,9 @@ public:
    * Get the maxumim number of flavours considered. If negative only
    * the corresponding flavour will be considered.
    */
-  inline int maxFlav() const;
+  inline int maxFlav() const {
+    return theMaxFlav;
+  }
   //@}
 
 public:
@@ -117,13 +121,17 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  inline virtual void doinitrun() {
+    WaveFunction::doinitrun();
+  }
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  inline virtual void dofinish() {
+    WaveFunction::dofinish();
+  }
   //@}
 
 private:
@@ -152,7 +160,5 @@ private:
 };
 
 }
-
-#include "VectorMesonBase.icc"
 
 #endif /* DIPSY_VectorMesonBase_H */

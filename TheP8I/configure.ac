@@ -28,33 +28,48 @@ THEPEG_SEARCH_THEPEG
 THEPEG_SEARCH_LHAPDF
 
 PYTHIA8WORKING="no"
-AC_MSG_CHECKING([if Pythia8 library and headers are present and working])
+
 AC_ARG_WITH(pythia8,
         AC_HELP_STRING([--with-pythia8=DIR],[location of Pythia8 installation]),
         [],
-	[with_pythia8="${prefix}/lib/Pythia8"])
+	[if test -d ${prefix}/include/Pythia8; then
+	    with_pythia8="${prefix}"
+	 else
+	    with_pythia8="${prefix}/lib/Pythia8"
+	 fi])
 PYTHIA8_DIR=${with_pythia8}
 PYTHIA8_LDFLAGS="-Wl,-rpath -Wl,$PYTHIA8_DIR/lib -L$PYTHIA8_DIR/lib"
 PYTHIA8_INCLUDE="-I$PYTHIA8_DIR/include"
 if test -d $PYTHIA8_DIR/include/Pythia8; then
    PYTHIA8_INCLUDE="-I$PYTHIA8_DIR/include -I$PYTHIA8_DIR/include/Pythia8"
 fi
-PYTHIA8_LIBS=-lpythia8
+PYTHIA8_LIBS="-lpythia8"
 if test "x$HAS_LHAPDF" == "no"; then
    PYTHIA8_LIBS="$PYTHIA8_LIBS -llhapdfdummy"
 else
-   PYTHIA8_LIBS="$PYTHIA8_LIBS -lLHAPDF"
+   PYTHIA8_LIBS="$PYTHIA8_LIBS $LHAPDF_LIBS"
+   LDFLAGS="$LDFLAGS $LHAPDF_LDFLAGS"
 fi
+
+AC_CHECK_FILE($PYTHIA8_DIR/share/Pythia8/xmldoc/Index.xml,
+              PYTHIA8_XMLDIR="$PYTHIA8_DIR/share/Pythia8/xmldoc",
+              AC_CHECK_FILE($PYTHIA8_DIR/xmldoc/Index.xml,
+                             PYTHIA8_XMLDIR="$PYTHIA8_DIR/xmldoc",
+                             AC_MSG_ERROR([
+Cannot build TheP8I without a working Pythia8 xmldoc directory.
+Please supply an argument: --with-pythia8=/path/to/Pythia8/installation.])))
 
 LIBS="$LIBS $PYTHIA8_LIBS"
 LDFLAGS="$LDFLAGS $PYTHIA8_LDFLAGS"
-CPPFLAGS="$CPPFLAGS $PYTHIA8_INCLUDE -DPYTHIA8_DIR=\"\\\"$PYTHIA8_DIR\\\"\""
+CPPFLAGS="$CPPFLAGS $PYTHIA8_INCLUDE -DPYTHIA8_XMLDIR=\"\\\"$PYTHIA8_XMLDIR\\\"\""
+
+AC_MSG_CHECKING([if Pythia8 library and headers are present and working])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include "Pythia.h"]],
                                   [[Pythia8::Pythia pythia;]])],
 				  AC_MSG_RESULT([$PYTHIA8_DIR]) &&
 				  PYTHIA8WORKING="yes",
    				  AC_MSG_RESULT([NOT FOUND]) &&
-				  AC_MSG_WARN([
+				  AC_MSG_ERROR([
 Cannot build TheP8I without a working Pythia8 installation.
 Please supply an argument: --with-pythia8=/path/to/Pythia8/installation.]))
 
@@ -66,6 +81,7 @@ AM_CXXFLAGS="-ansi -pedantic -Wall"
 AC_SUBST(AM_CXXFLAGS)
 AM_CONDITIONAL([PYTHIA8WORKS], [test "x$PYTHIA8WORKING" == "xyes"])
 AC_SUBST(PYTHIA8_DIR)
+AC_SUBST(PYTHIA8_XMLDIR)
 THEPEG_EMPTY_SUBST
 
 AC_CONFIG_FILES([Config/Makefile

@@ -48,7 +48,16 @@ public:
   /**
    * The default constructor.
    */
-  inline CloneBase() {}
+  inline CloneBase() {
+    //    allocated[uniqueId] = this;
+  }
+
+  /**
+   * The default constructor.
+   */
+  inline CloneBase(const CloneBase & x): PersistentBase(x) {
+    //    allocated[uniqueId] = this;
+  }
 
   /**
    * The destructor.
@@ -90,6 +99,22 @@ protected:
    */
   virtual void rebind(const TranslationMap & trans);
   //@}
+
+  /**
+   * For debugging purposes
+   */
+  static map<unsigned long, const CloneBase *> allocated;
+
+  /**
+   * For debugging purposes
+   */
+  long allocount() const;
+
+  /**
+   * For debugging purposes
+   */
+  void allocdebug() const;
+    
 
 private:
 

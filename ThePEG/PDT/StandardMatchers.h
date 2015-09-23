@@ -222,6 +222,27 @@ struct LeptonMatcher: public MatcherType {
 /** Gives a MatcherBase class based on LeptonMatcher. */
 typedef Matcher<LeptonMatcher> MatchLepton;
 
+/**
+ * A Matcher class which matches any neutrino.
+ */
+struct NeutrinoMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef NeutrinoMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) { return Check(pd.id()); }
+  /** The main static function to check if a given particle with type
+      \a id matches. */
+  static bool Check(long id) {
+    return abs(id)-10 >= 2 && abs(id)-10 <= 8 && abs(id)%2 == 0;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "Neutrino"; }
+};
+
+/** Gives a MatcherBase class based on VectorMesonMatcher. */
+typedef Matcher<NeutrinoMatcher> MatchNeutrino;
+
 struct LightAntiQuarkMatcher;
 
 /**

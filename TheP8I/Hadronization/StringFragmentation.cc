@@ -31,7 +31,7 @@ using namespace TheP8I;
 StringFragmentation::StringFragmentation()
   :  pythia(), fScheme(0), stringR0(0.5*femtometer), stringm0(1.0*GeV), junctionDiquark(1.0), alpha(1.0), average(true),
      stringyCut(2.0), stringpTCut(6*GeV), fragmentationMass(0.134),
-     baryonSuppression(0.5), window(false), throwaway(false), _eventShapes(0),
+     baryonSuppression(0.5), window(false), throwaway(false), rapidityOverlap(true), _eventShapes(0),
      useThrustAxis(0), opHandler(0), maxTries(2), doAnalysis(0), analysisPath(""),
 #include "StringFragmentation-init.h"
       {
@@ -78,7 +78,7 @@ void StringFragmentation::handle(EventHandler & eh, const tPVector & tagged,
     case 1: // For playing around and printing stuff
       {
         if(throwaway){
-          Ropewalk ropewalk_init(singlets, stringR0, stringm0, baryonSuppression, throwaway, false);
+          Ropewalk ropewalk_init(singlets, stringR0, stringm0, baryonSuppression, throwaway, rapidityOverlap, false);
           vector< pair<ColourSinglet,double> > allStrings = ropewalk_init.getSinglets(stringyCut);
           tPVector allParticles;
           for(vector< pair<ColourSinglet,double> >::iterator sItr = allStrings.begin(); sItr != allStrings.end(); ++sItr)
@@ -102,7 +102,7 @@ void StringFragmentation::handle(EventHandler & eh, const tPVector & tagged,
     }
     case 2: // Ropewalk/Dipole
      {
-     Ropewalk ropewalk(singlets, stringR0, stringm0, junctionDiquark, throwaway, false);
+       Ropewalk ropewalk(singlets, stringR0, stringm0, junctionDiquark, throwaway, rapidityOverlap, false);
      vector< pair<ColourSinglet,double> > strings = ropewalk.getSinglets(stringyCut);
      vector<ColourSinglet> toHadronization;    
      for(int i = 0, N = strings.size(); i < N; ++i ){
@@ -138,7 +138,7 @@ void StringFragmentation::handle(EventHandler & eh, const tPVector & tagged,
      }
      case 4: // Average kappa over whole strings
      {
-       Ropewalk ropewalk(singlets, stringR0, stringm0, baryonSuppression,throwaway, false);
+       Ropewalk ropewalk(singlets, stringR0, stringm0, baryonSuppression,throwaway, rapidityOverlap, false);
         vector< pair<ColourSinglet,double> > strings = ropewalk.getSinglets(stringyCut);
         vector<ColourSinglet> toHadronization;    
         double avge = 0;
@@ -157,7 +157,7 @@ void StringFragmentation::handle(EventHandler & eh, const tPVector & tagged,
      {
         if (throwaway) {
           Ropewalk ropewalk_init(singlets, stringR0, stringm0,
-				 baryonSuppression, throwaway, false);
+				 baryonSuppression, throwaway, rapidityOverlap, false);
 	  vector< pair<ColourSinglet,double> > allStrings =
 	    ropewalk_init.getSinglets(stringyCut);
 	  tPVector allParticles;
@@ -168,7 +168,7 @@ void StringFragmentation::handle(EventHandler & eh, const tPVector & tagged,
 	      allParticles.push_back(const_ptr_cast<tPPtr>(*pItr));
 	  singlets =  theCollapser->collapse(allParticles, newStep());	 
         }
-        Ropewalk ropewalk(singlets, stringR0, stringm0, baryonSuppression, false, false);
+        Ropewalk ropewalk(singlets, stringR0, stringm0, baryonSuppression, false, rapidityOverlap, false);
 	typedef multimap<Energy,Ropewalk::DipoleMap::const_iterator> OrderedMap;
 	OrderedMap ordered;
         for ( Ropewalk::DipoleMap::iterator itr = ropewalk.begin();
@@ -545,14 +545,7 @@ void StringFragmentation::doinitrun() {
   if(fScheme == 4 || fScheme == 5 || fScheme == 1){ // We don't need multiple Pythia objects anymore!
     pythia.enableHooks();
     pythia.init(*this,theAdditionalP8Settings);
-    if(pythia.version() > 0 && pythia.version() - 1.234 > 1.0){
-       cout << "Pythia version: " <<  pythia.version() << endl;
-       cout << "The chosen fragmentation scheeme requires a tweaked "
-	    << "Pythia v. 1.234 for option. I will default you to "
-	 "option 'pythia'." << endl;
-      fScheme = 0;
-    }
-    else{
+
       PytPars p;
   
      p.insert(make_pair<const string,double>("StringPT:sigma",theStringPT_sigma));
@@ -565,8 +558,6 @@ void StringFragmentation::doinitrun() {
 
      phandler.init(fragmentationMass*fragmentationMass,baryonSuppression,p);
      pythia.getRopeUserHooksPtr()->setParameterHandler(&phandler);
-     //pythia.getRopeUserHooksPtr()->setWindow(window,stringpTCut);
-    }
   }
   if( !( fScheme == 4  || fScheme == 5 || fScheme == 1) ){ // Not 'else' as it can change above...
 
@@ -614,7 +605,7 @@ void StringFragmentation::persistentOutput(PersistentOStream & os) const {
 #include "StringFragmentation-output.h"
     << fScheme << ounit(stringR0,femtometer) << ounit(stringm0,GeV) << junctionDiquark << alpha << average << stringyCut
     << ounit(stringpTCut,GeV) << fragmentationMass << baryonSuppression
-    << oenum(window) << oenum(throwaway) << useThrustAxis << maxTries
+    << oenum(window) << oenum(throwaway) << oenum(rapidityOverlap) << useThrustAxis << maxTries
     << theCollapser << doAnalysis << analysisPath;
 
 }
@@ -624,7 +615,7 @@ void StringFragmentation::persistentInput(PersistentIStream & is, int) {
 #include "StringFragmentation-input.h"
     >> fScheme >> iunit(stringR0,femtometer) >> iunit(stringm0,GeV) >> junctionDiquark >> alpha >> average >> stringyCut
     >> iunit(stringpTCut,GeV) >> fragmentationMass >> baryonSuppression
-    >> ienum(window) >> ienum(throwaway) >> useThrustAxis >> maxTries
+    >> ienum(window) >> ienum(throwaway) >> ienum(rapidityOverlap) >> useThrustAxis >> maxTries
     >> theCollapser >> doAnalysis >> analysisPath;
 }
 
@@ -710,6 +701,15 @@ void StringFragmentation::Init() {
     (interfaceThrowAway,"True","enabled.",true);
   static SwitchOption interfaceThrowAwayFalse
     (interfaceThrowAway,"False","disabled.",false);
+
+    static Switch<StringFragmentation,bool> interfaceRapidityOverlap
+    ("RapidityOverlap",
+     "Use rapidity overlap to calculate string overlap." ,
+     &StringFragmentation::rapidityOverlap, false, true, false);
+  static SwitchOption interfaceRapidityOverlapTrue
+    (interfaceRapidityOverlap,"True","enabled.",true);
+  static SwitchOption interfaceRapidityOverlapFalse
+    (interfaceRapidityOverlap,"False","disabled.",false);
 
   static Switch<StringFragmentation,bool> interfaceWindow
     ("StringWindow",

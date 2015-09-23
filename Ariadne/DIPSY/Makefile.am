@@ -8,7 +8,7 @@ mySOURCES = DipoleEventHandler.cc WaveFunction.cc SimpleProton.cc \
             TotalXSecAnalysis.cc EventFiller.cc DipoleAbsorber.cc \
             SmallDipoleAbsorber.cc EffectiveParton.cc RealParton.cc \
             RealPartonState.cc DiffractiveEventFiller.cc ParticleInfo.cc \
-            NucleusData.cc
+            NucleusData.cc ShadowParton.cc
 
 DOCFILES = DipoleEventHandler.h WaveFunction.h SimpleProton.h VirtualPhoton.h \
            DipoleState.h Dipole.h Parton.h DipoleXSec.h ImpactParameters.h \
@@ -17,26 +17,24 @@ DOCFILES = DipoleEventHandler.h WaveFunction.h SimpleProton.h VirtualPhoton.h \
            DipoleAnalysisHandler.h TotalXSecAnalysis.h EventFiller.h \
            DipoleAbsorber.h SmallDipoleAbsorber.h EffectiveParton.h \
            RealParton.h RealPartonState.h DiffractiveEventFiller.h ParticleInfo.h \
-           NucleusData.h
+           NucleusData.h ShadowParton.h
 
-INCLUDEFILES = $(DOCFILES) DipoleEventHandler.fh \
-               WaveFunction.icc WaveFunction.fh \
-               VirtualPhoton.icc DipoleState.fh DipoleState.icc Dipole.fh \
-               Dipole.icc Parton.fh Parton.icc DipoleXSec.fh DipoleXSec.icc \
-               ImpactParameters.icc ImpactParameterGenerator.fh  WFInfo.fh \
-               PhotonWFInfo.icc VectorMesonBase.icc PhotonDipoleState.icc \
-               SimpleProtonState.icc Emitter.fh Emitter.icc Swinger.fh \
-               Swinger.icc DipoleAnalysisHandler.fh EventFiller.fh \
+INCLUDEFILES = $(DOCFILES) DipoleEventHandler.fh WaveFunction.fh \
+               DipoleState.fh Dipole.fh Parton.fh DipoleXSec.fh \
+               ImpactParameterGenerator.fh  WFInfo.fh \
+               Emitter.fh Swinger.fh DipoleAnalysisHandler.fh EventFiller.fh \
                DipoleAbsorber.fh EffectiveParton.fh \
-               RealParton.fh RealPartonState.fh CPUTimer.h
+               RealParton.fh RealPartonState.fh CPUTimer.h ShadowParton.fh
 
 pkglib_LTLIBRARIES = libDIPSY.la OldStyleEmitter.la PT1DEmitter.la \
                      ElasticXSecAnalysis.la LargePTDipoleAbsorber.la \
                      SimpleNucleus.la RecoilSwinger.la \
-                     FSDipole5Ordering.la FSAnalysis.la GapAnalysis.la HIAnalysis.la \
-                     FixedImpactGenerator.la NoFluctXSecAnalysis.la GlauberAnalysis.la \
+                     FSDipole5Ordering.la FSAnalysis.la GapAnalysis.la \
+                     HIAnalysis.la FixedImpactGenerator.la \
+                     NoFluctXSecAnalysis.la GlauberAnalysis.la \
                      AnalysisProgress.la SemiInclusiveXSecAnalysis.la \
-                     GaussianImpactGenerator.la DipoleDensityAnalysis.la
+                     GaussianImpactGenerator.la PTAnalysis.la \
+                     DipoleDensityAnalysis.la
 
 INPUTFILES = TestXSecs.in RivetAnalyses.in DIPSYRemove.in DIPSYDefaults.in CurrentTune.in Tune27.in
 
@@ -60,6 +58,9 @@ FSDipole5Ordering_la_SOURCES = FSDipole5Ordering.cc FSDipole5Ordering.h
 
 FSAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 FSAnalysis_la_SOURCES = FSAnalysis.cc FSAnalysis.h
+
+PTAnalysis_la_LDFLAGS = -module -version-info 1:0:0
+PTAnalysis_la_SOURCES = PTAnalysis.cc PTAnalysis.h
 
 GapAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 GapAnalysis_la_SOURCES = GapAnalysis.cc GapAnalysis.h

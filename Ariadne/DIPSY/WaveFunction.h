@@ -31,12 +31,15 @@ public:
   /**
    * The default constructor.
    */
-  inline WaveFunction();
+  inline WaveFunction()
+    : theEventHandler(tcDipoleEventHandlerPtr()), theParticle(PDPtr()) {}
 
   /**
    * The copy constructor.
    */
-  inline WaveFunction(const WaveFunction &);
+  inline WaveFunction(const WaveFunction & x)
+    : HandlerBase(x), theEventHandler(x.theEventHandler),
+      theParticle(x.theParticle) {}
 
   /**
    * The destructor.
@@ -75,12 +78,16 @@ public:
   /**
    * The DipoleEventHandler in charge of the generation.
    */
-  inline tcDipoleEventHandlerPtr eventHandler() const;
+  inline tcDipoleEventHandlerPtr eventHandler() const {
+    return theEventHandler;
+  }
 
   /**
    * Get the corresponding particle.
    */
-  inline tcPDPtr particle() const;
+  inline tcPDPtr particle() const {
+    return theParticle;
+  }
 
   /**
    * Set the corresponding particle. May be overridden by sub classes
@@ -143,7 +150,5 @@ private:
 };
 
 }
-
-#include "WaveFunction.icc"
 
 #endif /* DIPSY_WaveFunction_H */

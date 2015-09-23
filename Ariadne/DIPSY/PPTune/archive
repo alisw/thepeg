@@ -1,0 +1,28 @@
+#!/usr/bin/perl -w
+
+for ( @ARGV ) {
+    if ( /^(\w+)\.run$/ ) {
+	my $base = $1;
+	print "Files from run $base -> archives/$base.run.tgz\n";
+	my @files;
+	for my $file ( glob("$base.* $base#*.* $base:*.*") ) {
+	    if ( $file =~ /^$base\.(run|log|dat|tex|yoda|out)$/ ) {
+		push @files, $file;
+	    }
+	    if ( $file =~ /^$base#.+\.(run|log|dat|tex|yoda|out)$/ ) {
+		push @files, $file;
+	    }
+	    if ( $file =~ /^$base:.+\.(run|log|dat|tex|yoda|out)$/ ) {
+		push @files, $file;
+	    }
+	}
+	system("tar czf archives/$base.run.tgz @files; rm @files");
+    }
+    if ( /^(\w+)\.prof$/ ) {
+	my $base = $1;
+	print "Files from proftune $base -> archives/$base.prof.tgz\n";
+	system("mv $base.prout $base.prof") if -e "$base.prout";
+	system("mv $base.prin $base.prof") if -e "$base.prin";
+	system("tar czf archives/$base.prof.tgz $base.prof; rm -rf $base.prof");
+    }
+}

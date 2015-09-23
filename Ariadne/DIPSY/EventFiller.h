@@ -47,6 +47,16 @@ public:
   typedef DipoleXSec::FList FList;
 
   /**
+   * Copy InteractionList typedef from DipoleXSec.
+   */
+  typedef DipoleInteraction::List InteractionList;
+
+  /**
+   * Copy InteractionList typedef from DipoleXSec.
+   */
+  typedef DipoleInteraction::PTSet InteractionPTSet;
+
+  /**
    * A String is simply a vector of colour-connected partons.
    */
   typedef DipoleState::String String;
@@ -61,6 +71,11 @@ public:
    * FList.
    */
   typedef DipoleXSec::DipolePairMap DipolePairMap;
+
+  /**
+   * Simple vector of interactions.
+   */
+  typedef vector<DipoleInteraction::List::const_iterator> InteractionVector;
 
 public:
 
@@ -92,13 +107,45 @@ public:
 		      const ImpactParameters & b) const;
 
   /**
+   * Fill the current collision object in the given DipoleEventHandler
+   * with the final state gluons produced when dipole states \a dl and
+   * \a dr collides with impact parameters \a b.
+   * @return the total interaction probability.
+   */
+  virtual double fill(Step & step, DipoleEventHandler & eh, tPPair inc,
+		      const ImpactParameters & b,
+		      DipoleState & dl, DipoleState & dr) const;
+
+  /**
+   * Fill the current collision object in the given DipoleEventHandler
+   * with the final state gluons produced when dipole states \a dl and
+   * \a dr collides with impact parameters \a b.
+   * @return the total interaction probability.
+   */
+  virtual double fillWithShadows(Step & step, DipoleEventHandler & eh, tPPair inc,
+				 const ImpactParameters & b,
+				 DipoleState & dl, DipoleState & dr) const;
+
+  /**
    * Select which dipole pairs should interact, and return them in the
    * order in which they should be processed.
    */
   virtual pair<RealPartonStatePtr, RealPartonStatePtr>
   selectInteractions(const FList & fl, const ImpactParameters & b, const DipoleXSec & xSec) const;
 
+  /**
+   * Select which dipole pairs should interact, and return them in the
+   * order in which they should be processed.
+   */
+  virtual pair<RealPartonStatePtr, RealPartonStatePtr>
+  selectInteractions(const InteractionList & intl, const DipoleXSec & xSec) const;
 
+  /**
+   * Select which dipole pairs should interact, and return them in the
+   * order in which they should be processed. (shadow parton version)
+   */
+  virtual InteractionVector
+  selectShadowInteractions(const InteractionList & intl, const DipoleXSec & xSec) const;
 
  
   /**
@@ -112,12 +159,38 @@ public:
 		      const ImpactParameters & b, const DipoleXSec & xSec) const ;
 
   /**
+   * Tries to do the interaction between the real states lrs and rrs with the two dipoles
+   * pointed to by inter, assuming that the interactions in inters already has been tested
+   * and accepted. States collide at impact paramter b and using the recoils in xSec.
+   */
+  bool addInteraction(InteractionList::const_iterator inter,
+		      RealPartonStatePtr lrs, RealPartonStatePtr rrs,
+		      const TransverseMomentum & recoil,
+		      InteractionVector & inters, const DipoleXSec & xSec) const ;
+
+  /**
+   * Go through all previously accepted interactions and check that
+   * they can still be performed. If \a mode > 0, this is the last check
+   * and partons are set on-shell.
+   */
+  bool recheckInteractions(const InteractionVector & interactions,
+			   int mode) const;
+
+  /**
    * Extract all strings after according to the given interactions.
    */
   virtual vector<String>
   extractStrings(DipoleState & dl, DipoleState & dr,
 		 pair<RealPartonStatePtr, RealPartonStatePtr>,
 		 const ImpactParameters & b) const;
+
+  /**
+   * Extract all strings after according to the given interactions.
+   */
+  virtual vector<String>
+  extractShadowStrings(DipoleState & dl, DipoleState & dr,
+		       const InteractionVector & interactions,
+		       const ImpactParameters & b) const;
 
   /**
    * Fill the given Step with a SubProcess object using the given
@@ -374,6 +447,14 @@ protected:
 		      pair<pair<bool, bool>, pair<bool, bool> > doesInt) const;
 
   /**
+   * Checks if the interacting partons in the current states have enough 
+   * p+- to set the other state on shell.
+   */
+  bool controlRecoils(InteractionVector & sel, 
+		      RealPartonStatePtr rrs, RealPartonStatePtr lrs,
+		      const DipoleXSec & xSec) const;
+
+  /**
    * Removes the off shell partons and recouples colour flow. p_mu unchanged.
    */
   void removeVirtuals(DipoleStatePtr state) const;
@@ -451,12 +532,45 @@ protected:
    */
   int theSoftRemove;
 
+  /**
+   * Do not allow a dipole to interact more than once.
+   */
+  bool onlyOnce;
+
+public:
+
+  /**
+   * Compatibility mode for debugging differences between FList and
+   * InteractionList.
+   */
+  int compat;
+
+  /**
+   * Emit histograms for debugging
+   */
+  int debughistos;
+
+  // *** TO REMOVE *** Temporary analysis
+  mutable FactoryBase::tH1DPtr histptmax, histptmaxi, histptfi, histptf,
+  histdd0, histddi, histdda, histddp,
+  histddff, histddfp, histddfk, histddfo, histddra,
+  histddrf, histddrp, histddrk, histddro, histdc0,
+  histdcfp0, histdcfk0, histdcfo0,
+  histdcfp, histdcfk, histdcfo, histdca,
+  histf0, histfa, histff, histfp, histfk, histfo;
+  mutable double sumwmaxpt;
+
 public:
 
   /**
    * Exception class for space-like gluon momenta.
    */
   struct SpaceLikeGluons: public Exception {};
+
+  /**
+   * Exception class for space-like gluon momenta.
+   */
+  struct ConsistencyException: public Exception {};
 
   /**
    * Exception class for failed gluon removal.

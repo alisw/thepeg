@@ -81,7 +81,7 @@ EventGenerator::EventGenerator()
     theDebugLevel(0), logNonDefault(-1), printEvent(0), dumpPeriod(0),
     keepAllDumps(false),
     debugEvent(0), maxWarnings(10), maxErrors(10), theCurrentRandom(0),
-    theCurrentGenerator(0), useStdout(false) {}
+    theCurrentGenerator(0), useStdout(false), theIntermediateOutput(false) {}
 
 EventGenerator::EventGenerator(const EventGenerator & eg)
   : Interfaced(eg), theDefaultObjects(eg.theDefaultObjects),
@@ -107,7 +107,8 @@ EventGenerator::EventGenerator(const EventGenerator & eg)
     theCurrentGenerator(0),
     theCurrentEventHandler(eg.theCurrentEventHandler),
     theCurrentStepHandler(eg.theCurrentStepHandler),
-    useStdout(eg.useStdout) {}
+    useStdout(eg.useStdout),
+    theIntermediateOutput(eg.theIntermediateOutput) {}
 
 EventGenerator::~EventGenerator() {
   if ( theCurrentRandom ) delete theCurrentRandom;
@@ -599,8 +600,16 @@ void EventGenerator::tic(long currev, long totev) const {
   if ( i > n/2 ) i = n-i;
   while ( skip && i >= 10 && !(i%10) ) i /= 10;
   if ( i == 1 || i == 2 || i == 5 ) skip = false;
-  if ( skip ) return;
-  cerr << "event> " << setw(8) << currev << " " << setw(8) << totev << "\r";
+  if (!theIntermediateOutput) { //default
+    if ( skip ) return;
+    cerr << "event> " << setw(8) << currev << " " << setw(8) << totev << "\r";
+  }
+  else if (theIntermediateOutput) {
+    if ( skip && currev%10000!=0) return;
+    cerr <<  "event> " << setw(9) << right << currev << "/" << totev 
+         << "; xs = " << integratedXSec()/picobarn << " pb +- " 
+         << integratedXSecErr()/picobarn << " pb" << endl;
+  }
   cerr.flush();
   if ( currev == totev ) cerr << endl;
 }
@@ -815,7 +824,7 @@ void EventGenerator::persistentOutput(PersistentOStream & os) const {
      << ieve << weightSum << theDebugLevel << logNonDefault << printEvent
      << dumpPeriod << keepAllDumps << debugEvent
      << maxWarnings << maxErrors << theCurrentEventHandler
-     << theCurrentStepHandler << useStdout << theMiscStream.str();
+     << theCurrentStepHandler << useStdout << theIntermediateOutput << theMiscStream.str();
 }
 
 void EventGenerator::persistentInput(PersistentIStream & is, int) {
@@ -829,7 +838,7 @@ void EventGenerator::persistentInput(PersistentIStream & is, int) {
      >> ieve >> weightSum >> theDebugLevel >> logNonDefault >> printEvent
      >> dumpPeriod >> keepAllDumps >> debugEvent
      >> maxWarnings >> maxErrors >> theCurrentEventHandler
-     >> theCurrentStepHandler >> useStdout >> dummy;
+     >> theCurrentStepHandler >> useStdout >> theIntermediateOutput >> dummy;
   theMiscStream.str(dummy);
   theMiscStream.seekp(0, std::ios::end);
   theObjects.clear();
@@ -1349,6 +1358,25 @@ void EventGenerator::Init() {
      "Don't print changed interfaces.",
      -1);
   interfaceLogNonDefault.setHasDefault(false);
+
+  static Switch<EventGenerator,bool> interfaceIntermediateOutput
+    ("IntermediateOutput",
+     "Modified event number count with the number of events processed so far, "
+     "which updates at least every 10000 events, together with the corresponding "
+     "intermediate estimate for the cross section plus the integration error.",
+     &EventGenerator::theIntermediateOutput, false, true, false);
+  static SwitchOption interfaceIntermediateOutputYes
+    (interfaceIntermediateOutput,
+     "Yes",
+     "Show the modified event number count with the number of events processed so far, "
+     "plus further information on the intermediate cross section estimate.",
+     true);
+  static SwitchOption interfaceIntermediateOutputNo
+    (interfaceIntermediateOutput,
+     "No",
+     "Show the usual event number count with the number of events processed so far, "
+     "but no further information on the intermediate cross section estimate.",
+     false);
 
 }
 
