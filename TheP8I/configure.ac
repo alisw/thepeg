@@ -77,7 +77,7 @@ Please supply an argument: --with-pythia8=/path/to/Pythia8/installation.]))
 AC_PATH_PROG(PERL, perl)
 
 
-AM_CXXFLAGS="-ansi -pedantic -Wall"
+AM_CXXFLAGS="-ansi  -Wall"
 AC_SUBST(AM_CXXFLAGS)
 AM_CONDITIONAL([PYTHIA8WORKS], [test "x$PYTHIA8WORKING" == "xyes"])
 AC_SUBST(PYTHIA8_DIR)

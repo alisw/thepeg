@@ -100,10 +100,10 @@ AX_COMPILER_VENDOR
 
 case "${ax_cv_cxx_compiler_vendor}" in
      gnu)
-	AM_CXXFLAGS="-ansi -pedantic -Wall -W"
+	AM_CXXFLAGS="-ansi  -Wall -W"
 	;;
      clang)
-	AM_CXXFLAGS="-ansi -pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"
+	AM_CXXFLAGS="-ansi  -Wall -Wno-overloaded-virtual -Wno-unused-function"
 dnl  -Wno-unneeded-internal-declaration 
 	;;
      intel)

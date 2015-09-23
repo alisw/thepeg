@@ -25,7 +25,7 @@ LT_INIT([disable-static dlopen pic-only])
 
 THEPEG_SEARCH_THEPEG
 
-AM_CXXFLAGS="-ansi -pedantic -Wall"
+AM_CXXFLAGS="-ansi  -Wall"
 AC_SUBST(AM_CXXFLAGS)
 
 THEPEG_EMPTY_SUBST

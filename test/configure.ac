@@ -67,7 +67,7 @@ AM_CONDITIONAL([USEHZTOOL], [test "x$HAS_HZTOOL" == "xyes"])
 AC_SUBST([F77],[$FC])
 THEPEG_EMPTY_SUBST
 
-AM_CXXFLAGS="-ansi -pedantic -Wall"
+AM_CXXFLAGS="-ansi  -Wall"
 AC_SUBST(AM_CXXFLAGS)
 
 AC_CONFIG_FILES([Misc/Makefile
