@@ -1,8 +1,0 @@
-#! /usr/bin/tcsh
-
-if ( ! $# ) then
-    echo "Usage: $0 [tag] {[basedir]}"
-    exit(1)
-endif
-
-./dofull $1 >& $1.log &

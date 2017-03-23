@@ -1,8 +1,0 @@
-@INCLUDE=ThePEG.conf
-PROJECT_NAME           = TheP8I
-PROJECT_NUMBER         = @VERSION@
-INPUT                  = ../../TheP8I
-GENERATE_TAGFILE       = TheP8I-refman.tag
-TAGFILES               = ThePEG-refman.tag=../../../ThePEG/Doc/refman-html
-INCLUDE_PATH           = ./include
-

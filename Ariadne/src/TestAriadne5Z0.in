@@ -1,7 +1,0 @@
-mkdir /Ariadne5/SimpleTevatron
-cd /Ariadne5/SimpleTevatron
-cp /Ariadne5/Generators/Tevatron/TevatronZ0Generator SimpleTevatronGenerator
-set SimpleTevatronGenerator:NumberOfEvents 1000
-set SimpleTevatronGenerator:DebugLevel 1
-set SimpleTevatronGenerator:PrintEvent 10
-saverun TestAriadne5Z0 SimpleTevatronGenerator

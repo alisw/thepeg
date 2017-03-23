@@ -1,0 +1,931 @@
+ThePEG News	-*- outline -*-
+===============================
+
+Numbered bugs can be found at
+ http://projects.hepforge.org/herwig/trac/ticket/NN
+where NN is the bug number.
+
+The latest version of ThePEG can be found at http://www.thep.lu.se/ThePEG
+or at http:///projects.hepforge.org/herwig/versions
+
+* ThePEG-2.0.4 release: 2016-10-25
+
+** Default weight explicitly labelled    
+   The nominal event weight is now labelled "Default" and is always the
+   first weight to be inserted into HepMC.
+   (Note that HepMC 2.06.09 may not preserve this ordering.)
+
+** LesHouches event weights handling    
+   There are now two options for the treatment of optional weights 
+   coming in from a Les Houches file, available through 
+   "LesHouchesEventHandler:WeightNormalization". Either they are
+   normalized to the "Default" weight ("Normalized"), or they are given
+   as cross-sections in pb ("CrossSection"). The default behaviour
+   is "Normalized".
+
+** JetFinder in Cuts objects writes information
+   The selected JetFinder is explicitly listed in the debug output
+   
+
+
+* ThePEG-2.0.3 release: 2016-07-21
+
+** LesHouches reader
+   Removed FxFx-specific weights from default output
+
+** FuzzyTheta cut
+   Fixed missing division by width 
+
+** NaN check for incoming momenta from ME providers
+
+** Build system
+   Compatibility with gcc-6, improved configure macros. 
+
+
+
+* ThePEG-2.0.2 release: 2016-04-27
+
+** LesHouches reader
+   Fixed cross-section issue for LH event files using weight scheme 3
+
+
+
+* ThePEG-2.0.1 release: 2016-02-17
+
+** Electroweak scheme fixes
+   Schemes 2 and 5 now set GF, scheme 7 calculates mw correctly.
+
+** New ParVector 'clear' command
+
+** More visible version information
+   The version number of ThePEG is written into the log file.
+
+** Rivet exception handling
+   Any exceptions from Rivet/YODA are converted into warning exceptions. 
+   This can invalidate plots, please check the logfile.
+
+** Rapidity limits fixed in FuzzyTheta cuts
+
+** Doxygen updated to version 1.8
+
+** Java interface fixed
+
+
+
+* ThePEG-2.0.0 release: 2015-12-04
+
+** Improvements for NLO
+   A number of improvements and bug fixes have been made in the course of
+   (Herwig 7) NLO development.
+
+** Improvements for spin correlations
+   A number of improvements have been made to handle spin correlations in the
+   parton shower.
+
+** Setup file mechanism
+   An isolated event generator can now be modified prior to generating events
+   by providing an additional input file; also support for re-initalizing
+   isolated event generators has been added in this course to support Herwig
+   7's parallel integration modes.
+
+** Handling of weighted LHE events
+   The handling of LHE events with variable weight (codes 3 and 4) has now
+   been enabled, along with the full handling of multiple event weights down
+   to the HepMC output.
+
+** LHAPDF6 handling
+   A problem in initializing LHAPDF6 has been fixed.
+
+** Heavy ion collisions
+   A dedicated HepMC interface for heavy ion collisions has been introduced.
+
+** First steps for unit testing
+   Unit testing has been introduced for a number of components based on
+   boost's unittesting framework. They are only enabled, when configured
+   --with-boost .
+
+* ThePEG-1.9.2 release: 2014-07-07
+
+** Better support for LHAPDF 6
+   The LHAPDF interface now determines if version 6 is available and
+   makes use of new LHAPDFv6 features.
+
+
+
+* ThePEG-1.9.1 release: 2014-04-30
+
+** Build fix for SLC6
+   Fixed problems with a missing <algorithm> header in ACDCGen.h that affected 
+   some builds on SLC6 
+
+** Build fix for Rivet 2.1.1
+   Adapted to Rivet 2.1.1 changed header file layout
+
+** OS X Mavericks build fix for readline
+   The problem of infinite hangs when linking against libreadline 
+   in Mavericks has been resolved.
+
+
+
+* ThePEG-1.9.0 release: 2013-10-28
+
+** Rapidity edge cases
+   Changed behavior for vanishing pt in eta() and vanishing mt in
+   rapidity(): no error is thrown, but a ridculously large rapidity is
+   returned instead.
+
+** Command line interface
+   Adding a tag of the form "#first-last" when running a
+   MultiEventGenerator now allows to run a subset of the runs
+
+** Pre- and Posthandlers
+   A warning is now issued if the same handler is inserted twice into
+   a pre- or posthandler list.
+
+** Statistics fixes
+   Various issues for the handling of statistics in the presence of
+   negative weights have been fixed.
+
+** Rivet search paths
+   A new interface RivetAnalysis:Paths allows more search paths to be
+   added to the analysis finding routine. This supplements the
+   RIVET_ANALYSIS_PATH environment variable.
+
+** Vertex classes
+   A chain of sign and prefactor fixes has been implemented in the
+   Vertex classes to correct various vertex structures in Herwig++
+   conversions of Feynrules models.
+
+** Custom XComb objects
+   Matrix element classes can built with customized XComb objects.
+
+** Reweighting of SubProcessGroups and projections
+   Matrix element groups can reweight contributions in a
+   SubProcessGroup and select one of the dependent subprocesses to be
+   used as the hard one instead of the group in total.
+
+** Fuzzy cuts
+   Jet cuts in the jet cut framework can be assigned a fuzzy shape to
+   improve the stability of NLO calculations.
+
+** NLORivetAnalysis, NLOHepMCFile
+   The NLOHepMCFile and NLORivetAnalysis classes have been added to
+   allow Rivet to analyse NLO calculations which perform output for the
+   subtracted real emission matrix elements as ThePEG::SubProcessGroups; 
+   individual subprocesses in these groups are flagged as correlated
+   by being assigned the same event number.
+
+** C++-11 testing
+   To help with the coming transition to C++-11, we provide the new
+   --enable-stdcxx11 configure flag. Please try to test builds with
+   this flag enabled and let us know any problems, but do not use this
+   in production code yet. In future releases, this flag will be on by
+   default.
+
+
+
+
+* ThePEG-1.8.3 release: 2013-02-22
+
+** Fixed HepMC status code assignment
+   The incoming line to a technical vertex that only changes a particle's
+   momentum is now labelled 11 (MC-internal) instead of 2 (unstable).
+
+
+
+* ThePEG-1.8.2 release: 2013-01-30
+
+** Changes to scheduled event dumps
+   Set the EventGenerator option "KeepAllDumps" to keep all dump files
+   of a run, labelled by event number. These scheduled dumps now produce
+   a cleaned generator state between events.
+   
+** SLHA block bug fix
+   In some circumstances, the end of an SLHA block was not parsed
+   correctly.
+
+
+
+* ThePEG-1.8.1 release: 2012-10-15
+
+** Repository changes
+
+*** Stable flag
+    The behaviour of the 'Particle:Stable' flag has changed slightly. When
+    all decaymodes are removed from a particle, the flag will be
+    automatically set to stable. However, it still needs to be set unstable
+    by hand when new decaymodes are added to a formerly stable particle.
+
+*** Search paths
+    The search paths for reading input files are now saved in the
+    repository.
+
+** Rivet analysis YODA capable
+   The configure time check for Rivet will now detect the version to
+   check if it is YODA capable.
+
+** NLOHepMCFile
+   An AnalysisHandler, similar to the standard HepMCFile has been
+   added to allow analysing plain NLO calculations by communicating
+   each member of a subprocess group (typically real emission and
+   subtraction contributions) to a HepMC file; until Rivet supports
+   the correct treatment of errors in this case, the subprocess group
+   members are written out as events independent of each other.
+
+** Jet cuts
+   A more flexible framework for cuts on jets has been added,
+   including jet finders (either builtin or via an optional link to
+   fastjet). All kinds of exclusive and inclusive jet cuts, as well as
+   jet vetoes on the level of the hard process are now supported.
+
+** Tree2toNDiagram
+   A bug has been fixed in Tree2toNDiagram::isSame(tcDiagPtr,
+   map<int,int>&) method to take into account symmetries when swapping
+   two external legs attached to the same vertex
+
+** Quark thresholds in alphaS
+   Support for setting quark masses for threshold matching in
+   couplings deriving from AlphaSBase independently of masses used in
+   ParticleData objects has been added. The O1AlphaS implementation is
+   fully aware of this enhancement.
+
+** LesHouches reader fixes
+   The LesHouches readers have been improved, and will spot many more
+   consistency errors, such as coloured Standard Model leptons, or helicity
+   values outside of [-1,1] and 9.
+
+** Spinor enhancements
+   The LorentzSpinor class has gained member functions for projection operations
+   and the contraction with the sigma-mu-nu commutator.
+
+
+
+* ThePEG-1.8.0 release: 2012-05-21
+
+** NLO support
+
+***    ThePEG now includes structures to ease implementing next-to-leading
+       order (NLO) calculations as well as for interfacing external
+       matrix element codes through runtime interfaces. Particularly,
+       the newly introduced MEGroup and accompanying StdXCombGroup,
+       StdDependentXComb and SubProcessGroup classes provide the
+       functionality required by subtraction approaches to higher
+       orders. A general interface for cutting on reconstructed jets
+       as required by higher-order calculations is included, along
+       with an implementation of kt, Cambridge-Aachen and anti-kt jet
+       finding as relevant for NLO calculations. Hard process
+       implementations deriving from MEBase are no longer limited to
+       the evaluation of PDFs by PartonExtractor objects, thus
+       allowing for a more flexible and more stable implementation of
+       finite collinear contributioins appearing in the context of
+       higher order corrections.
+
+***    The generation of phasespace points
+       for the hard subprocess has been made more flexible,
+       particularly to allow generation of incoming parton momenta by
+       the hard matrix element as is typically done by phasespace
+       generators provided with fixed-order codes. Along with this
+       change, generation of the phasespace point does not need to
+       take place in the centre-of-mass system of the incoming
+       partons.
+
+***    Various helpers have been added to MEBase and dependent 
+       code along with the improvements described above, including
+       simple functionality required for caching intermediate results.
+
+***    Tree2toNDiagram supports merging of two external legs, 
+       yielding another Tree2toNDiagram object to assist in
+       determining subtraction terms required for a particular process
+
+** Support for SU(3)-sextet colour lines
+
+** Named weights support, also in HepMC
+   Named, optional weights on top of the usual event weight are now
+   fully supported; this includes their communication to HepMC events
+   as well as their parsing from the extented Les Houches file format
+   drafted at the Les Houches workshop 2009.
+
+** Complex masses supported in Helicity code
+
+** Several minor fixes and enhancements
+ 
+
+
+
+
+* ThePEG-1.7.3 release: 2012-03-05
+
+  The only changes are in LesHouches.so, now at version 14.
+
+** Spin information
+   Spin correlation information will now be set up correctly for tau
+   leptons. To go back to the old behaviour, set
+   LesHouchesReader:IncludeSpin No
+
+** Consistency checks
+   Catch broken input where mother-daughter relations are circular.
+
+* ThePEG-1.7.2 release: 2011-11-01
+
+** HepMC configuration
+   Clarified at configure time that HepMC versions before 2.05 are not
+   officially supported.
+
+** Rivet configuration
+   Rivet builds with external header dependencies are now correctly
+   recognized.
+
+** Helicity vertex consistency
+   To help debugging, the addToList() function for registering
+   particle lines connected to a vertex now checks for electric charge
+   conservation at the vertex. Additionally, the specified QED/QCD
+   order of the interaction is checked.
+
+** Ticket #355: Global library list for resume functionality
+   The list of global libraries is now correctly included in the dump
+   file, to fix the functionality of resuming a run from regular
+   checkpoints.
+
+
+
+* ThePEG-1.7.1 release: 2011-06-20
+
+** Ticket #238: Self-consistent electroweak schemes
+   The default behaviour of Herwig++ is to use the best values for all
+   the electroweak parameters, which can be inconsistent. Optionally
+   now, a self-consistent electroweak scheme can be chosen in the
+   parameter Model:EW/Scheme. Note that values of 'EW/Scheme' away
+   from the default have not received the same amount of testing.
+
+** Ticket #338: Fixed reporting of floating point exceptions
+   This was an issue whenever LHAPDF libraries were linked in.
+
+** Fixed cTau() behaviour
+   The new behavior is that if both width and lifetime are zero,
+   cTau() returns zero for unstable particles and MaxLength for
+   stable ones.
+
+** MaxErrors
+   The cutoff can be disabled by setting MaxErrors to -1.
+
+** StdOut redirect
+   CurrentGenerator::Redirect now does not redirect to to the internal
+   stream in EventGenerator if the useStdout flag has been set.
+
+** Run name tags
+   Aded possibility to add a tag to the run name when running with the
+   '-t' option. One run file can thus be run with different seeds and
+   result in different output files.
+
+** Exception names
+   EventGenerator tries to convert exception type names into
+   human-readable form. Currently this only works for gcc-compatible
+   compilers.
+
+** Repository API changes
+   Instead of printing an error message to cerr, the
+   Repository::load() and Repository::read(filename,os) commands now
+   behave like the other repo commands and return an error string.
+   This allows --exitonerror to work correctly for load() and read().
+   Users of these functions need to send the string to cerr themselves
+   if the old output behaviour is required. 
+   Repository::read(is, os, prompt) is unchanged.
+
+** HepMC precision
+   The precision() option for HepMC GenEvent is now available as an
+   interface in the HepMCFile analysis handler.
+
+** gcc-4.6
+   The build has now also been tested with gcc 4.6.0.
+
+
+
+* ThePEG-1.7.0 release: 2011-02-08
+
+** Behaviour
+*** Cross-section information
+    The .out file contains a better estimate of the cross-section
+    directly from the phase space sampler. It should be reliable if
+    not too many events were vetoed during the later phases of the
+    production.
+*** Simpler decay mode selection
+    Instead of having to turn off every mode individually, the new
+    'SelectDecayModes' interface allows commands such as
+      tbar:SelectDecayModes none 
+      tbar:SelectDecayModes tbar->nu_ebar,e-,bbar; tbar->nu_mubar,mu-,bbar;
+    Use 'PrintDecayModes' to list the available choices.
+*** Rivet interface
+    The interface will check before the run if all chosen analyses are
+    actually available in Rivet, and will only call finalize() if any
+    events have been generated. Event weights are now passed correctly
+    into Rivet.
+*** Les Houches QNUMBER support
+    QNUMBER particle creation support has been added to the Les
+    Houches reader.
+*** Debug level
+    If a debug level is set on the command line, it will always be used.
+*** Abort preserves events
+    A hard abort exception during event generation will try to finalize as
+    best as it can, thus preserving information about the run until this
+    point.
+*** Progress log
+    There is a new ThePEG::ProgressLog analysis handler, which prints
+    timing information about the run to screen. 
+*** Graphviz
+    The event graph can show missing momentum information.
+*** CRLF line endings (Windows-style)
+    File readers can now cope with files that have CRLF (Windows) and CR
+    (Mac) line endings.
+
+
+** Structure
+*** Diffraction support
+    To provide support for the simulation of diffractive events, the
+    LeptonLeptonRemnant class was renamed to UnresolvedRemnant, the
+    WeizsackerWilliams PDF extended, BudnevPDF added, and PartonExtractor
+    modified to allow separate override PDFs for each beam.
+*** Polarized beams
+    The PolarizedBeamParticleData class permits a spin polarization choice
+    on the incoming particles.
+*** Mixing particles
+    The MixedParticleData class supports mixed particle states.
+*** SpinBase
+    The SpinBase class has been removed, SpinInfo is now the base class. 
+*** Vertex classes
+    Several new vertices were added for BSM physics, and some minor bugs
+    fixed with existing classes.
+*** PID type
+    Particle IDs now have their own type, 'PID'. It can only be converted
+    to 'long' to avoid unsigned int overflow errors on 64bit machines.
+*** ClassDescription
+    There is a simpler way to register ClassDescription information with
+    the Repository: the DescribeClass<> template. No information is needed
+    in the class headers anymore, reducing build dependencies. New code
+    will use this method now, older classes will be migrated in future.
+*** LWH histogramming
+    The built-in implementation of AIDA histogramming has been
+    restructured slightly to decouple the implementation from the
+    interface.
+
+** Build system
+*** Silent build rules
+    'make' now builds silently, to improve readability. To get the old
+    behaviour, run 'make V=1'
+*** zlib
+    Integrated zlib to read compressed files, such as Les Houches events.
+*** Libtool 2.4
+    Will fix some issues on OS X. 
+*** gsl check
+    This check now also works with Rivet
+
+
+** Bug fixes
+*** Ticket #286: Implementation of Cuts in LesHouchesReader
+    Les Houches events are given in the lab frame, but QCDCuts expects to
+    be given momenta in the parton-parton cmf.  Boost added.
+*** Ticket #303: AlphaS thresholds
+    AlphaS thresholds were fixed for exactly massless quarks. 
+*** Ticket #304: Length units in HepMC
+*** Ticket #309: Particle initialization order
+*** Ticket #310: LeptonLeptonPDF fix
+
+   
+
+* ThePEG-1.6.1 release: 2009-12-11
+
+** Ticket #292: Spin correlation fix to stabilize tau decay numerics
+   We have restructured the spin correlation code to stabilize the
+   numerical problems seen in tau decays. 
+
+** Speed increase
+   Improved decay chain handling speeds up a typical run by a few percent.
+
+** Exception logging
+   The log file lists different exception types individually again
+   instead of grouping them all by severity only. This was broken in
+   the last few releases.
+
+
+
+* ThePEG-1.6.0 release: 2009-11-19
+ 
+** Helicity amplitudes
+   The main change in this release is a streamlining of the helicity
+   amplitude code. If you have self-written vertex classes, you will
+   need to adapt them slightly:
+*** Spinor representation
+    All spinors are now in HELAS representation, the optional
+    representation switching has been removed.
+*** Adding particles to the vertex
+    Instead of calling setList(v1, v2, v3) with three vectors of
+    particles that need to be filled in sync, call 
+    addToList(p1, p2, p3) repeatedly.
+*** Name changes
+    To make them consistent with the rest of ThePEG, the names of
+    functions starting with get...() have changed:
+    getFoo() becomes foo(); setFoo(...) becomes foo(...).
+
+** Vector code changes
+*** Vector3 has been renamed ThreeVector
+    This makes it consistent with the other vector classes.
+*** LorentzVector::mag()/mag2() removed, to reduce confusion
+    Use the equivalent ::m()/m2() instead to get E^2-p^2. 
+    LorentzVector::rho2() == ThreeVector::mag2() == p^2
+*** Calculating with a zero-length vector 
+    Previously, mathematically undefined values were arbitrarily set
+    to 0 in this situation.  Now an assertion failure is triggered in
+    debug mode. Only the azimuthal angle phi() still returns 0.
+
+** Environment variable interpretation removed
+   The programs setupThePEG and runThePEG are not wrapped in shell
+   scripts anymore. All usage of environment variables at runtime has
+   been removed. To influence the behaviour of ThePEG, you will need
+   to use explicit command line flags, or calls to Repository::
+   functions.
+
+** StandardModelBase now provides G_Fermi
+   InvEnergy2 StandardModelBase::fermiConstant() const;
+   provides the PDG 2006 value of G_Fermi.
+
+** Allow particle width cuts to be unset
+   Setting a negative value for the lower or upper width cut removes
+   that bound on the width.
+
+** Ticket #271: Decay mode names are normalized
+   Previously, the ordering of decay products in a decay mode
+   specifier needed to match ThePEG's internal ordering exactly. This
+   is now done automatically.
+
+** Ticket #273: NoPDF and LesHouches reader
+   The LesHouches reader has been fixed for the case where no PDFs are
+   used in the LHE file.
+
+** Ticket #275: doinitrun() ordering
+   The ACDC sampler now ensures that initrun() of all ME objects is
+   run first.
+
+** Ticket #277: Repository command help texts
+   ThePEG's repository command language now includes a 'help'
+   functionality.
+
+** Redirection of various files
+   The log file stream now goes to stdout instead of stderr when
+   EventGenerator:UseStdout is set.
+
+** Readline support can be disabled
+   Using the configure switch '--disable-readline', the linking of
+   libreadline can be suppressed. This can be useful for batch code that
+   will never be used interactively, if the number of linked-in
+   libraries is a problem.
+
+** --with-LHAPDF configure flag
+   Previously, the full LHAPDF path including lib/ needed to be
+   specified. This now also works with the more common usage of just
+   LHAPDF's prefix path.
+
+** Rivet analysis plugin
+   The Rivet analysis output files are now named consistently like the
+   other output from a run, with the run name as prefix. 
+
+** Graphviz event visualization
+   This is now independent of HepMC. The call to
+   void ThePEG::printGraphviz(ostream & os, tcEventPtr event);
+   on any event will output a Graphviz file to the stream,
+   suitable for interpretation with the 'dot' tool. It shows a
+   visualization of the generator's internal event structure, useful
+   for debugging. This is an initial version, feedback is welcome!
+
+** Fixed compatibility with older HepMC versions
+   A problem with rejecting a missing HepMC unit implementation was fixed.
+
+
+
+
+* ThePEG-1.5.0 release: 2009-09-01
+** New ZERO object
+   The ZERO object can be used to set any dimensionful quantity to
+   zero. This avoids explicit constructs like 0.0*GeV.
+
+** Readline interface
+   The interactive repository access now uses the readline library,
+   providing a command history and easier command line editing.
+
+** Syntax highlighting
+   We now have a syntax highlighting mode for emacs. To enable it, use
+   'M-x ThePEG-repository-mode' on any .in file.
+
+** Configure information
+   Important configuration information is listed at the end of the
+   'configure' run and in the file 'config.thepeg'. Please provide
+   this file in any bug reports.
+
+** Rivet interface
+   ThePEG now supports Rivet internally as an AnalysisHandler if it's
+   available.
+
+** HepMC tools; CLHEP support removed
+   The HepMC file output and graphviz event view have migrated from
+   Herwig++ to ThePEG. The deprecated CLHEP support has been removed.
+
+** Exception specifiers removed
+   Client code changes are needed in doinit() etc. Simply remove the
+   exception specifier after the function name.
+
+** Support for HepMC 2.05
+*** New features
+    ThePEG now supports cross-section output, PDF information and unit
+    specifications if they are available in HepMC.
+*** IO_ASCII
+    Support for the deprecated IO_ASCII format has been removed.
+*** Status codes
+    ThePEG uses codes 1, 2 and 11 according to the HepMC agreement.
+
+** Redirection of .out, .log and .tex to stdout
+   Set 'EventGenerator:UseStdout' to 'Yes' and (almost) all output
+   will be streamed to stdout instead of files.
+
+** Ticket #248: Les Houches reader
+   The cross-section information is now reported correctly when
+   reading several files.
+
+** Cuts output
+   If the debug level is set > 0, the current set of cuts is prepended
+   to the logfile.
+
+** Preweighting of matrix elements
+   A segfault when using preweights was fixed. Preweights are now
+   correctly included in handler statistics.
+
+** Other technical changes
+*** Colour line improvements
+*** PDFsets.index search improved
+*** Ticket #232: Java check on OS X now works headless
+*** Running couplings restructured
+*** LeptonLeptonRemnant iprovements to support GammaGamma
+*** WaveFunction constructors streamlined
+*** VertexBase now provides sin2ThetaW etc.
+
+
+
+
+* ThePEG-1.4.2 release: 2009-05-08
+** Ticket #242
+   Fixed a compiler problem that showed up on openSUSE 10.2, g++
+   4.1.2.  A source line was omitted if the optimization level was
+   higher than -O1.
+
+** User interaction
+   Dump file generation can now be disabled completely by setting
+   EventGenerator:DumpPeriod to -1.
+
+
+
+* ThePEG-1.4.1 release: 2009-03-31
+** User interaction
+   Error messages have been clarified in BaseRepository and
+   StandardEventHandler
+
+** Les Houches files
+   File readers are more robust, with clearer messages when things go
+   wrong.
+
+** Floating point issues
+   fixed in ThreeVector and VertexBase.
+
+** HepMC converter
+   Fixed PDF choice for asymmetric beams.
+
+** Libtool
+   Updated to version 2.2.6
+
+
+
+* ThePEG-1.4.0 release: 2008-12-02
+** Efficiency improvements
+   The LorentzVector class, the helicity amplitude code and PDF
+   lookups have been profiled and restructured to eliminate speed
+   bottlenecks. 
+
+** Deep inelastic scattering
+   Support for DIS is now implemented in ThePEG.
+
+** New rapidity cut
+   Added alternative pT cut that cuts on rapidity rather than
+   pseudorapidty as the existing one fails for zero-pt massive
+   particles.
+
+** HepMC units support
+   Users of HepMC versions > 2.04 get full units support. The HepMC
+   GenEvent object has the correct units set.
+
+** Support for HepMC PdfInfo data
+   Users of the HepMC converter can now fill the PdfInfo data, which
+   has been available since HepMC 1.28.00. Older versions are no
+   longer supported.
+
+** Ticket #199: Particle lifetime cutoff
+   Users can set a maximum lifetime. Particles that live longer than
+   this are not decayed.
+
+** Ticket #215: Madgraph
+   Fixed a problem in reading certain Madgraph event files.
+
+** Les Houches files
+   Optional rescaling of energy or mass of particles which were read
+   in. Check the file to trap 'nan' and 'inf' values early during the read-in.
+
+** File cleanup
+   Most inline functions are now defined in the headers rather than a
+   separate .icc file.
+
+
+
+* ThePEG-1.3.0 release: 2008-06-20
+** Statistical errors
+   Error estimates on the cross-sections are now reported in the .out files.
+
+** Decaymode setup
+   The decaymode setup has been reworked, keeping backwards
+   compatibility. The 'defaultparticle' command has been removed.
+
+** Madgraph reader
+   Updated to latest Madevent version. 
+
+** LHAPDF improvements
+   lhapdf-config is not used anymore to determine the location of the
+   PDF sets. Instead, they are fixed at configure-time.
+
+** HepMC 
+   The beam particles are now set correctly.
+
+** Arbitrary search paths for .in files
+   Input files don't have to be in '.', use '-I' to specify additional
+   directories.
+
+** Ticket #172
+   Fix for cuts in mirrored processes.
+
+** Simpler emacs macros
+   The emacs macros have been significantly cleaned up.
+
+** Helicity vertex classes
+   Potential prolems with uninitialized variables were fixed. No
+   actual bugs had occurred from here.
+
+** Memory leak fixes and performance
+   Several loops of shared pointers were fixed involving DecayModes
+   and ParticleData. FixedSizeAllocator was removed, the regular 'new'
+   and 'delete' is now used for all allocations, giving a 5% speedup.  
+
+
+
+* ThePEG-1.2.0 release: 2008-04-18
+** ThePEG uses GSL 
+   The GNU Scientific Library and its headers are now required for
+   building ThePEG. RandomGenerator partially uses GSL now.
+
+** Ticket #160: HepMC converter 
+   Optionally, the HepMC converter can fill an external GenEvent object,
+   instead of newing one internally.
+
+** 'globallibrary' command
+   The 'globallibrary' command can be used to register libraries which
+   are useful for the whole run. They do not need to be listed in each
+   class's library() function.
+
+** Resume from dump files (also solves #149)
+   The --resume command line flag instructs runThePEG to resume the
+   run from a previous dump file. 'set Generator:DumpPeriod 1000'
+   writes such a checkpoint every 1000 events.
+
+** New Repository interface (also solves #141)
+   The repository now provides a Repository::cleanup() method, to be
+   called at the end of a run. Alternatively, a Repository object can
+   be created and its member functions called. 
+
+** Les Houches interface improvements.
+   LesHouchesReader had had a major overhaul.
+
+** XSecCheck analysis
+   Issues a warning if a target cross section is not met in the run.
+
+** Weighted events
+   Handling of weighted events was improved.
+
+** Ticket #124: 'Deleted' interface option 
+   Interfaces can be declared obsolete, a warning will be issued when
+   they're used. 
+
+** LHAPDF interface 
+   The interface now allows photons as partons inside a hadron.
+
+** gcc 4.3.0
+   ThePEG compiles cleanly with the new gcc 4.3 series.
+
+** Bug #138
+   Lepton NoPDF now works.
+
+
+
+
+* ThePEG-1.1.2 release: 2008-02-25
+** Bug #136: dSigHatDR
+   Efficiency improvement for zero PDF.
+
+** Bug #137: HepMC conversion
+   The HepMC converter now takes a unit argument to specify which
+   energy and length units should be used in the HepMC event.
+
+** Bug #140 / #141: Crash on shutdown
+   This fixes a bug introduced in 1.1.1. External code interfaces
+   should now work again. 
+
+** Bug #151: Loop in Remnant record
+   The loop between remnants in the event record has been removed.
+
+** PDF improvements
+   Fix to handling of maximum flavour from LHAPDF. Fix for xmin
+   calculation. 
+
+
+
+
+* ThePEG-1.1.1 release: 2007-12-07
+** Bug #46: Reproducibility
+   Fixed a problem where runs were not identical for a given random
+   number seed. You now _must_ reset the seed if you need independent
+   event generator runs.  
+
+** Detection of gcc abs bug
+   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
+   configure now checks for and works around the gcc abs() bug.
+
+** Separate LWHFactory library
+   Fixed problem in Rivet interaction by factoring out LWHFactory into
+   its own dynamic library.
+
+
+
+
+* ThePEG-1.1.0 release: 2007-11-20
+** New vector classes
+   ThePEG now uses its own internal Vector classes, making it
+   independent of CLHEP.
+
+** New dimension checking mechanism
+   Optionally, any physical expression is checked for dimensional
+   correctness at compile time.
+
+** Extended Helicity classes
+   A full set of helicity amplitude classes has been transferred from
+   Herwig++. 
+
+** unlisted
+  Many other improvements and small bug fixes, see ChangeLog.
+
+
+
+
+* ThePEG-1.0.1 release: 2006-11-22
+
+** unlisted:
+   Fixed memory leak in LesHouchesReader.
+
+** Bug #58
+   maximumCMEnergy() member of the EventGenerator returns zero. See
+   ChangeLog entry 2006-10-06
+
+** Bug #62
+   fixed 'const' behaviour in Lorentz spinor classes
+
+** Bug #68
+   Improved error message for switch options
+
+** unlisted
+   Improved compile-time LHAPDF library and include file handling.
+
+** unlisted
+   Bug in IteratorRange::rrange(const Container &).
+
+** unlisted
+   fixed Selector::swap()
+
+** unlisted
+   Bug in ClusterCollapser where no colour-singlet particles were
+   considered for momentum compensation if no coloured particles were
+   present. 
+
+** unlisted
+   Bug in LeptonLeptonRemnant: minX variable not persistent
+
+** unlisted
+   scale of the produced coloured particles was not set in
+   Onium3GDecayer and ColourPairDecayer
+
+** unlisted
+   unused default path removed from DynamicLoader
+
+
+
+
+* ThePEG-1.0 release: 2006-09-27

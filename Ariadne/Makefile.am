@@ -1,5 +1,0 @@
-SUBDIRS = include Config Cascade lib src DIPSY
-
-EXTRA_DIST = GUIDELINES
-
-ACLOCAL_AMFLAGS = -I m4
