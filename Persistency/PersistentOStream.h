@@ -220,7 +220,7 @@ public:
    * Write a double.
    */
   PersistentOStream & operator<<(double d) {
-    if ( isnan(d) || isinf(d) )
+    if ( std::isnan(d) || std::isinf(d) )
       throw WriteError()
 	<< "Tried to write a NaN or Inf double to a persistent stream."
 	<< Exception::runerror;
@@ -233,7 +233,7 @@ public:
    * Write a float.
    */
   PersistentOStream & operator<<(float f) {
-    if ( isnan(f) || isinf(f) )
+    if ( std::isnan(f) || std::isinf(f) )
       throw WriteError()
 	<< "Tried to write a NaN or Inf float to a persistent stream."
 	<< Exception::runerror;

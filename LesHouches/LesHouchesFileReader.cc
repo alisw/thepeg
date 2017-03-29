@@ -696,9 +696,9 @@ bool LesHouchesFileReader::doReadEvent() {
       return false;
     //print momenta for debugging
     // cout << hepeup.PUP[i][0] << " " << hepeup.PUP[i][1] << " " << hepeup.PUP[i][2] << " " << hepeup.PUP[i][3] << " " << hepeup.PUP[i][4] << endl;
-    if(isnan(hepeup.PUP[i][0])||isnan(hepeup.PUP[i][1])||
-       isnan(hepeup.PUP[i][2])||isnan(hepeup.PUP[i][3])||
-       isnan(hepeup.PUP[i][4])) 
+    if(std::isnan(hepeup.PUP[i][0])||std::isnan(hepeup.PUP[i][1])||
+       std::isnan(hepeup.PUP[i][2])||std::isnan(hepeup.PUP[i][3])||
+       std::isnan(hepeup.PUP[i][4])) 
       throw Exception() 
 	<< "nan's as momenta in Les Houches file "
 	<< Exception::eventerror;
