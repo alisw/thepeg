@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // PhysicalQtyComplex.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2011 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Physical_Qty_Complex_H
@@ -24,27 +24,27 @@ namespace std {
   {
   public:
     /// Default constructor
-    complex(double r=0.0, double i=0.0) 
+    constexpr complex(double r=0.0, double i=0.0) 
       : rawValue_(r,i) {}
 
     /// Constructor from complex<double>
-    complex(complex<double> C)
+    constexpr complex(complex<double> C)
       : rawValue_(C) {}
 
     /**
      * The internal representation of the dimensionful quantity.
      * Using this will break dimension-consistency.
      */ 
-    complex<double> rawValue() const { return rawValue_; }
+    constexpr complex<double> rawValue() const { return rawValue_; }
 
     /// Real part
-    double real() const { return rawValue_.real(); }
+    constexpr double real() const { return rawValue_.real(); }
 
     /// Imaginary part
-    double imag() const { return rawValue_.imag(); }
+    constexpr double imag() const { return rawValue_.imag(); }
    
     /// Cast to complex<double>
-    operator complex<double>() const {
+    constexpr operator complex<double>() const {
       return rawValue_;
     }
     
@@ -76,7 +76,7 @@ namespace ThePEG {
 // complex qty = complex qty * complex qty
 template<int L1, int L2, int E1, int E2, int Q1, int Q2,
   int DL1, int DL2, int DE1, int DE2, int DQ1, int DQ2>
-inline std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
+inline constexpr std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
 			DL1*DL2,DE1*DE2,DQ1*DQ2> >
 operator*(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1, 
 	  std::complex<Qty<L2,E2,Q2,DL2,DE2,DQ2> > q2) {
@@ -88,7 +88,7 @@ operator*(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1,
 
 // complex qty = complex qty * complex qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
 operator*(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1, 
 	  std::complex<Qty<L,E,Q,DL,DE,DQ> > q2) {
   typedef std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> > RetT;
@@ -98,7 +98,7 @@ operator*(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1,
 
 // complex qty = complex double - complex qty
 template<int DL, int DE, int DQ>
-inline std::complex<double>
+inline constexpr std::complex<double>
 operator-(std::complex<double> q1, 
 	  std::complex<Qty<0,0,0,DL,DE,DQ> > q2) {
   typedef std::complex<double> RetT;
@@ -107,7 +107,7 @@ operator-(std::complex<double> q1,
 
 // complex qty = complex double * complex qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<L,E,Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<L,E,Q,DL,DE,DQ> >
 operator*(std::complex<double> q1, 
 	  std::complex<Qty<L,E,Q,DL,DE,DQ> > q2) {
   typedef std::complex<Qty<L,E,Q,DL,DE,DQ> > RetT;
@@ -128,7 +128,7 @@ operator/(std::complex<double> q1,
 
 // complex qty = complex double / qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<-L,-E,-Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<-L,-E,-Q,DL,DE,DQ> >
 operator/(std::complex<double> q1, 
 	  Qty<L,E,Q,DL,DE,DQ>  q2) {
   typedef std::complex<Qty<-L,-E,-Q,DL,DE,DQ> > RetT;
@@ -177,7 +177,7 @@ operator/(Qty<L,E,Q,DL,DE,DQ> q1,
 
 // complex double = complex qty / qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<double>
+inline constexpr std::complex<double>
 operator/(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1, 
 	  Qty<L,E,Q,DL,DE,DQ> q2) {
   return std::complex<double>(q1.real()/q2,q1.imag()/q2);
@@ -214,7 +214,7 @@ operator/(Qty<L1,E1,Q1,DL1,DE1,DQ1> q1,
 // complex qty = complex qty / qty
 template<int L1, int L2, int E1, int E2, int Q1, int Q2,
   int DL1, int DL2, int DE1, int DE2, int DQ1, int DQ2>
-inline std::complex<Qty<L1*DL2-L2*DL1,E1*DE2-E2*DE1,Q1*DQ2-Q2*DQ1,DL1*DL2,DE1*DE2,DQ1*DQ2> >
+inline constexpr std::complex<Qty<L1*DL2-L2*DL1,E1*DE2-E2*DE1,Q1*DQ2-Q2*DQ1,DL1*DL2,DE1*DE2,DQ1*DQ2> >
 operator/(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1, 
 	  Qty<L2,E2,Q2,DL2,DE2,DQ2> q2) {
   typedef std::complex<Qty<L1*DL2-L2*DL1,E1*DE2-E2*DE1,Q1*DQ2-Q2*DQ1,
@@ -225,7 +225,7 @@ operator/(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1,
 
 // complex qty = complex qty * complex double
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<L,E,Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<L,E,Q,DL,DE,DQ> >
 operator*(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1, 
 	  std::complex<double> q2) {
   return q2 * q1;
@@ -235,7 +235,7 @@ operator*(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1,
 // complex qty = qty * complex qty
 template<int L1, int L2, int E1, int E2, int Q1, int Q2,
   int DL1, int DL2, int DE1, int DE2, int DQ1, int DQ2>
-inline std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
+inline constexpr std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
 			DL1*DL2,DE1*DE2,DQ1*DQ2> >
 operator*(Qty<L1,E1,Q1,DL1,DE1,DQ1> q1, 
 	  std::complex<Qty<L2,E2,Q2,DL2,DE2,DQ2> > q2) {
@@ -246,7 +246,7 @@ operator*(Qty<L1,E1,Q1,DL1,DE1,DQ1> q1,
 
 // complex qty = qty * complex qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
 operator*(Qty<L,E,Q,DL,DE,DQ> q1, 
 	  std::complex<Qty<L,E,Q,DL,DE,DQ> > q2) {
   typedef std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> > RetT;
@@ -255,7 +255,7 @@ operator*(Qty<L,E,Q,DL,DE,DQ> q1,
 
 // complex qty = qty * complex double
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<L,E,Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<L,E,Q,DL,DE,DQ> >
 operator*(Qty<L,E,Q,DL,DE,DQ> q1, 
 	  std::complex<double> q2) {
   typedef std::complex<Qty<L,E,Q,DL,DE,DQ> > RetT;
@@ -264,7 +264,7 @@ operator*(Qty<L,E,Q,DL,DE,DQ> q1,
 
 // complex qty = complex double * qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<L,E,Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<L,E,Q,DL,DE,DQ> >
 operator*(std::complex<double> q1,
 	  Qty<L,E,Q,DL,DE,DQ> q2) {
   return q2 * q1;
@@ -274,7 +274,7 @@ operator*(std::complex<double> q1,
 // complex qty = complex qty * qty
 template<int L1, int L2, int E1, int E2, int Q1, int Q2,
   int DL1, int DL2, int DE1, int DE2, int DQ1, int DQ2>
-inline std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
+inline constexpr std::complex<Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
 			DL1*DL2,DE1*DE2,DQ1*DQ2> >
 operator*(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1, 
 	  Qty<L2,E2,Q2,DL2,DE2,DQ2> q2) {
@@ -283,7 +283,7 @@ operator*(std::complex<Qty<L1,E1,Q1,DL1,DE1,DQ1> > q1,
 
 // complex qty = complex qty * qty
 template<int L, int E, int Q, int DL, int DE, int DQ>
-inline std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
+inline constexpr std::complex<Qty<2*L,2*E,2*Q,DL,DE,DQ> >
 operator*(std::complex<Qty<L,E,Q,DL,DE,DQ> > q1, 
 	  Qty<L,E,Q,DL,DE,DQ> q2) {
   return q2 * q1;

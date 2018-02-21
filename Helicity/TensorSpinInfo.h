@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // TensorSpinInfo.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_TensorSpinInfo_H
@@ -14,6 +14,7 @@
 #include "ThePEG/Helicity/LorentzTensor.h"
 #include "TensorSpinInfo.fh"
 // #include "TensorSpinInfo.xh"
+#include <array>
 
 namespace ThePEG {
 namespace Helicity {
@@ -48,19 +49,15 @@ public:
   /**
    * Default constructor.
    */
-  TensorSpinInfo() : SpinInfo(PDT::Spin2),_productionstates(5),
-		     _decaystates(5), _currentstates(5), 
-		     _decaycalc(false) {}
+  TensorSpinInfo() : SpinInfo(PDT::Spin2), _decaycalc(false) {}
   
   /**
    * Standard Constructor.
    * @param p the production momentum.
    * @param time true if the particle is time-like.
    */
-  TensorSpinInfo(const Lorentz5Momentum & p,bool time)
-    : SpinInfo(PDT::Spin2, p, time),
-      _productionstates(5), _decaystates(5), _currentstates(5), 
-      _decaycalc(false) {}
+  TensorSpinInfo(const Lorentz5Momentum & p, bool time)
+    : SpinInfo(PDT::Spin2, p, time), _decaycalc(false) {}
   //@}
 
 public:
@@ -147,17 +144,17 @@ private:
   /**
    * Basis states in the frame in which the particle was produced.
    */
-  mutable vector<LorentzTensor<double> > _productionstates;
+  mutable std::array<LorentzTensor<double>,5> _productionstates;
 
   /**
    * Basis states in the frame in which the particle decays.
    */
-  mutable vector<LorentzTensor<double> > _decaystates;
+  mutable std::array<LorentzTensor<double>,5> _decaystates;
 
   /**
    * Basis states in the current frame of the particle
    */
-  mutable vector<LorentzTensor<double> > _currentstates;
+  mutable std::array<LorentzTensor<double>,5> _currentstates;
 
   /**
    * True if the decay state has been set.

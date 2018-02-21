@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // UnitIO.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_UnitIO_H
@@ -16,12 +16,6 @@
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
-
-// Workarounds for OS X
-#if defined __APPLE__ && defined __MACH__
-extern "C" int isnan(double) throw();
-extern "C" int isinf(double) throw();
-#endif
 
 namespace ThePEG {
 
@@ -177,8 +171,8 @@ inline OUnitErr<double,double> ouniterr(double t, double dt) {
 /** Output an OUnitErr object to a stream. */
 template <typename OStream, typename T, typename UT>
 OStream & operator<<(OStream & os, const OUnitErr<T,UT> & u) {
-  if ( std::isnan(u.x) || std::isinf(u.x) ) return os << u.x;
-  if ( std::isnan(u.dx) || std::isinf(u.dx) ) {
+  if ( ! isfinite(u.x) ) return os << u.x;
+  if ( ! isfinite(u.dx) ) {
     ostringstream out;
     out << u.x << '(' << u.dx << ')';
     return os << out.str();

@@ -105,16 +105,16 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = config.h ThePEG_Qty.h
+CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libThePEGConfig_la_LIBADD =
-am__libThePEGConfig_la_SOURCES_DIST = ThePEG.cc Containers.cc ThePEG.h \
-	Constants.h Containers.h Pointers.h Unitsystem.h algorithm.h \
-	std.h Complex.h TemplateTools.h PhysicalQty.h PhysicalQtyOps.h \
+am__libThePEGConfig_la_SOURCES_DIST = ThePEG.cc ThePEG.h Constants.h \
+	Containers.h Pointers.h Unitsystem.h algorithm.h std.h \
+	Complex.h TemplateTools.h PhysicalQty.h PhysicalQtyOps.h \
 	PhysicalQtyComplex.h HepMCHelper.h
-am__objects_1 = ThePEG.lo Containers.lo
+am__objects_1 = ThePEG.lo
 am__objects_2 =
 am__objects_3 = $(am__objects_2)
 am__objects_4 = $(am__objects_3)
@@ -184,8 +184,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
-	$(LISP)config.h.in ThePEG_Qty.h.a ThePEG_Qty.h.in \
-	ThePEG_Qty.h.b
+	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
 # *not* preserved.
@@ -204,11 +203,9 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/ThePEG_Qty.h.a \
-	$(srcdir)/ThePEG_Qty.h.b $(srcdir)/ThePEG_Qty.h.in \
-	$(srcdir)/config.h.in $(top_srcdir)/Config/Makefile.aminclude \
-	ar-lib compile config.guess config.sub depcomp install-sh \
-	ltmain.sh missing
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(top_srcdir)/Config/Makefile.aminclude ar-lib compile \
+	config.guess config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -373,14 +370,14 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-mySOURCES = ThePEG.cc Containers.cc
+mySOURCES = ThePEG.cc
 DOCFILES = ThePEG.h Constants.h Containers.h Pointers.h Unitsystem.h \
 	algorithm.h std.h Complex.h TemplateTools.h PhysicalQty.h \
 	PhysicalQtyOps.h PhysicalQtyComplex.h $(am__append_1)
 INCLUDEFILES = $(DOCFILES)
 noinst_LTLIBRARIES = libThePEGConfig.la
 libThePEGConfig_la_SOURCES = $(mySOURCES) $(INCLUDEFILES)
-all: config.h ThePEG_Qty.h
+all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
@@ -428,16 +425,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 	rm -f stamp-h1
 	touch $@
 
-ThePEG_Qty.h: stamp-h2
-	@test -f $@ || rm -f stamp-h2
-	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h2
-
-stamp-h2: $(srcdir)/ThePEG_Qty.h.a $(srcdir)/ThePEG_Qty.h.in $(srcdir)/ThePEG_Qty.h.b $(top_builddir)/config.status
-	@rm -f stamp-h2
-	cd $(top_builddir) && $(SHELL) ./config.status Config/ThePEG_Qty.h
-
 distclean-hdr:
-	-rm -f config.h stamp-h1 ThePEG_Qty.h stamp-h2
+	-rm -f config.h stamp-h1
 
 clean-noinstLTLIBRARIES:
 	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
@@ -459,7 +448,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Containers.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ThePEG.Plo@am__quote@
 
 .cc.o:
@@ -576,7 +564,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) config.h ThePEG_Qty.h
+all-am: Makefile $(LTLIBRARIES) config.h
 installdirs:
 install: install-am
 install-exec: install-exec-am

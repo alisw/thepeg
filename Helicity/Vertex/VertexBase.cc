@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VertexBase.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -28,7 +28,7 @@ using namespace ThePEG::Helicity;
 
 VertexBase::VertexBase(VertexType::T name, bool kine) 
   : _npoint(1), _norm(0), _calckinematics(kine), 
-    _kine(5,vector<Energy2>(5)), _theName(name), 
+    _kine(), _theName(name), 
     _ordergEM(0), _ordergS(0),
     _coupopt(0), _gs(sqrt(4.*Constants::pi*0.3)), 
     _ee(sqrt(4.*Constants::pi/137.04)),
@@ -42,23 +42,16 @@ VertexBase::VertexBase(VertexType::T name, bool kine)
 // setup the lists of particles 
 // should only be called from child class constructors
 void VertexBase::addToList(long ida, long idb, long idc, long idd) {
-  if ( idd == 0 ) {
-    const long id[] = { ida, idb, idc };
-    addToList(vector<long>(id,id+3));
-  }
-  else {
-    const long id[] = { ida, idb, idc, idd };
-    addToList(vector<long>(id,id+4));
-  }
+  if ( idd == 0 ) addToList({ ida, idb, idc });
+  else            addToList({ ida, idb, idc, idd });
 }
 
 void VertexBase::addToList(const vector<long> & ids) {
   assert( ids.size() == _npoint );
   vector<PDPtr> tmp;
   int chargeSum = 0;
-  for (vector<long>::const_iterator it = ids.begin();
-       it != ids.end(); ++it) {
-    tPDPtr p = getParticleData(*it);
+  for ( auto id : ids ) {
+    tPDPtr p = getParticleData(id);
     if ( !p ) return; // needed e.g. to deal with chi_5 in MSSM
     tmp.push_back(p);
     chargeSum += p->iCharge();
@@ -81,12 +74,9 @@ void VertexBase::doinit() {
   // set up the incoming and outgoing particles
   if ( !_outpart.empty() || !_inpart.empty() )
     return;
-  for ( unsigned int ix=0; ix<_particles.size(); ++ix ) {
-    for ( vector<PDPtr>::const_iterator it = _particles[ix].begin();
-	  it != _particles[ix].end(); ++it ) {
-      tPDPtr p = *it;
+  for ( const auto & pvec : _particles ) {
+    for ( tPDPtr p : pvec ) {
       assert( p );
-      assert ( p->id() == getParticleData(p->id())->id() );
       tPDPtr cc = p->CC();
       _inpart.insert( cc ? cc : p );
       _outpart.insert(p);
@@ -185,11 +175,11 @@ void VertexBase::Init() {
 vector<long> VertexBase::search(unsigned int iloc,long idd) const {
   assert( iloc < _npoint );
   vector<long> out;
-  for(unsigned int ix=0; ix<_particles.size(); ++ix) {
-    bool found = _particles[ix][iloc]->id() == idd;
+  for(const auto & pvec : _particles ) {
+    bool found = pvec[iloc]->id() == idd;
     if(found) {
-      for(unsigned int iy=0;iy<_particles[ix].size();++iy) {
-	out.push_back(_particles[ix][iy]->id());
+      for( tcPDPtr p : pvec ) {
+	out.push_back(p->id());
       }
     }
   }
@@ -200,12 +190,9 @@ vector<long> VertexBase::search(unsigned int iloc,long idd) const {
 vector<tPDPtr> VertexBase::search(unsigned int iloc,tcPDPtr idd) const {
   assert( iloc < _npoint );
   vector<tPDPtr> out;
-  for(unsigned int ix=0; ix<_particles.size(); ++ix) {
-    bool found = _particles[ix][iloc] == idd;
-    if(found) {
-      for(unsigned int iy=0;iy<_particles[ix].size();++iy) {
-	out.push_back(_particles[ix][iy]);
-      }
+  for(const auto & pvec : _particles) {
+    if(pvec[iloc] == idd) {
+      out.insert(out.end(),pvec.begin(), pvec.end());
     }
   }
   return out;
@@ -287,21 +274,18 @@ Complex VertexBase::propagator(int iopt, Energy2 p2,tcPDPtr part,
 }
 
 void VertexBase::rebind(const TranslationMap & trans) {
-  vector<vector<PDPtr> >::iterator cit;
-  vector<PDPtr>::iterator cjt;
-  for (cit =  _particles.begin(); cit != _particles.end(); ++cit) {
-    for (cjt = cit->begin(); cjt != cit->end(); ++cjt) {
+  for (auto cit = _particles.begin(); cit != _particles.end(); ++cit) {
+    for (auto cjt = cit->begin(); cjt != cit->end(); ++cjt) {
       *cjt = trans.translate(*cjt);
     }
   }
-  set<tPDPtr>::iterator it;
   set<tPDPtr> newinpart;
-  for (it =  _inpart.begin(); it != _inpart.end(); ++it) {
+  for (auto it = _inpart.begin(); it != _inpart.end(); ++it) {
     newinpart.insert(trans.translate(*it));
   }
   _inpart = newinpart;
   set<tPDPtr> newoutpart;
-  for (it =  _outpart.begin(); it != _outpart.end(); ++it) {
+  for (auto it = _outpart.begin(); it != _outpart.end(); ++it) {
     newoutpart.insert(trans.translate(*it));
   }
   _outpart = newoutpart;
@@ -310,20 +294,15 @@ void VertexBase::rebind(const TranslationMap & trans) {
 
 IVector VertexBase::getReferences() {
   IVector ret = Interfaced::getReferences();
-  vector<vector<PDPtr> >::iterator cit;
-  vector<PDPtr>::iterator cjt;
-  for (cit =  _particles.begin(); cit != _particles.end(); ++cit) {
-    for (cjt = cit->begin(); cjt != cit->end(); ++cjt) {
+  for (auto cit = _particles.begin(); cit != _particles.end(); ++cit) {
+    for (auto cjt = cit->begin(); cjt != cit->end(); ++cjt) {
       ret.push_back(*cjt);
     }
   }
-  set<tPDPtr>::iterator it;
-  for (it =  _inpart.begin();
-       it != _inpart.end(); ++it) {
+  for (auto it = _inpart.begin(); it != _inpart.end(); ++it) {
       ret.push_back(*it);
   }
-  for (it =  _outpart.begin();
-       it != _outpart.end(); ++it) {
+  for (auto it = _outpart.begin(); it != _outpart.end(); ++it) {
       ret.push_back(*it);
   }
   return ret;

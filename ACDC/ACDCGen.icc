@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ACDCGen.icc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 
@@ -51,7 +51,7 @@ inline void ACDCGen<Rnd,FncPtr>::clear() {
   theFunctions = FncVector(1);
   theDimensions = DimVector(1, 0);
   for ( int i = 0, N = thePrimaryCells.size(); i < N; ++i )
-    if ( thePrimaryCells[i] ) delete thePrimaryCells[i];
+    delete thePrimaryCells[i];
   thePrimaryCells = CellVector(1);
   theSumMaxInts = DVector(1, 0.0);
   theLast = 0;
@@ -781,7 +781,10 @@ void ACDCGen<Rnd,FncPtr>::output(POStream & os) const {
   for ( int i = 1, N = theFunctions.size(); i < N; ++i )
     os << theFunctions[i] << theDimensions [i] << theSumMaxInts[i]
        << *thePrimaryCells[i] << theNI[i] << theSumW[i] << theSumW2[i];
-  os << thePrimaryCells[theLast]->getIndex(theLastCell);
+  if ( theLast > 0 ) // first entry in thePrimaryCells always points at 0x0
+    os << thePrimaryCells[theLast]->getIndex(theLastCell);
+  else
+    os << -1l;
   for ( int i = 0, N = levels.size(); i < N; ++i )
     os << levels[i].lastN << levels[i].g << levels[i].index
        << levels[i].up << levels[i].lo
@@ -810,7 +813,10 @@ void ACDCGen<Rnd,FncPtr>::input(PIStream & is) {
   }
   long index = -1;
   is >> index;
-  theLastCell = thePrimaryCells[theLast]->getCell(index);
+  if ( index == -1 )
+    theLastCell = 0x0;
+  else
+    theLastCell = thePrimaryCells[theLast]->getCell(index);
   while ( lsize-- ) {
     levels.push_back(Level());
     is >> levels.back().lastN >> levels.back().g >> levels.back().index

@@ -1,14 +1,14 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([ThePEG],[2.0.4],[http://www.thep.lu.se/ThePEG/],[ThePEG])
+AC_INIT([ThePEG],[2.1.2],[http://www.thep.lu.se/ThePEG/],[ThePEG])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
 
-THEPEG_LIBTOOL_VERSION_INFO(20,0,0)
+THEPEG_LIBTOOL_VERSION_INFO(25,0,0)
 
 AC_CONFIG_SRCDIR([EventRecord/SubProcess.h])
-AC_CONFIG_HEADERS([Config/config.h Config/ThePEG_Qty.h:Config/ThePEG_Qty.h.a:Config/ThePEG_Qty.h.in:Config/ThePEG_Qty.h.b])
+AC_CONFIG_HEADERS([Config/config.h])
 
 AC_CANONICAL_HOST
 
@@ -32,27 +32,7 @@ m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 dnl Checks for C++ compiler. Handle C++11 flags.
 AC_PROG_CXX
-
-dnl this block can go once we decide to have C++11 always on
-AC_MSG_CHECKING([whether to include C++11 flag for testing])
-AC_ARG_ENABLE(stdcxx11,
-        AC_HELP_STRING([--enable-stdcxx11],
-    [turn on C++11 flag (only for testing, do not use in production!)]),
-        [],
-        [enable_stdcxx11=no]
-        )
-
-
-if test "x$enable_stdcxx11" = "xyes"; then
-AC_MSG_RESULT([yes])
-dnl remove the wrapper if block and "optional" once we decide to have C++11 always on
-AX_CXX_COMPILE_STDCXX([11],[noext],[optional])
-if test "x$HAVE_CXX11" != "x1"; then
-AC_MSG_ERROR([compiler does not recognize requested c++11 option])
-fi
-else
-AC_MSG_RESULT([no])
-fi
+AX_CXX_COMPILE_STDCXX([11],[noext],[mandatory])
 
 dnl check for unistd
 AC_CHECK_HEADER([unistd.h],[],
@@ -68,7 +48,6 @@ LT_INIT([disable-static dlopen pic-only])
 
 VL_LIB_READLINE
 
-THEPEG_UNIT_CHECKING
 THEPEG_CHECK_GSL
 THEPEG_SEARCH_LHAPDF
 THEPEG_CHECK_HEPMC
@@ -121,8 +100,6 @@ dnl  -Wno-unneeded-internal-declaration
     AM_CXXFLAGS="-strict-ansi -Wall -wd13000,1418,981,444,383,1599,1572,2259,980"
     ;;
 esac
-
-THEPEG_CHECK_ABS_BUG
 
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CXXFLAGS)

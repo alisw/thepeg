@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // JetRegion.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2007 Leif Lonnblad
-// Copyright (C) 2009-2012 Simon Platzer
+// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 2009-2017 Simon Platzer
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_JetRegion_H

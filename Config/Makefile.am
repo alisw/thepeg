@@ -1,4 +1,4 @@
-mySOURCES = ThePEG.cc Containers.cc
+mySOURCES = ThePEG.cc
 
 DOCFILES = ThePEG.h Constants.h Containers.h Pointers.h \
 	   Unitsystem.h algorithm.h \

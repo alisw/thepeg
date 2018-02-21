@@ -1,53 +1,3 @@
-# check for gcc bug http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
-AC_DEFUN([THEPEG_CHECK_ABS_BUG],
-[
-if test "$GCC" = "yes"; then
-AC_MSG_CHECKING([for gcc abs bug])
-AC_RUN_IFELSE([
-	AC_LANG_PROGRAM(
-		[[ int foo (int i) { return -2 * __builtin_abs(i - 2); }	]],
-		[[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]]
-	)],
-	[ AC_MSG_RESULT([not found. Compiler is ok.]) ],
-	[
-	AC_MSG_RESULT([found. Builtin abs() is buggy.])
-	AC_MSG_CHECKING([if -fno-builtin-abs works])
-	oldcxxflags=$CXXFLAGS
-	CXXFLAGS="$CXXFLAGS -fno-builtin-abs"
-	AC_RUN_IFELSE([
-		AC_LANG_PROGRAM(
-			[[
-			#include <cstdlib>
-			int foo (int i) { return -2 * std::abs(i - 2); }
-			]],
-			[[
-			if (foo(1) != -2 || foo(3) != -2) return 1; 
-			]]
-		)],
-		[
-		AC_MSG_RESULT([yes. Setting -fno-builtin-abs.])
-		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin-abs"
-		AM_CFLAGS="$AM_CFLAGS -fno-builtin-abs"
-		],
-		[
-		AC_MSG_RESULT([no. Setting -fno-builtin.])
-		AC_MSG_WARN([
-*****************************************************************************
-For this version of gcc, -fno-builtin-abs alone did not work to avoid the 
-gcc abs() bug. Instead, all gcc builtin functions are now disabled.
-Update gcc if possible.
-*****************************************************************************])
-		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin"
-		AM_CFLAGS="$AM_CFLAGS -fno-builtin"
-		]
-	)
-	CXXFLAGS=$oldcxxflags
-	]
-)
-fi
-])
-
-
 # Check for ThePEG.
 AC_DEFUN([THEPEG_CHECK_THEPEG],
 [THEPEGBUILD="no"
@@ -359,20 +309,6 @@ AC_DEFUN([THEPEG_LIBTOOL_VERSION_INFO],
 [  LIBTOOLVERSIONINFO="-version-info $1:$2:$3"
    AC_SUBST(LIBTOOLVERSIONINFO)])
 
-AC_DEFUN([THEPEG_UNIT_CHECKING],
-[
-AC_MSG_CHECKING([whether to include dimension checking])
-AC_ARG_ENABLE(unitchecks,
-        AC_HELP_STRING([--enable-unitchecks],[turns on dimension checking for physical quantities.]),
-        [],
-        [enable_unitchecks=no]
-        )
-AC_MSG_RESULT([$enable_unitchecks])
-if test "x$enable_unitchecks" = "xyes"; then
-   AC_DEFINE([ThePEG_HAS_UNITS_CHECKING],[1],[define if units should be checked])
-fi
-])
-
 AC_DEFUN([THEPEG_CHECK_GSL],
 [
 AC_MSG_CHECKING([for gsl location])
@@ -454,7 +390,7 @@ cat << _THEPEG_EOF_ > config.thepeg
 ***--------------------------------------------------
 *** Prefix:		$prefix
 ***
-*** Dimension checks:	$enable_unitchecks
+*** Dimension checks:	yes
 ***
 *** GSL:		$with_gsl
 ***

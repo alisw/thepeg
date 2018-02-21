@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LesHouchesFileReader.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -428,10 +428,10 @@ void LesHouchesFileReader::doinit() {
 	    ostringstream br;
 	    br << setprecision(13) << brat;
 	    generator()->preinitInterface(dm, "BranchingRatio", "set", br.str());
-	    generator()->preinitInterface(dm, "OnOff", "set", "On");
+	    generator()->preinitInterface(dm, "Active", "set", "Yes");
 	    if(dm->CC()) {
 	      generator()->preinitInterface(dm->CC(), "BranchingRatio", "set", br.str());
-	      generator()->preinitInterface(dm->CC(), "OnOff", "set", "On");
+	      generator()->preinitInterface(dm->CC(), "Active", "set", "Yes");
 	    }
 	    ++nmode;
 	  }
@@ -488,7 +488,6 @@ void LesHouchesFileReader::open() {
   map<string,string> attributes =
     StringUtils::xmlAttributes("LesHouchesEvents", cfile.getline());
   LHFVersion = attributes["version"];
-  //cout << LHFVersion << endl;
   if ( LHFVersion.empty() ) return;
 
   bool readingHeader = false;
@@ -503,15 +502,21 @@ void LesHouchesFileReader::open() {
   bool readingInitWeights = false, readingInitWeights_sc = false;
   string weightinfo;
   while ( cfile.readline() ) {
-    
     // found the init block for multiple weights
-    if(cfile.find("<initrwgt")) { /*cout << "reading weights" << endl;*/ readingInitWeights = true; }
+    if(cfile.find("<initrwgt")) readingInitWeights = true;
     
-     // found end of init block for multiple weights: end the while loop
-    if(cfile.find("</initrwgt")) { readingInitWeights = false; readingInitWeights_sc = false; continue;}
+    // found end of init block for multiple weights: end the while loop
+    if(cfile.find("</initrwgt")) {
+      readingInitWeights = false;
+      readingInitWeights_sc = false;
+      continue;
+    }
 
     // found the end of init block
-    if(cfile.find("</init")) { readingInit = false; break; } 
+    if(cfile.find("</init")) {
+      readingInit = false;
+      break;
+    } 
 
     /* read the weight information block 
      * optionalWeightNames will contain information about the weights
@@ -534,6 +539,7 @@ void LesHouchesFileReader::open() {
 	erase_substr(weightinfo, str_weightgroup);
 	erase_substr(weightinfo, str_arrow);
 	erase_substr(weightinfo, str_newline);
+	continue;
       }
       /* if we are reading a new weightgroup, go on 
        * until we find the end of it
@@ -545,20 +551,28 @@ void LesHouchesFileReader::open() {
 	/* get the name that will be used to identify the scale 
 	 */
 	do {
-	  string sub; isc >> sub;
-	  if(ws==1) { string str_arrow =  ">"; erase_substr(sub, str_arrow); scalename = sub; }
+	  string sub;
+	  isc >> sub;
+	  if(ws==1) {
+	    string str_arrow =  ">";
+	    erase_substr(sub, str_arrow);
+	    scalename = sub;
+	    break;
+	  }
 	  ++ws;
-	} while (isc);
+	}
+	while (isc);
 	/* now get the relevant information
 	 * e.g. scales or PDF sets used
 	 */
 	string startDEL = "'>"; //starting delimiter
 	string stopDEL = "</weight>"; //end delimiter
-	unsigned firstLim = hs.find(startDEL); //find start of delimiter
+	int firstLim = hs.find(startDEL); //find start of delimiter
+	if(firstLim == -1) { startDEL = ">"; firstLim = hs.find(startDEL); }
 //	unsigned lastLim = hs.find(stopDEL); //find end of delimitr
 	string scinfo = hs.substr(firstLim); //define the information for the scale
 	erase_substr(scinfo,stopDEL);
-	erase_substr(scinfo,startDEL);
+	erase_substr(scinfo,startDEL);		
         scinfo = StringUtils::stripws(scinfo);
 	/* fill in the map 
 	 * indicating the information to be appended to each scale
@@ -643,7 +657,6 @@ bool LesHouchesFileReader::doReadEvent() {
   hepeup.XPDWUP.first = hepeup.XPDWUP.second = 0.0;
   optionalWeights.clear();
   optionalWeightsTemp.clear();
-
   // Keep reading lines until we hit the next event or the end of
   // the event block. Save any inbetween lines. Exit if we didn't
   // find an event.
@@ -791,11 +804,20 @@ bool LesHouchesFileReader::doReadEvent() {
     //determine start of MG5 clustering scale information
     if(cfile.find("<clustering")) { readingMG5ClusInfo = true;}
   }
+  string str_quote = "'";
+  string str_doublequote = "\"";
   // loop over the optional weights and add the extra information as found in the init
   for (map<string,double>::const_iterator it=optionalWeightsTemp.begin(); it!=optionalWeightsTemp.end(); ++it){
+    //to avoid issues with inconsistencies of defining the weight ids, remove "" and ''
+    string id_1 = it->first;
+    erase_substr(id_1, str_quote);
+    erase_substr(id_1, str_doublequote);
     for (map<string,string>::const_iterator it2=scalemap.begin(); it2!=scalemap.end(); ++it2){
       //find the scale id in the scale information and add this information
-      if(it->first==it2->first) { 
+      string id_2 = it2->first;
+      erase_substr(id_2, str_quote);
+      erase_substr(id_2, str_doublequote);
+      if(id_1==id_2) {
         string info = it2->second;
 	string str_newline = "\n";
 	erase_substr(info, str_newline);

@@ -247,7 +247,12 @@ void NLORivetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   if( _nevent > 0 && _rivet ) {
     CurrentGenerator::Redirect stdout(cout);
+#if ThePEG_RIVET_VERSION > 2
+    _rivet->setCrossSection(generator()->integratedXSec()/picobarn,
+                            generator()->integratedXSecErr()/picobarn);
+#else
     _rivet->setCrossSection(generator()->integratedXSec()/picobarn);
+#endif
     _rivet->finalize();
 
     string fname = filename;
@@ -263,7 +268,7 @@ void NLORivetAnalysis::dofinish() {
     _rivet->writeData(fname);
   }
   delete _rivet;
-  _rivet = 0;
+  _rivet = nullptr;
 }
 
 void NLORivetAnalysis::doinit() {

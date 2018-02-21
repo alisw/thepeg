@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VertexBase.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_VertexBase_H
@@ -17,6 +17,8 @@
 #include <ThePEG/Repository/EventGenerator.h>
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "VertexBase.fh"
+#include <array>
+
 
 namespace ThePEG {
 namespace Helicity {
@@ -402,9 +404,8 @@ public:
    *  Calculate the kinematics for a n-point vertex
    */
   void calculateKinematics(const vector<Lorentz5Momentum> & p) {
-    unsigned int ix,iy;
-    for(ix=0;ix<p.size();++ix) {
-      for(iy=0;iy<=ix;++ix) {
+    for(size_t ix=0;ix<p.size();++ix) {
+      for(size_t iy=0;iy<=ix;++ix) {
 	_kine[ix][iy]=p[ix]*p[iy];
 	_kine[iy][ix]=_kine[ix][iy];
       }
@@ -486,7 +487,7 @@ private:
   /**
    * Kinematica quantities needed for loop vertices
    */
-  vector<vector<Energy2> > _kine;
+  std::array<std::array<Energy2,5>,5> _kine;
 
   /**
    * Name of vertex

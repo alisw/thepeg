@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VSelector.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 
@@ -41,7 +41,7 @@ WeightType VSelector<T,WeightType>::reweight(WeightType d, const T & t) {
 
 template <typename T, typename WeightType>
 typename VSelector<T,WeightType>::size_type VSelector<T,WeightType>::
-iselect(double rnd, double * remainder) const throw(range_error) {
+iselect(double rnd, double * remainder) const {
   if ( rnd <= 0 )
     throw range_error("Random number out of range in VSelector::select.");
   WeightType sum = rnd*theSum;

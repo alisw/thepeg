@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Parameter.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_Parameter_H
@@ -13,6 +13,7 @@
 
 
 #include "ThePEG/Config/ThePEG.h"
+#include "ThePEG/Utilities/Throw.h"
 #include "InterfaceBase.h"
 #include "Parameter.xh"
 #include "Parameter.fh"
@@ -393,6 +394,11 @@ private:
    * zero, the Type object is written/read directly.
    */
   Type theUnit;
+
+  /**
+   * Helper to check the unit consistency in set() operations
+   */
+  void checkUnitConsistency(string suffix) const;
 
 };
 

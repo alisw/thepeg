@@ -107,8 +107,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(dist_pkgdata_DATA) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -491,7 +490,7 @@ pkglib_LTLIBRARIES = LeptonLeptonPDF.la UnResolvedRemnant.la \
 	GRVBase.la GRV94L.la GRV94M.la WeizsackerWilliamsPDF.la \
 	BudnevPDF.la $(am__append_1)
 @USELHAPDF_TRUE@LHAPDF_SOURCES = LHAPDF6.cc LHAPDF6.h
-@USELHAPDF_TRUE@ThePEGLHAPDF_la_LDFLAGS = $(AM_LDFLAGS) -module $(LHAPDF_LDFLAGS) $(LIBTOOLVERSIONINFO)
+@USELHAPDF_TRUE@ThePEGLHAPDF_la_LDFLAGS = $(AM_LDFLAGS) $(LHAPDF_LDFLAGS) -module -version-info 25:1:0
 @USELHAPDF_TRUE@ThePEGLHAPDF_la_LIBADD = $(LHAPDF_LIBS)
 @USELHAPDF_TRUE@ThePEGLHAPDF_la_SOURCES = $(LHAPDF_SOURCES)
 @USELHAPDF_TRUE@ThePEGLHAPDF_la_CPPFLAGS = $(AM_CPPFLAGS) $(LHAPDF_CPPFLAGS)

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LorentzRSSpinorBar.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_LorentzRSSpinorBar_H
@@ -44,11 +44,7 @@ public:
   /**
    * Default zero constructor, optionally specifying \a t, the type.
    */
-  LorentzRSSpinorBar(SpinorType t = unknown_spinortype) : _type(t) {
-    for(unsigned int ix=0;ix<4;++ix)
-      for(unsigned int iy=0;iy<4;++iy) 
-	_spin[ix][iy]=Value();
-  }
+  LorentzRSSpinorBar(SpinorType t = SpinorType::unknown) : _type(t), _spin() {}
 
   /**
    * Constructor with complex numbers specifying the components,
@@ -62,13 +58,12 @@ public:
 		     complex<Value> c3,complex<Value> d3,
 		     complex<Value> a4,complex<Value> b4,
 		     complex<Value> c4,complex<Value> d4,
-		     SpinorType t=unknown_spinortype)
-    : _type(t) {
-    _spin[0][0]=a1;_spin[1][0]=a2;_spin[2][0]=a3;_spin[3][0]=a4;
-    _spin[0][1]=b1;_spin[1][1]=b2;_spin[2][1]=b3;_spin[3][1]=b4;
-    _spin[0][2]=c1;_spin[1][2]=c2;_spin[2][2]=c3;_spin[3][2]=c4;
-    _spin[0][3]=d1;_spin[1][3]=d2;_spin[2][3]=d3;_spin[3][3]=d4;
-  }
+		     SpinorType t=SpinorType::unknown)
+    : _type(t), _spin{{ {{a1,b1,c1,d1}},
+                        {{a2,b2,c2,d2}},
+                        {{a3,b3,c3,d3}},
+                        {{a4,b4,c4,d4}}
+                      }} {}
   //@}
 
   /** @name Access the components. */
@@ -340,7 +335,7 @@ private:
   /**
    * Storage of the components.
    */
-  complex<Value> _spin[4][4];
+  std::array<std::array<complex<Value>,4>,4> _spin;
 };
 }
 }

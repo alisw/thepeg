@@ -41,14 +41,12 @@ CLEANFILES = .done-all-links
 	mkdir -p ThePEG/Config
 	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) ThePEG
 	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) ThePEG/Config
-	$(LN_S) -f ../../../Config/ThePEG_Qty.h ThePEG/Config
 	touch .done-all-links
 @EMPTY@else
 	@echo "sym-linking header files..."
 	@mkdir -p ThePEG/Config
 	@$(LN_S) -f $(addprefix ../, $(DIRLINKS)) ThePEG
 	@$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) ThePEG/Config
-	@$(LN_S) -f ../../../Config/ThePEG_Qty.h ThePEG/Config
 	@touch .done-all-links
 @EMPTY@endif
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // RhoDMatrix.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_RhoDMatrix_H
@@ -13,6 +13,7 @@
 #include "ThePEG/PDT/PDT.h"
 #include "ThePEG/Helicity/HelicityDefinitions.h"
 #include <cassert>
+#include <array>
 
 namespace ThePEG {
 
@@ -33,7 +34,7 @@ public:
   /**
    * Default constructor with undefined spin.
    */
-  RhoDMatrix() : _spin(), _ispin() {}
+  RhoDMatrix() = default;
 
   /**
    * Standard constructor giving the spin as 2s+1. The matrix starts out averaged, 
@@ -43,9 +44,9 @@ public:
   : _spin(inspin), _ispin(abs(int(inspin))) {
     assert(_ispin <= MAXSPIN);
     // initialize to average
-    for(size_t ix=0; ix<_ispin; ++ix)
-      for(size_t iy=0; iy<_ispin; ++iy)	
-	_matrix[ix][iy] = (average && ix==iy) ? 1./_ispin : 0.;
+    if ( average )
+        for(size_t ix=0; ix<_ispin; ++ix)
+	    _matrix[ix][ix] = 1./_ispin;
   }
   //@}
 
@@ -126,7 +127,7 @@ private:
    */
   // Deliberately not using vector<> to avoid calls to 'new' 
   // from this commonly used class.
-  Complex _matrix[MAXSPIN][MAXSPIN];
+  std::array<std::array<Complex,MAXSPIN>,MAXSPIN> _matrix;
 
 };
 

@@ -3,7 +3,7 @@
 // LHAPDF6.cc is a part of ThePEG - Toolkit for HEP Event Generation
 // Copyright (C) 2014 Leif Lonnblad, David Grellscheid
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -226,7 +226,7 @@ double ThePEG::LHAPDF::xfx(tcPDPtr particle, tcPDPtr parton,
   case g:
     return thePDF->xfxQ2(g,x,Q2);
   case ParticleID::gamma:
-    return 0.;
+    return thePDF->xfxQ2(ParticleID::gamma,x,Q2);
   }
   return 0.0;
 }
@@ -383,7 +383,7 @@ double ThePEG::LHAPDF::xfsx(tcPDPtr particle, tcPDPtr parton,
   case g:
     return thePDF->xfxQ2(g,x,Q2);
   case ParticleID::gamma:
-    return 0.;
+    return thePDF->xfxQ2(ParticleID::gamma,x,Q2);
   }
   return 0.0;
 }
@@ -415,7 +415,7 @@ void ThePEG::LHAPDF::Init() {
 
   static Deleted<LHAPDF> interfacePType
     ("PType",
-     "The LHAPDFv6 interface currently does not support pi or gamma.");
+     "The LHAPDFv6 interface currently does not support pi.");
 
   static Parameter<LHAPDF,string> interfacePDFName
     ("PDFName",
@@ -443,11 +443,11 @@ void ThePEG::LHAPDF::Init() {
 
   static Deleted<LHAPDF> interfaceEnablePartonicGamma
     ("EnablePartonicGamma",
-     "The LHAPDFv6 interface currently does not support pi or gamma.");
+     "Not required in LHAPDFv6.");
 
   static Deleted<LHAPDF> interfacePhotonOption
     ("PhotonOption",
-     "The LHAPDFv6 interface currently does not support pi or gamma.");
+     "Not required in LHAPDFv6.");
 
   static Deleted<LHAPDF> interfaceMaxNSet
     ("MaxNSet",

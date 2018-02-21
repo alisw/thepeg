@@ -115,8 +115,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -652,7 +651,7 @@ VERSIONSTAMP := $(shell hg -R $(top_srcdir) parents --template '"ThePEG {node|sh
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed
-ThePEGStrategy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 20:1:0
+ThePEGStrategy_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 ThePEGStrategy_la_SOURCES = ThePEGStrategy.cc  ThePEGStrategy.h
 
 # Version info should be updated if any interface or persistent I/O

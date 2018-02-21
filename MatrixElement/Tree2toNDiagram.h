@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Tree2toNDiagram.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_Tree2toNDiagram_H
@@ -166,6 +166,13 @@ public:
    * Return the number of space-like partons
    */
   int nSpace() const { return theNSpace; }
+
+  /**
+   * Extend this diagram to accomodate the given number of space-like lines
+   */
+  void resize(size_type nSpace) {
+    theNSpace = max(nSpace,theNSpace);
+  }
 
   /**
    * Return the number of outgoing partons.

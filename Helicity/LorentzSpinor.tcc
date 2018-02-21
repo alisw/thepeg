@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LorentzSpinor.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -93,15 +93,15 @@ template <typename Value>
 LorentzSpinor<Value> LorentzSpinor<Value>::conjugate() const {
   SpinorType new_type;
   switch(_type) {
-  case u_spinortype:
-    new_type=v_spinortype;
+  case SpinorType::u:
+    new_type=SpinorType::v;
     break;
-  case v_spinortype:
-    new_type=u_spinortype;
+  case SpinorType::v:
+    new_type=SpinorType::u;
     break;
-  case unknown_spinortype:
+  case SpinorType::unknown:
   default:
-    new_type=unknown_spinortype;
+    new_type=SpinorType::unknown;
     break;
   }
   return LorentzSpinor<Value>( conj(_spin[3]),

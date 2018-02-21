@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Switch.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -16,12 +16,6 @@
 #include "ThePEG/Utilities/StringUtils.h"
 
 namespace ThePEG {
-
-SwitchOption::SwitchOption(SwitchBase & theSwitch, string newName,
-			   string newDescription, long newValue)
-  : Named(newName), theDescription(newDescription), theValue(newValue) {
-  theSwitch.registerOption(*this);
-}
 
 string SwitchBase::opttag(long opt) const {
   ostringstream ret;

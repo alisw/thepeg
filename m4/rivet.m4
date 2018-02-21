@@ -65,12 +65,14 @@ fi
 
 rivetversion=1
 if test "x$with_rivet" = "xsystem"; then
-   echo $( rivet-config --version ) | grep -q '^1\.' || rivetversion=2
+   echo $( rivet-config --version ) | grep -q '^2\.' && rivetversion=2
+   echo $( rivet-config --version ) | grep -q '^3\.' && rivetversion=3
 elif test "x$with_rivet" != "xno"; then
-   echo $( "$with_rivet/bin/rivet-config" --version ) | grep -q '^1\.' || rivetversion=2
+   echo $( "$with_rivet/bin/rivet-config" --version ) | grep -q '^2\.' && rivetversion=2
+   echo $( "$with_rivet/bin/rivet-config" --version ) | grep -q '^3\.' && rivetversion=3
 fi
 
-AC_DEFINE_UNQUOTED([ThePEG_RIVET_VERSION], [$rivetversion], [Rivet histogram variant (1=AIDA or 2=YODA)])
+AC_DEFINE_UNQUOTED([ThePEG_RIVET_VERSION], [$rivetversion], [Rivet major version (1,2,3)])
 
 AM_CONDITIONAL(HAVE_RIVET,[test "x$with_rivet" != "xno"])
 AC_SUBST(RIVETINCLUDE)

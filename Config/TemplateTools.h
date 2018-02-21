@@ -1,13 +1,15 @@
 // -*- C++ -*-
 //
 // TemplateTools.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2011 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Template_Tools_H
 #define Template_Tools_H
+
+#include <type_traits>
 
 /**
  * @file TemplateTools.h 
@@ -79,13 +81,16 @@ struct TypeTraits
   enum { hasDimension = false };
   /// Implementation selector
   typedef StandardT DimType;
-  /// Base unit
-  static const double baseunit;
+  /// Base unit for arithmetic types
+  // construction with extra U type is necessary to make
+  // enable_if work before concepts are supported properly
+  template <typename U = T>
+  static constexpr typename
+  std::enable_if< (std::is_arithmetic<U>::value && 
+                   std::is_same<U, T>::value), U>::type 
+  baseunit() 
+  { return static_cast<U>(1); }
 };
-
-/// Built-in types have no dimension.
-template<typename T>
-const double TypeTraits<T>::baseunit = T(1);
 
 }
 

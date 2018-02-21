@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // DecayMode.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -649,6 +649,16 @@ void DecayMode::Init() {
     (interfaceOn, "Off", "The decay channel is switched off.", 0);
   interfaceOn.setHasDefault(false);
 
+  static Switch<DecayMode> interfaceActive
+    ("Active",
+     "Indicates if the decay mode is switched on or off.",
+     0, 0, false, false, &DecayMode::setOn, &DecayMode::getOn);
+  static SwitchOption interfaceActiveYes
+    (interfaceActive, "Yes", "The decay channel is switched on.", 1);
+  static SwitchOption interfaceActiveNo
+    (interfaceActive, "No", "The decay channel is switched off.", 0);
+  interfaceActive.setHasDefault(false);
+
   static Reference<DecayMode,Decayer> interfaceDecayer
     ("Decayer",
      "The ThePEG::Decayer object responsible for performing this decay.",
@@ -658,6 +668,7 @@ void DecayMode::Init() {
   interfaceBrat.rank(10);
   interfaceDecayer.rank(9);
   interfaceOn.rank(8);
+  interfaceActive.rank(8);
 
 }
 
@@ -678,8 +689,3 @@ DecModRebind::DecModRebind(string tag, string obj) {
 	     << "the object '" << obj << "' refered to lacked a translation.";
   severity(abortnow);
 }
-
-ThePEG_IMPLEMENT_MULTISET(tPDPtr,ParticleMSet)
-ThePEG_IMPLEMENT_MULTISET(tPMPtr,MatcherMSet)
-ThePEG_IMPLEMENT_MULTISET(tDMPtr,ModeMSet)
-

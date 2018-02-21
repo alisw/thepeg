@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Unitsystem.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad, David Grellscheid
+// Copyright (C) 1999-2017 Leif Lonnblad, David Grellscheid
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_Units_H
@@ -13,7 +13,11 @@
 #include "ThePEG/Vectors/LorentzVector.fh"
 #include "ThePEG/Vectors/ThreeVector.fh"
 #include "ThePEG/Vectors/Transverse.fh"
-#include "ThePEG_Qty.h"
+
+#include "PhysicalQty.h"
+#include "PhysicalQtyOps.h"
+#include "PhysicalQtyComplex.h"
+
 
 namespace ThePEG {
 
@@ -31,37 +35,37 @@ namespace ThePEG {
 namespace Units {
 
 /** Energy. */
-typedef QTY<0,1,0>::Type Energy;
+typedef Qty<0,1,0> Energy;
 
 /** Mass has the same unit as Energy <=> c == 1. */
 typedef Energy Mass;
 
 /** Length. */
-typedef QTY<1,0,0>::Type Length;
+typedef Qty<1,0,0> Length;
 
 /** Time has the same unit as Length. <=> c == 1. */
 typedef Length Time;
 
 /** Inverse Length. */
-typedef QTY<-1,0,0>::Type InvLength;
+typedef Qty<-1,0,0> InvLength;
 
 /** Velocities are dimensionless fractions of c. */
 typedef double Velocity;
 
 /** Charge. */
-typedef QTY<0,0,1>::Type Charge;
+typedef Qty<0,0,1> Charge;
 
 /** Angular momentum. */
-typedef QTY<1,1,0>::Type AngularMomentum;
+typedef Qty<1,1,0> AngularMomentum;
 
 /** Tension. */
-typedef QTY<-1,1,0>::Type Tension;
+typedef Qty<-1,1,0> Tension;
 
 /** Area will be assumed to be Length\f$^2\f$. */
-typedef QTY<2,0,0>::Type Area;
+typedef Qty<2,0,0> Area;
 
 /** Inverse Area. */
-typedef QTY<-2,0,0>::Type InvArea;
+typedef Qty<-2,0,0> InvArea;
 
 /** Cross section is an area. */
 typedef Area CrossSection;
@@ -71,46 +75,46 @@ typedef Area CrossSection;
  * Even higher powers can be created with similar typedefs.
  */
 //@{
-typedef QTY<0, 2, 0>::Type Energy2;
-typedef QTY<0, 3, 0>::Type Energy3;
-typedef QTY<0, 4, 0>::Type Energy4;
-typedef QTY<0, 5, 0>::Type Energy5;
-typedef QTY<0, 6, 0>::Type Energy6;
-typedef QTY<0, 7, 0>::Type Energy7;
-typedef QTY<0, 8, 0>::Type Energy8;
-typedef QTY<0, 9, 0>::Type Energy9;
-typedef QTY<0,10, 0>::Type Energy10;
-typedef QTY<0,11, 0>::Type Energy11;
-typedef QTY<0,12, 0>::Type Energy12;
+typedef Qty<0, 2, 0> Energy2;
+typedef Qty<0, 3, 0> Energy3;
+typedef Qty<0, 4, 0> Energy4;
+typedef Qty<0, 5, 0> Energy5;
+typedef Qty<0, 6, 0> Energy6;
+typedef Qty<0, 7, 0> Energy7;
+typedef Qty<0, 8, 0> Energy8;
+typedef Qty<0, 9, 0> Energy9;
+typedef Qty<0,10, 0> Energy10;
+typedef Qty<0,11, 0> Energy11;
+typedef Qty<0,12, 0> Energy12;
 
-typedef QTY<0, 1,0, 1,2,1>::Type SqrtEnergy;
-typedef QTY<0,-1,0, 1,2,1>::Type InvSqrtEnergy;
+typedef Qty<0, 1,0, 1,2,1> SqrtEnergy;
+typedef Qty<0,-1,0, 1,2,1> InvSqrtEnergy;
 
-typedef QTY<0, -1, 0>::Type InvEnergy;
-typedef QTY<0, -2, 0>::Type InvEnergy2;
-typedef QTY<0, -3, 0>::Type InvEnergy3;
-typedef QTY<0, -4, 0>::Type InvEnergy4;
-typedef QTY<0, -5, 0>::Type InvEnergy5;
-typedef QTY<0, -6, 0>::Type InvEnergy6;
-typedef QTY<0, -7, 0>::Type InvEnergy7;
-typedef QTY<0, -8, 0>::Type InvEnergy8;
-typedef QTY<0, -9, 0>::Type InvEnergy9;
-typedef QTY<0,-10, 0>::Type InvEnergy10;
-typedef QTY<0,-11, 0>::Type InvEnergy11;
-typedef QTY<0,-12, 0>::Type InvEnergy12;
+typedef Qty<0, -1, 0> InvEnergy;
+typedef Qty<0, -2, 0> InvEnergy2;
+typedef Qty<0, -3, 0> InvEnergy3;
+typedef Qty<0, -4, 0> InvEnergy4;
+typedef Qty<0, -5, 0> InvEnergy5;
+typedef Qty<0, -6, 0> InvEnergy6;
+typedef Qty<0, -7, 0> InvEnergy7;
+typedef Qty<0, -8, 0> InvEnergy8;
+typedef Qty<0, -9, 0> InvEnergy9;
+typedef Qty<0,-10, 0> InvEnergy10;
+typedef Qty<0,-11, 0> InvEnergy11;
+typedef Qty<0,-12, 0> InvEnergy12;
 //@}
 
 /** CrossSection*Energy2. */
-typedef QTY<2,2,0>::Type Energy2XSec;
+typedef Qty<2,2,0> Energy2XSec;
 
 /** CrossSection/Energy2. */
-typedef QTY<2,-2,0>::Type DiffXSec;
+typedef Qty<2,-2,0> DiffXSec;
 
 /** CrossSection/Energy4. */
-typedef QTY<2,-4,0>::Type Diff2XSec;
+typedef Qty<2,-4,0> Diff2XSec;
 
 /** CrossSection/Energy6 */
-typedef QTY<2,-6,0>::Type Diff3XSec;
+typedef Qty<2,-6,0> Diff3XSec;
 
 /** Scale is the same as a squared energy. */
 typedef Energy2 Scale;
@@ -152,38 +156,84 @@ typedef Transverse<Energy> TransverseMomentum;
 
 /// @name Pre-defined basic units.
 //@{
-const Length millimeter = TypeTraits<Length>::baseunit;
-const Energy MeV = TypeTraits<Energy>::baseunit;
-const Charge eplus = TypeTraits<Charge>::baseunit;
+constexpr Length operator "" _mm( long double x ) {
+  return Length{Length::baseunit(), static_cast<double>(x)};
+}
+constexpr Length operator "" _mm( unsigned long long x ) {
+  return Length{Length::baseunit(), static_cast<double>(x)};
+}
 
-const Energy keV = 1.0e-3 * MeV;
-const Energy GeV = 1.0e3  * MeV;
-const Energy TeV = 1.0e6  * MeV;
-
-const Energy2 MeV2 = MeV * MeV;
-const Energy2 GeV2 = GeV * GeV;
-const InvEnergy InvGeV = 1/GeV;
-
-const Length meter = 1.0e3 * millimeter;
-const Length mm = millimeter;
-const Length centimeter = 10.0*millimeter;
-const Length micrometer = 1.0e-3  * millimeter;
-const Length nanometer  = 1.0e-6  * millimeter;
-const Length picometer  = 1.0e-9  * millimeter;
-const Length femtometer = 1.0e-12 * millimeter;
+constexpr Length meter      = 1.0e+3_mm;
+constexpr Length millimeter = 1_mm;
+constexpr Length mm         = 1_mm;
+constexpr Length centimeter = 10_mm;
+constexpr Length micrometer = 1.0e-3_mm;
+constexpr Length nanometer  = 1.0e-6_mm;
+constexpr Length picometer  = 1.0e-9_mm;
+constexpr Length femtometer = 1.0e-12_mm;
  
-const Area picobarn  = 1.0e-40 * meter * meter;
-const Area nanobarn  = 1.0e3  * picobarn;
-const Area microbarn = 1.0e6  * picobarn;
-const Area millibarn = 1.0e9  * picobarn;
-const Area barn      = 1.0e12 * picobarn; 
-const Area femtobarn = 1.0e-3 * picobarn;
+constexpr Energy operator "" _MeV( long double x ) {
+  return Energy{Energy::baseunit(), static_cast<double>(x)};
+}
+constexpr Energy operator "" _MeV( unsigned long long x ) {
+  return Energy{Energy::baseunit(), static_cast<double>(x)};
+}
+
+constexpr Energy operator "" _GeV( long double x ) {
+  return Energy{1000_MeV, static_cast<double>(x)};
+}
+constexpr Energy operator "" _GeV( unsigned long long x ) {
+  return Energy{1000_MeV, static_cast<double>(x)};
+}
+
+constexpr Energy keV = 1.0e-3_MeV;
+constexpr Energy MeV = 1_MeV;
+constexpr Energy GeV = 1_GeV;
+constexpr Energy TeV = 1.0e+6_MeV;
+
+
+
+constexpr Energy2 operator "" _MeV2( long double x ) {
+  return Energy2{Energy2::baseunit(),	static_cast<double>(x)};
+}
+constexpr Energy2 operator "" _MeV2( unsigned long long x ) {
+  return Energy2{Energy2::baseunit(),	static_cast<double>(x)};
+}
+
+constexpr Energy2 operator "" _GeV2( long double x ) {
+  return Energy2{1.0e+6_MeV2, static_cast<double>(x)};
+}
+constexpr Energy2 operator "" _GeV2( unsigned long long x ) {
+  return Energy2{1.0e+6_MeV2, static_cast<double>(x)};
+}
+
+constexpr Energy2 MeV2 = 1_MeV2;
+constexpr Energy2 GeV2 = 1_GeV2;
+
+constexpr InvEnergy InvGeV = 1/GeV;
+
+
+constexpr Area operator "" _pb( long double x ) {
+  return Area{1.0e-34 * Area::baseunit(), static_cast<double>(x)};
+}
+constexpr Area operator "" _pb( unsigned long long x ) {
+  return Area{1.0e-34 * Area::baseunit(), static_cast<double>(x)};
+}
+
+constexpr Area femtobarn = 1.0e-03_pb;
+constexpr Area picobarn  = 1_pb;
+constexpr Area nanobarn  = 1.0e+03_pb;
+constexpr Area microbarn = 1.0e+06_pb;
+constexpr Area millibarn = 1.0e+09_pb;
+constexpr Area barn      = 1.0e+12_pb; 
+
+constexpr Charge eplus = Charge::baseunit();
 //@}
 
 /// Planck's constant times c (PDG 2006 value 197.326968(17) MeV fm)
-const QTY<1,1,0>::Type hbarc = 197.326968e-15 * MeV * meter;
+constexpr Qty<1,1,0> hbarc = 197.326968e-15 * MeV * meter;
 /// Planck's constant (PDG 2006 value 197.326968(17) MeV fm)
-const QTY<1,1,0>::Type hbar_Planck = hbarc / 1.0;
+constexpr Qty<1,1,0> hbar_Planck = hbarc / 1.0; // c is one
 }
 
 /** 
@@ -193,19 +243,19 @@ const QTY<1,1,0>::Type hbar_Planck = hbarc / 1.0;
 namespace UnitRemoval {
   /// @name Helper units to make breaks of unit consistency explicit.
   //@{
-  const Units::Energy E = Units::MeV;
+  constexpr Units::Energy E = Units::Energy::baseunit();
 
-  const Units::Energy2 E2 = E*E;
-  const Units::Energy3 E3 = E*E2;
-  const Units::Energy4 E4 = E2*E2;
+  constexpr Units::Energy2 E2 = E*E;
+  constexpr Units::Energy3 E3 = E*E2;
+  constexpr Units::Energy4 E4 = E2*E2;
 
-  const Units::InvEnergy InvE = 1.0/E;
-  const Units::InvEnergy2 InvE2 = 1.0/E2;
-  const Units::InvEnergy3 InvE3 = 1.0/E3;
-  const Units::InvEnergy4 InvE4 = 1.0/E4;
+  constexpr Units::InvEnergy InvE = 1.0/E;
+  constexpr Units::InvEnergy2 InvE2 = 1.0/E2;
+  constexpr Units::InvEnergy3 InvE3 = 1.0/E3;
+  constexpr Units::InvEnergy4 InvE4 = 1.0/E4;
 
-  const Units::SqrtEnergy SqrtE = sqrt(E);
-  const Units::InvSqrtEnergy InvSqrtE = 1.0/sqrt(E);
+  constexpr Units::SqrtEnergy SqrtE = Units::SqrtEnergy::baseunit();
+  constexpr Units::InvSqrtEnergy InvSqrtE = Units::InvSqrtEnergy::baseunit();
   //@}
 }
 

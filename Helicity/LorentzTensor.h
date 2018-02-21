@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LorentzTensor.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_LorentzTensor_H
@@ -43,11 +43,7 @@ public:
   /**
    * Default zero constructor.
    */
-  LorentzTensor()  {
-    for(unsigned int ix=0;ix<4;++ix)
-      for(unsigned int iy=0;iy<4;++iy)
-	_tensor[ix][iy]=Value();
-  }
+  LorentzTensor() = default;
 
   /**
    * Constructor specifyign all components.
@@ -59,13 +55,11 @@ public:
 		complex<Value> zx, complex<Value> zy,
 		complex<Value> zz, complex<Value> zt,
 		complex<Value> tx, complex<Value> ty,
-		complex<Value> tz, complex<Value> tt){
-    _tensor[0][0]=xx;_tensor[0][1]=xy;_tensor[0][2]=xz;_tensor[0][3]=xt;
-    _tensor[1][0]=yx;_tensor[1][1]=yy;_tensor[1][2]=yz;_tensor[1][3]=yt;
-    _tensor[2][0]=zx;_tensor[2][1]=zy;_tensor[2][2]=zz;_tensor[2][3]=zt;
-    _tensor[3][0]=tx;_tensor[3][1]=ty;_tensor[3][2]=tz;_tensor[3][3]=tt;
-  }
-
+		complex<Value> tz, complex<Value> tt)
+  : _tensor{{ {{xx,xy,xz,xt}},
+              {{yx,yy,yz,yt}},
+              {{zx,zy,zz,zt}},
+              {{tx,ty,tz,tt}} }} {}
   /**
    * Constructor in terms of two polarization vectors.
    */
@@ -428,7 +422,7 @@ private:
   /**
    * The components.
    */
-  complex<Value> _tensor[4][4];
+  std::array<std::array<complex<Value>,4>,4> _tensor;
 
 };
 

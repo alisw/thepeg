@@ -2,11 +2,50 @@ ThePEG News	-*- outline -*-
 ===============================
 
 Numbered bugs can be found at
- http://projects.hepforge.org/herwig/trac/ticket/NN
+ https://herwig.hepforge.org/trac/ticket/NN
 where NN is the bug number.
 
 The latest version of ThePEG can be found at http://www.thep.lu.se/ThePEG
-or at http:///projects.hepforge.org/herwig/versions
+or at https:///herwig.hepforge.org/
+
+
+
+* ThePEG-2.1.2 release: 2017-11-01
+
+** Allow LHAPDF6 interface to return photon pdf.
+
+** Sign fix in GeneralVVSVertex
+
+** Fix multiple weight reading from LHE files
+
+** Preparations for Rivet 3
+
+
+
+* ThePEG-2.1.1 release: 2017-07-14
+
+** Added missing evaluate() option to GeneralVVSVertex
+
+** More robust reading of LHE files
+
+** Warn about duplicate PDG names in user input
+
+** Write current timestamp into log files
+
+** Calling 'read' in an input file will no longer change the 
+   repository directory you're in
+
+
+
+* ThePEG-2.1.0 release: 2017-05-19
+
+** Transition to C++-11 code, building with C++-98 is no longer possible
+
+** Interfaces with two choices now consistently accept Yes/No as answer
+
+** Several smaller bug fixes and additions, to allow new features in Herwig 7.1
+
+
 
 * ThePEG-2.0.4 release: 2016-10-25
 

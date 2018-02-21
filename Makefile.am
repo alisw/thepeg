@@ -11,7 +11,7 @@ SUBDIRS = $(MAINDIRS) $(JAVADIR)
 
 EXTRA_DIST = GUIDELINES
 
-## DISTCHECK_CONFIGURE_FLAGS = --enable-unitchecks --without-lhapdf --with-gsl=$(GSLPATH)
+DISTCHECK_CONFIGURE_FLAGS = --without-lhapdf --with-gsl=$(GSLPATH)
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Exception.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_Exception_H
@@ -94,7 +94,7 @@ public:
   /**
    * The destructor
    */
-  virtual ~Exception() throw();
+  virtual ~Exception() noexcept;
 
 public:
 
@@ -131,7 +131,7 @@ public:
   /**
    * Return the error message.
    */
-  virtual const char* what() const throw() {
+  virtual const char* what() const noexcept {
     static string str;
     str = message();
     return str.c_str();

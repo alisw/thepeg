@@ -104,8 +104,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
@@ -122,7 +121,8 @@ am__objects_1 = libThePEGUtilities_la-SimplePhaseSpace.lo \
 	libThePEGUtilities_la-CFileLineReader.lo \
 	libThePEGUtilities_la-XSecStat.lo \
 	libThePEGUtilities_la-CFile.lo \
-	libThePEGUtilities_la-DebugItem.lo
+	libThePEGUtilities_la-DebugItem.lo \
+	libThePEGUtilities_la-ColourOutput.lo
 am__objects_2 =
 am__objects_3 = $(am__objects_2)
 am_libThePEGUtilities_la_OBJECTS = $(am__objects_1) $(am__objects_3)
@@ -379,16 +379,16 @@ top_srcdir = @top_srcdir@
 mySOURCES = SimplePhaseSpace.cc Debug.cc DescriptionList.cc Maths.cc \
           Direction.cc DynamicLoader.cc StringUtils.cc \
           Exception.cc ClassDescription.cc CFileLineReader.cc \
-          XSecStat.cc CFile.cc DebugItem.cc
+          XSecStat.cc CFile.cc DebugItem.cc ColourOutput.cc
 
 DOCFILES = ClassDescription.h ClassTraits.h  Debug.h DescriptionList.h \
            HoldFlag.h Interval.h Maths.h Rebinder.h Selector.h \
            SimplePhaseSpace.h Triplet.h Direction.h UtilityBase.h \
            TypeInfo.h DynamicLoader.h UnitIO.h EnumIO.h \
-           DIterator.h StringUtils.h Exception.h Named.h \
+           StringUtils.h Exception.h Named.h \
            VSelector.h LoopGuard.h ObjectIndexer.h \
            CFileLineReader.h CompSelector.h XSecStat.h Throw.h MaxCmp.h \
-	   Level.h Current.h CFile.h DescribeClass.h DebugItem.h AnyReference.h
+	   Level.h Current.h CFile.h DescribeClass.h DebugItem.h AnyReference.h ColourOutput.h
 
 INCLUDEFILES = $(DOCFILES) ClassDescription.fh \
                Interval.fh Interval.tcc Rebinder.fh \
@@ -459,6 +459,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-CFile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-CFileLineReader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-ClassDescription.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-ColourOutput.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-Debug.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-DebugItem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libThePEGUtilities_la-DescriptionList.Plo@am__quote@
@@ -584,6 +585,13 @@ libThePEGUtilities_la-DebugItem.lo: DebugItem.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DebugItem.cc' object='libThePEGUtilities_la-DebugItem.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libThePEGUtilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libThePEGUtilities_la-DebugItem.lo `test -f 'DebugItem.cc' || echo '$(srcdir)/'`DebugItem.cc
+
+libThePEGUtilities_la-ColourOutput.lo: ColourOutput.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libThePEGUtilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libThePEGUtilities_la-ColourOutput.lo -MD -MP -MF $(DEPDIR)/libThePEGUtilities_la-ColourOutput.Tpo -c -o libThePEGUtilities_la-ColourOutput.lo `test -f 'ColourOutput.cc' || echo '$(srcdir)/'`ColourOutput.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libThePEGUtilities_la-ColourOutput.Tpo $(DEPDIR)/libThePEGUtilities_la-ColourOutput.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ColourOutput.cc' object='libThePEGUtilities_la-ColourOutput.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libThePEGUtilities_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libThePEGUtilities_la-ColourOutput.lo `test -f 'ColourOutput.cc' || echo '$(srcdir)/'`ColourOutput.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

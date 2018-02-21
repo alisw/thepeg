@@ -144,7 +144,7 @@ void MixedParticleData::setZPhase(double m) {
   if ( synchronized() && apd ) apd->_zphase = m;
 }
 
-void MixedParticleData::doinit() throw(InitException) {
+void MixedParticleData::doinit() {
   ParticleData::doinit();
   // calculate the complex parameters from the magnitudes and phases
   // and x and y from massive parameters

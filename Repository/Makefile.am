@@ -36,7 +36,7 @@ versionstamp.inc: update_versionstamp
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed
-ThePEGStrategy_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 20:1:0
+ThePEGStrategy_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 ThePEGStrategy_la_SOURCES = ThePEGStrategy.cc  ThePEGStrategy.h
 
 # Version info should be updated if any interface or persistent I/O

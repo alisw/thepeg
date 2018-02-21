@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Repository.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -29,6 +29,7 @@
 #include "ThePEG/Utilities/StringUtils.h"
 
 #include <iterator>
+#include <chrono>
 
 #include <config.h>
 
@@ -694,7 +695,11 @@ string Repository::exec(string command, ostream & os) {
       istringstream is(StringUtils::cdr(command));
       readSetup(obj, is);
       // A particle may have been registered before but under the wrong id().
-      registerParticle(dynamic_ptr_cast<PDPtr>(obj));
+      PDPtr pd = dynamic_ptr_cast<PDPtr>(obj);
+      if(pd) {
+	registerParticle(pd);
+	checkDuplicatePDGName(pd);
+      }
       return "";
     }
     if ( verb == "decaymode" ) {
@@ -729,8 +734,15 @@ string Repository::exec(string command, ostream & os) {
       return "";
     }
     if ( verb == "read" ) {
+      // remember directory we're in
+      string cwd = directoryStack().back();
       string filename = StringUtils::car(command);
-      return read(filename, os);
+      string msg = read(filename, os);
+      // Return to the original directory, so that
+      // calling 'read' in an input file will not change the 
+      // repository directory you're in
+      ChangeDirectory(cwd);
+      return msg;
     }
     if ( verb == "load" ) {
       return load(StringUtils::car(command));
@@ -1081,6 +1093,30 @@ Repository::~Repository() {
   }
 }
 
+void Repository::checkDuplicatePDGName(PDPtr pd) {
+  string name = pd->PDGName();
+  for ( ParticleMap::iterator pit = defaultParticles().begin();
+	pit != defaultParticles().end(); ++pit ) {
+    if( pit->second == pd) continue;
+    if ( pit->second->PDGName() == name ) {
+      std::cerr << "Using duplicate PDGName " << pd->PDGName()
+		<< " for a new particle.\n This can cause problems and is not "
+		<< "recommended.\n If this second particle is a new particle "
+		<< "in a BSM Model we recommend you change the name of the particle.\n";
+    }
+  }
+  for ( ParticleDataSet::iterator pit = particles().begin();
+	pit != particles().end(); ++pit ) {
+    if( *pit == pd) continue;
+    if ( (**pit).PDGName() == name ) {
+      std::cerr << "Using duplicate PDGName " << pd->PDGName()
+		<< " for a new particle.\n This can cause problems and is not "
+		<< "recommended.\n If this second particle is a new particle "
+		<< "in a BSM Model we recommend you change the name of the particle.\n";
+    }
+  }
+}
+
 int Repository::ninstances = 0;
 
 namespace {
@@ -1094,9 +1130,21 @@ string Repository::version() {
 }
 
 string Repository::banner() {
+  const auto now    = std::chrono::system_clock::now();
+  const auto now_c  = std::chrono::system_clock::to_time_t(now);
+  string time = ">>>> " ;
+  time += StringUtils::stripws(string(std::ctime(&now_c))) + ' ';
+  time += string(max(0,74 - int(time.size())), ' ');
+  time += "<<<<";
+
   string line = ">>>> Toolkit for HEP Event Generation - "
-    + Repository::version() + " ";
+    + Repository::version() + ' ';
   line += string(max(0,78 - int(line.size())), '<');
-  return string(78, '>') + "\n" + line + "\n" + string(78, '<') + "\n";
+
+  string block = string(78, '>') + '\n' 
+                 + line + '\n' 
+                 + time + '\n'
+                 + string(78, '<') + '\n';
+  return block;
 }
 

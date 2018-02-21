@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ClusterCollapser.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -24,6 +24,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Utilities/EnumIO.h"
+#include "ThePEG/Utilities/Throw.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "ClusterCollapser.tcc"
@@ -374,14 +375,23 @@ collapse(tStepPtr newStep, const ColourSinglet & cs,
     LorentzMomentum pcomp =
       Utilities::sumMomentum(comp.begin(), comp.end() - 1);
     Energy2 s = (pcomp + h->momentum()).m2();
-    Energy pnew = SimplePhaseSpace::getMagnitude(s, mh, pcomp.m());
-    h->set5Momentum(R*Lorentz5Momentum(ZERO, ZERO,
-				       pnew, sqrt(sqr(pnew) + sqr(mh)), mh));
 
-    comp.pop_back();
-    R = R*LorentzRotation(0.0, 0.0, -(pcomp.e()*pcomp.z() +
-				      sqrt(sqr(pnew) + pcomp.m2())*pnew)/
-			             (sqr(pnew) + sqr(pcomp.e())));
+    try {    
+      Energy pnew = SimplePhaseSpace::getMagnitude(s, mh, pcomp.m());
+      h->set5Momentum(R*Lorentz5Momentum(ZERO, ZERO,
+					 pnew, sqrt(sqr(pnew) + sqr(mh)), mh));
+      
+      comp.pop_back();
+      R = R*LorentzRotation(0.0, 0.0, -(pcomp.e()*pcomp.z() +
+					sqrt(sqr(pnew) + pcomp.m2())*pnew)/
+			    (sqr(pnew) + sqr(pcomp.e())));
+    }
+    catch ( ... ) {
+      Throw<Exception>()
+	// *** TODO *** Check cicumstances for this.
+	<< "Impossible kinematics found in Ariadne5::DipoleState::purgeGluon."
+	<< Exception::eventerror;
+    }    
     Utilities::transform(comp, R);
   }
 

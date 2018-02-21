@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ColourLines.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -76,8 +76,8 @@ void ColourLines::connect(const tPVector & partons) const {
       } else if ( -line[i].first > np ) {
 	// this is a colour sink.
 	int is = -line[i].first - np;
-	sources.resize(is);
-	sources[is - 1].push_back(cline);
+	sinks.resize(is);
+	sinks[is - 1].push_back(cline);
       } else if ( line[i].first > 0 ) {
 	// This is a coloured particle.
 	if ( !partons[line[i].first - 1]->hasColour() )
@@ -106,7 +106,6 @@ void ColourLines::connect(const tPVector & partons) const {
       }
     }
   }
-
   // Now connect up all lines steming from sources.
   for ( VertexVector::size_type i = 0; i < sources.size(); ++i ) {
     if ( sources[i].empty() ) continue;

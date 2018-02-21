@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // MEBase.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -149,6 +149,8 @@ MEBase::DiagramIndex MEBase::diagram(const DiagramVector & dv) const {
 const ColourLines & MEBase::
 selectColourGeometry(tcDiagPtr diag) const {
   Selector<const ColourLines *> sel = colourGeometries(diag);
+  if ( sel.size() == 1 )
+    return *sel.begin()->second;
   return *sel.select(rnd());
 }
 

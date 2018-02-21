@@ -104,8 +104,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -177,8 +176,8 @@ ReweightMinPT_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(LDFLAGS) -o $@
 libThePEGME_la_LIBADD =
 am__objects_1 = Amplitude.lo ColourLines.lo DiagramBase.lo \
-	Tree2toNDiagram.lo MEBase.lo MEGroup.lo ReweightBase.lo \
-	ME2to2Base.lo ME2to2QCD.lo
+	Tree2toNDiagram.lo BlobDiagram.lo MEBase.lo BlobMEBase.lo \
+	MEGroup.lo ReweightBase.lo ME2to2Base.lo ME2to2QCD.lo
 am__objects_2 =
 am__objects_3 = $(am__objects_2)
 am_libThePEGME_la_OBJECTS = $(am__objects_1) $(am__objects_3)
@@ -432,12 +431,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-mySOURCES = Amplitude.cc ColourLines.cc DiagramBase.cc Tree2toNDiagram.cc \
-            MEBase.cc MEGroup.cc ReweightBase.cc ME2to2Base.cc ME2to2QCD.cc
+mySOURCES = Amplitude.cc ColourLines.cc DiagramBase.cc Tree2toNDiagram.cc BlobDiagram.cc \
+            MEBase.cc BlobMEBase.cc MEGroup.cc ReweightBase.cc ME2to2Base.cc ME2to2QCD.cc
 
 myQCDSOURCES = 
-DOCFILES = Amplitude.h ColourLines.h DiagramBase.h Tree2toNDiagram.h MEBase.h \
-           MEGroup.h ReweightBase.h ME2to2Base.h ME2to2QCD.h
+DOCFILES = Amplitude.h ColourLines.h DiagramBase.h Tree2toNDiagram.h BlobDiagram.h MEBase.h \
+           BlobMEBase.h MEGroup.h ReweightBase.h ME2to2Base.h ME2to2QCD.h
 
 INCLUDEFILES = $(DOCFILES) ColourLines.xh \
                DiagramBase.xh DiagramBase.fh \
@@ -583,6 +582,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Amplitude.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobDiagram.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobMEBase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ColourLines.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DiagramBase.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ME2to2Base.Plo@am__quote@

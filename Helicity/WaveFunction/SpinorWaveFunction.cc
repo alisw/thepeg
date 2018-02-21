@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // SpinorWaveFunction.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -109,7 +109,7 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel) {
     }
   }
   // now finally we can construct the spinors
-  _wf = LorentzSpinor<double>( (dir==incoming) ? u_spinortype : v_spinortype);
+  _wf = LorentzSpinor<double>( (dir==incoming) ? SpinorType::u : SpinorType::v);
   _wf[0]=upper*hel_wf[0]*UnitRemoval::InvSqrtE;
   _wf[1]=upper*hel_wf[1]*UnitRemoval::InvSqrtE;
   _wf[2]=lower*hel_wf[0]*UnitRemoval::InvSqrtE;
@@ -139,8 +139,8 @@ calculateWaveFunctions(vector<LorentzSpinor<SqrtEnergy> > & waves,
     }
     else {
       inspin->decay();
-      if( (particle->id()>0&&inspin->getDecayBasisState(0).Type()!=u_spinortype) || 
-	  (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=v_spinortype)) {
+      if( (particle->id()>0&&inspin->getDecayBasisState(0).Type()!=SpinorType::u) || 
+	  (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=SpinorType::v)) {
 	waves[0] = inspin->getDecayBasisState(0).conjugate();
 	waves[1] = inspin->getDecayBasisState(1).conjugate();
       }
@@ -176,8 +176,8 @@ calculateWaveFunctions(vector<SpinorWaveFunction> & waves,
     }
     else {
       inspin->decay();
-      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=u_spinortype) ||
-	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=v_spinortype)) {
+      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=SpinorType::u) ||
+	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=SpinorType::v)) {
 	for(unsigned int ix=0;ix<2;++ix)
 	  waves[ix] = SpinorWaveFunction(particle,
 					 inspin->getDecayBasisState(ix).conjugate(),dir);
@@ -216,8 +216,8 @@ calculateWaveFunctions(vector<LorentzSpinor<SqrtEnergy> > & waves,
     }
     else {
       inspin->decay();
-      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=u_spinortype) ||
-	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=v_spinortype)) {
+      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=SpinorType::u) ||
+	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=SpinorType::v)) {
 	waves[0] = inspin->getDecayBasisState(0).conjugate();
 	waves[1] = inspin->getDecayBasisState(1).conjugate();
       }
@@ -257,8 +257,8 @@ calculateWaveFunctions(vector<SpinorWaveFunction> & waves,
     }
     else {
       inspin->decay();
-      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=u_spinortype) ||
-	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=v_spinortype)) {
+      if((particle->id()>0&&inspin->getDecayBasisState(0).Type()!=SpinorType::u) ||
+	 (particle->id()<0&&inspin->getDecayBasisState(0).Type()!=SpinorType::v)) {
 	for(unsigned int ix=0;ix<2;++ix)
 	  waves[ix] = SpinorWaveFunction(particle,
 					 inspin->getDecayBasisState(ix).conjugate(),dir);

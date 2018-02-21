@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Throw.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_Throw_H
@@ -29,8 +29,8 @@ namespace ThePEG {
  * object is treated as a warning which is logged with the current
  * EventGenerator. If no current EventGenerator is present the warning
  * message is instead written to std::cerr. If no Exception::Severity
- * is specified, the Exception object is thrown when the Throw object
- * is destroyed.
+ * is specified, the Exception object is treated as a warning
+ * when the Throw object is destroyed.
  *
  * Assuming you have an Exception class called MyEx the Throw class is
  * used as follows:<br><code>Throw&lt;MyEx&gt>() &lt;&lt; "My error
@@ -42,7 +42,7 @@ namespace ThePEG {
  */
 template <typename Ex>
 struct Throw {
-
+public:
   /**
    * Standard constructor creating an internal Exception object.
    */
@@ -56,13 +56,27 @@ struct Throw {
     return *this;
   }
 
+private:
+  /** 
+   * Write warning messages to the current EventGenerator. If no 
+   * current EventGenerator is present, the warning message is instead
+   * written to std::cerr. 
+   */
+  void writeWarning() {
+    if ( CurrentGenerator::isVoid() ) {
+      Repository::clog() << ex.message() << endl;
+      ex.handle();
+    } else {
+      CurrentGenerator::current().logWarning(ex);
+    }
+  }
+
+public:
   /**
    * Specify the Exception::Severity of the exception. If this is
    * Exception::warning, the exception will not be thown, instead it
-   * will be logged with the current * EventGenerator. If no current
-   * EventGenerator is present the warning * message is instead
-   * written to std::cerr. All other seveities will cause the
-   * exception to be thrown immediately.
+   * will be logged with writeWarning(). All other seveities will cause
+   * the exception to be thrown immediately.
    */
   void operator<<(Exception::Severity sev) {
     handled = true;
@@ -70,20 +84,18 @@ struct Throw {
     if ( sev != Exception::warning && sev != Exception::info  ) {
       throw ex;
     } else {
-      if ( CurrentGenerator::isVoid() ) {
-	Repository::clog() << ex.message() << endl;
-	ex.handle();
-      } else {
-	CurrentGenerator::current().logWarning(ex);
-      }
+      writeWarning();
     }
   }
 
   /**
    * The destructor will throw the exception if it has not been handled.
    */
-  ~Throw() throw (Ex) {
-    if ( !handled ) throw ex;
+  ~Throw() {
+    if ( !handled ) {
+    	ex << Exception::warning;
+    	writeWarning();
+    }
   }
 
   /**

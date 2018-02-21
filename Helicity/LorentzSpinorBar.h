@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LorentzSpinorBar.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_LorentzSpinorBar_H
@@ -40,9 +40,7 @@ public:
   /**
    * Default zero constructor, optionally specifying \a t, the type
    */
-  LorentzSpinorBar(SpinorType t = unknown_spinortype) : _type(t) {
-    for(unsigned int ix=0;ix<4;++ix) _spin[ix]=Value();
-  }
+  LorentzSpinorBar(SpinorType t = SpinorType::unknown) : _type(t), _spin() {}
 
   /**
    * Constructor with complex numbers specifying the components,
@@ -50,13 +48,8 @@ public:
    */
   LorentzSpinorBar(complex<Value> a, complex<Value> b,
 		   complex<Value> c, complex<Value> d,
-		   SpinorType t = unknown_spinortype)
-    : _type(t) {
-    _spin[0]=a;
-    _spin[1]=b;
-    _spin[2]=c;
-    _spin[3]=d;
-  }
+		   SpinorType t = SpinorType::unknown)
+    : _type(t), _spin{{a,b,c,d}} {}
   //@}
 
   /** @name Access the components. */
@@ -227,7 +220,7 @@ private:
   /**
    * Storage of the components.
    */
-  complex<Value> _spin[4];
+  std::array<complex<Value>,4> _spin;
 };
 
 }

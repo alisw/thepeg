@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // EventHandler.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -164,6 +164,7 @@ tCollPtr EventHandler::continueCollision() {
 }
 
 void EventHandler::clearEvent() {
+  ThePEG::CascadeHandler::setDidRunCascade(false);
   for ( GroupVector::const_iterator git = groups().begin();
 	git != groups().end(); ++git ) (**git).clear();
 }
@@ -409,6 +410,12 @@ void EventHandler::Init() {
      "This EventHandler produces weighted events.", true);
   static SwitchOption interfaceWeightedFalse
     (interfaceWeighted, "Off",
+     "This EventHandler produces unweighted events.", false);
+  static SwitchOption interfaceWeightedYes
+    (interfaceWeighted, "Yes",
+     "This EventHandler produces weighted events.", true);
+  static SwitchOption interfaceWeightedNo
+    (interfaceWeighted, "No",
      "This EventHandler produces unweighted events.", false);
 
   static Switch<EventHandler,int> interfaceStatLevel

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // RCPtr.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_RCPtr_H
@@ -82,7 +82,12 @@ public:
   /**
    * Constructor for null pointer.
    */
-  RCPtr() : ptr(0) {}
+  RCPtr() : ptr(nullptr) {}
+
+  /**
+   * Constructor for nullptr.
+   */
+  RCPtr( decltype(nullptr) ) : ptr(nullptr) {}
 
   /**
    * Copy constructor.
@@ -336,7 +341,12 @@ public:
   /**
    * Constructor for null pointer.
    */
-  ConstRCPtr() : ptr(0) {}
+  ConstRCPtr() : ptr(nullptr) {}
+
+  /**
+   * Constructor for nullptr.
+   */
+  ConstRCPtr( decltype(nullptr) ) : ptr(nullptr) {}
 
   /**
    * Copy constructor.
@@ -530,7 +540,12 @@ public:
   /**
    * Constructor for null pointer.
    */
-  TransientRCPtr() : ptr(0) {}
+  TransientRCPtr() : ptr(nullptr) {}
+
+  /**
+   * Constructor for nullptr.
+   */
+  TransientRCPtr( decltype(nullptr) ) : ptr(nullptr) {}
 
   /**
    * Copy constructor.
@@ -702,7 +717,12 @@ public:
   /**
    * Constructor for null pointer.
    */
-  TransientConstRCPtr() : ptr(0) {}
+  TransientConstRCPtr() : ptr(nullptr) {}
+
+  /**
+   * Constructor for nullptr.
+   */
+  TransientConstRCPtr( decltype(nullptr) ) : ptr(nullptr) {}
 
   /**
    * Copy constructor.

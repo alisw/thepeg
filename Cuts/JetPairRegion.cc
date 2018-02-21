@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // JetPairRegion.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2007 Leif Lonnblad
-// Copyright (C) 2009-2012 Simon Platzer
+// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 2009-2017 Simon Platzer
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -192,6 +192,16 @@ void JetPairRegion::Init() {
   static SwitchOption interfaceOppositeHemispheresFalse
     (interfaceOppositeHemispheres,
      "False",
+     "Do not require jets to be in different hemispheres",
+     false);
+  static SwitchOption interfaceOppositeHemispheresYes
+    (interfaceOppositeHemispheres,
+     "Yes",
+     "Require jets to be in different hemispheres",
+     true);
+  static SwitchOption interfaceOppositeHemispheresNo
+    (interfaceOppositeHemispheres,
+     "No",
      "Do not require jets to be in different hemispheres",
      false);
 

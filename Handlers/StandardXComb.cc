@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // StandardXComb.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
-// Copyright (C) 2009-2011 Simon Platzer
+// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 2009-2017 Simon Platzer
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -165,9 +165,13 @@ bool StandardXComb::setIncomingPartons(tStdXCombPtr labHead) {
 
   if ( lastPartons().first )
     return true;
-
-  if ( !labHead )
+    // If no labHead was given, we need to search the labhead
+  if ( !labHead ){
     labHead = head();
+    while ( labHead->head() && labHead->head() != labHead ) {
+      labHead =labHead->head();
+    }
+  }
 
   createPartonBinInstances();
   lastParticles(labHead->lastParticles());
@@ -352,6 +356,9 @@ CrossSection StandardXComb::dSigDR(const double * r) {
   lastScale(matrixElement()->scale());
   lastAlphaS(matrixElement()->alphaS());
   lastAlphaEM(matrixElement()->alphaEM());
+
+  partonBinInstances().first->scale(lastScale());
+  partonBinInstances().second->scale(lastScale());
 
   if ( (!willPassCuts() && 
 	!matrixElement()->headCuts() &&
@@ -555,7 +562,11 @@ dSigDR(const pair<double,double> ll, int nr, const double * r) {
     return ZERO;
   }
 
-  xsec *= cutWeight();
+  const bool isCKKW=CKKWHandler() && matrixElement()->maxMultCKKW() > 0 &&
+              matrixElement()->maxMultCKKW() > matrixElement()->minMultCKKW();
+
+  if(!isCKKW)
+    xsec *= cutWeight();
 
   lastAlphaS (matrixElement()->orderInAlphaS () >0 ?
 	      matrixElement()->alphaS()  : -1.);
@@ -568,8 +579,7 @@ dSigDR(const pair<double,double> ll, int nr, const double * r) {
   }
 
   subProcess(SubProPtr());
-  if ( CKKWHandler() && matrixElement()->maxMultCKKW() > 0 &&
-       matrixElement()->maxMultCKKW() > matrixElement()->minMultCKKW() ) {
+  if ( isCKKW ) {
     newSubProcess();
     CKKWHandler()->setXComb(this);
     xsec *= CKKWHandler()->reweightCKKW(matrixElement()->minMultCKKW(),

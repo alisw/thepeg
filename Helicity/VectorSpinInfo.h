@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VectorSpinInfo.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_VectorSpinInfo_H
@@ -45,9 +45,7 @@ public:
   /**
    * Default constructor.
    */
-  VectorSpinInfo() : SpinInfo(PDT::Spin1), _productionstates(3),
-		     _decaystates(3), _currentstates(3), 
-		     _decaycalc(false) {}
+  VectorSpinInfo() : SpinInfo(PDT::Spin1), _decaycalc(false) {}
   
   /**
    * Standard Constructor.
@@ -55,9 +53,7 @@ public:
    * @param time true if the particle is time-like.
    */
   VectorSpinInfo(const Lorentz5Momentum & p, bool time)
-    : SpinInfo(PDT::Spin1, p, time),
-      _productionstates(3), _decaystates(3), _currentstates(3), 
-      _decaycalc(false) {}
+    : SpinInfo(PDT::Spin1, p, time), _decaycalc(false) {}
   //@}
   
 public:
@@ -147,17 +143,17 @@ private:
   /**
    * Basis states in the frame in which the particle was produced.
    */
-  mutable vector<LorentzPolarizationVector> _productionstates;
+  mutable std::array<LorentzPolarizationVector,3> _productionstates;
 
   /**
    * Basis states in the frame in which the particle decays.
    */
-  mutable vector<LorentzPolarizationVector> _decaystates;
+  mutable std::array<LorentzPolarizationVector,3> _decaystates;
 
   /**
    * Basis states in the current frame of the particle
    */
-  mutable vector<LorentzPolarizationVector> _currentstates;
+  mutable std::array<LorentzPolarizationVector,3> _currentstates;
 
   /**
    * True if the decay state has been set.

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Event.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -17,7 +17,6 @@
 #include "ThePEG/Config/algorithm.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Utilities/DIterator.h"
 #include <iostream>
 
 using namespace ThePEG;
@@ -130,8 +129,7 @@ void Event::removeDecay(tPPtr p) {
 void Event::removeEntry(tPPtr p) {
   ParticleSet::iterator it = allParticles.find(p);
   if ( it == allParticles.end() ) return;
-  for ( DIterator<CollisionVector::iterator> cit = theCollisions.begin();
-	cit != theCollisions.end(); ++cit ) cit->removeEntry(p);
+  for ( auto & cit : theCollisions ) cit->removeEntry(p);
   allParticles.erase(it);
 }
 
@@ -142,8 +140,7 @@ void Event::removeParticle(tPPtr p) {
 }
 
 void Event::cleanSteps() {
-  for ( DIterator<CollisionVector::iterator> cit = theCollisions.begin();
-	cit != theCollisions.end(); ++cit ) cit->cleanSteps();
+  for ( auto & cit : theCollisions ) cit->cleanSteps();
 }
 
 EventPtr Event::clone() const {

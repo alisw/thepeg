@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // RSSpinorBarWaveFunction.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -20,8 +20,8 @@ using namespace ThePEG::Helicity;
 void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel) {
   Complex ii(0.,1.);
   LorentzRSSpinorBar<double> news;
-  if(direction()==incoming) news=LorentzRSSpinorBar<double>(u_spinortype);
-  else                      news=LorentzRSSpinorBar<double>(v_spinortype);
+  if(direction()==incoming) news=LorentzRSSpinorBar<double>(SpinorType::u);
+  else                      news=LorentzRSSpinorBar<double>(SpinorType::v);
   unsigned int ix,iy;
   assert(direction()!=intermediate);
   assert(ihel<=3);

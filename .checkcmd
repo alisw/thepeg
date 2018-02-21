@@ -1,3 +1,0 @@
-auto.pl -c
-make check
-make distcheck DISTCHECK_CONFIGURE_FLAGS='CLHEPPATH=/usr/local CERNLIBDIR=/usr/local/cern/pro/lib F77RUNTIMEDIR=/usr/local/lib'

@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = -Wno-portability
 bin_PROGRAMS = setupThePEG runThePEG
 EXTRA_PROGRAMS = runEventLoop
 
-EXTRA_DIST = testpdfs
+EXTRA_DIST = testpdfs .check-local.sh
 
 myLDADD = $(top_builddir)/lib/libThePEG.la 
 myLDFLAGS = -export-dynamic
@@ -67,17 +67,7 @@ ThePEGDefaults.rpo: .done-all-links setupThePEG ThePEGDefaults.in ThePEGParticle
 	cd ../lib; rm -f ThePEGDefaults.rpo; $(LN_S) -f ../src/ThePEGDefaults.rpo .
 
 check-local: ThePEGDefaults.rpo
-	./setupThePEG --exitonerror -r ThePEGDefaults.rpo SimpleLEP.in
-	mv SimpleLEP.out SimpleLEP.cmp
-	time ./runThePEG -d 0 SimpleLEP.run
-	diff SimpleLEP.out SimpleLEP.cmp
-	mv SimpleLEP.out SimpleLEP.cmp
-	time ./runThePEG --resume -d 0 SimpleLEP.dump
-	diff SimpleLEP.out SimpleLEP.cmp
-	rm SimpleLEP.cmp
-	time ./runThePEG -d 0 -m SimpleLEP.mod SimpleLEP.run
-	./setupThePEG --exitonerror -r ThePEGDefaults.rpo MultiLEP.in
-	time ./runThePEG -d 0 MultiLEP.run
+	@$(srcdir)/.check-local.sh
 if USELHAPDF
 	LHAPATH=$(srcdir)/testpdfs ./setupThePEG --exitonerror -r ThePEGDefaults.rpo TestLHAPDF.in
 	LHAPATH=$(srcdir)/testpdfs time ./runThePEG -d 1 -x .libs/TestLHAPDF.so TestLHAPDF.run

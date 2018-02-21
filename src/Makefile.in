@@ -109,8 +109,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(dist_pkgdata_DATA) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -424,7 +423,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = -Wno-portability
-EXTRA_DIST = testpdfs
+EXTRA_DIST = testpdfs .check-local.sh
 myLDADD = $(top_builddir)/lib/libThePEG.la 
 myLDFLAGS = -export-dynamic
 runThePEG_SOURCES = runThePEG.cc
@@ -930,17 +929,7 @@ ThePEGDefaults.rpo: .done-all-links setupThePEG ThePEGDefaults.in ThePEGParticle
 	cd ../lib; rm -f ThePEGDefaults.rpo; $(LN_S) -f ../src/ThePEGDefaults.rpo .
 
 check-local: ThePEGDefaults.rpo
-	./setupThePEG --exitonerror -r ThePEGDefaults.rpo SimpleLEP.in
-	mv SimpleLEP.out SimpleLEP.cmp
-	time ./runThePEG -d 0 SimpleLEP.run
-	diff SimpleLEP.out SimpleLEP.cmp
-	mv SimpleLEP.out SimpleLEP.cmp
-	time ./runThePEG --resume -d 0 SimpleLEP.dump
-	diff SimpleLEP.out SimpleLEP.cmp
-	rm SimpleLEP.cmp
-	time ./runThePEG -d 0 -m SimpleLEP.mod SimpleLEP.run
-	./setupThePEG --exitonerror -r ThePEGDefaults.rpo MultiLEP.in
-	time ./runThePEG -d 0 MultiLEP.run
+	@$(srcdir)/.check-local.sh
 @USELHAPDF_TRUE@	LHAPATH=$(srcdir)/testpdfs ./setupThePEG --exitonerror -r ThePEGDefaults.rpo TestLHAPDF.in
 @USELHAPDF_TRUE@	LHAPATH=$(srcdir)/testpdfs time ./runThePEG -d 1 -x .libs/TestLHAPDF.so TestLHAPDF.run
 

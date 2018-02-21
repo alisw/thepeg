@@ -20,7 +20,7 @@ MadGraphTwoCut.cc MadGraphTwoCut.h
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed
-LesHouches_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 22:0:0
+LesHouches_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 25:2:0
 LesHouches_la_SOURCES = $(mySOURCES) $(INCLUDEFILES)
 
 include $(top_srcdir)/Config/Makefile.aminclude

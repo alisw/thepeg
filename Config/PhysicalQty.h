@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // PhysicalQty.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2011 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef Physical_Qty_H
@@ -26,11 +26,11 @@ namespace ThePEG {
 /// Helper class to construct zero unitful quantities.
 struct ZeroUnit {
   /** Automatic conversion to double. */
-  operator double() const { return 0.0; }
+  constexpr operator double() const { return 0.0; }
 };
 
 /// ZERO can be used as zero for any unitful quantity.
-const ZeroUnit ZERO = ZeroUnit();
+constexpr ZeroUnit ZERO = ZeroUnit();
 
 /// Helper classes to extend or shorten fractions
 //@{
@@ -41,7 +41,7 @@ template <int M, int II>
 struct QtyHelper 
 {
   /// The numerator, indicating failure.
-  static const int I = -999999;
+  static constexpr int I = -999999;
 };
 
 /**
@@ -51,7 +51,7 @@ template <int II>
 struct QtyHelper<0,II> 
 {
   /// The new numerator.
-  static const int I = II;
+  static constexpr int I = II;
 };
 
 /**
@@ -61,7 +61,7 @@ template <int II, int DI, int DI2>
 struct QtyInt 
 {
   /// The new numerator.
-  static const int I = QtyHelper<(DI2*II)%DI,(DI2*II)/DI>::I;
+  static constexpr int I = QtyHelper<(DI2*II)%DI,(DI2*II)/DI>::I;
 };
 //@}
 
@@ -82,7 +82,7 @@ class Qty
 {
 private:
   /// Constructor from raw values. Breaks consistency.
-  Qty(double val) : rawValue_(val) {}
+  constexpr Qty(double val) : rawValue_(val) {}
 
 public:
 
@@ -105,27 +105,29 @@ public:
   typedef Qty<2*L,2*E,2*Q,DL,DE,DQ> Squared;
 
   /// Basic unit of this quantity.
-  static Qty<L,E,Q,DL,DE,DQ> baseunit() 
+  static constexpr Qty<L,E,Q,DL,DE,DQ> baseunit() 
   {
     return Qty<L,E,Q,DL,DE,DQ>(1.0);
   }
 
   /// Default constructor to 0.
-  Qty() : rawValue_(0.0) {}
+  constexpr Qty() : rawValue_(0.0) {}
 
   /// Default constructor to 0.
-  Qty(ZeroUnit) : rawValue_(0.0) {}
+  constexpr Qty(ZeroUnit) : rawValue_(0.0) {}
 
   /// Constructor from a compatible quantity
   template <int DL2, int DE2, int DQ2>
+  constexpr 
   Qty(const Qty<QtyInt<L,DL,DL2>::I,
                 QtyInt<E,DE,DE2>::I,
                 QtyInt<Q,DQ,DQ2>::I,
-                DL2,DE2,DQ2> & q)
-    : rawValue_(q.rawValue()) {}
+                DL2,DE2,DQ2> & q,
+                double factor = 1.0)
+    : rawValue_(q.rawValue() * factor) {}
 
   /// Access to the raw value. Breaks consistency.
-  double rawValue() const { return rawValue_; }
+  constexpr double rawValue() const { return rawValue_; }
 
   /// Assignment multiplication by dimensionless number.
   Qty<L,E,Q,DL,DE,DQ> & operator*=(double x) { rawValue_ *= x; return *this; }
@@ -168,28 +170,31 @@ class Qty<0,0,0,DL,DE,DQ>
 {
 public:
   /// The squared type.
-  typedef Qty<0,0,0,DL,DE,DQ> Squared;
+  typedef double Squared;
 
   /// Basic unit of this quantity.
-  static double baseunit() {
+  static constexpr double baseunit() {
     return 1.0;
   }
 
   /// Default constructor to 0.
-  Qty(ZeroUnit) : rawValue_(0.0) {}
+  constexpr Qty(ZeroUnit) : rawValue_(0.0) {}
 
   /// Default constructor from a double.
-  Qty(double x = 0.0) : rawValue_(x) {}
+  constexpr Qty(double x = 0.0, double factor=1.0) 
+  	: rawValue_(x * factor) {}
 
   /// Constructor from a compatible quantity
   template <int DL2, int DE2, int DQ2>
-  Qty(const Qty<0,0,0,DL2,DE2,DQ2> & q) : rawValue_(q.rawValue()) {}
+  constexpr
+  Qty(const Qty<0,0,0,DL2,DE2,DQ2> & q, double factor=1.0)
+   : rawValue_(q.rawValue() * factor) {}
 
   /// Access to the raw value.
-  double rawValue() const { return rawValue_; }
+  constexpr double rawValue() const { return rawValue_; }
 
   /// Cast to double.
-  operator double() const { return rawValue_; }
+  constexpr operator double() const { return rawValue_; }
 
   /// Assignment multiplication by dimensionless number.
   Qty<0,0,0,DL,DE,DQ> & operator*=(double x) { rawValue_ *= x; return *this; }
@@ -273,12 +278,10 @@ struct BinaryOpTraits<Qty<L1,E1,Q1,DL1,DE1,DQ1>,
 template<int L1, int E1, int Q1, int DL1, int DE1, int DQ1>
 struct BinaryOpTraits<double,
 		      Qty<L1,E1,Q1,DL1,DE1,DQ1> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
+  /** The type resulting from multiplication of the template type */
   typedef Qty<L1,E1,Q1,
               DL1,DE1,DQ1> MulT;
-  /** The type resulting from division of one template type with
-      another. */
+  /** The type resulting from division of the template type */
   typedef Qty<-L1,-E1,-Q1,
               DL1,DE1,DQ1> DivT;
 };
@@ -289,12 +292,10 @@ struct BinaryOpTraits<double,
 template<int L1, int E1, int Q1, int DL1, int DE1, int DQ1>
 struct BinaryOpTraits<Qty<L1,E1,Q1,DL1,DE1,DQ1>,
 		      double> {
-  /** The type resulting from multiplication of the template type with
-      itself. */
+  /** The type resulting from multiplication of the template type */
   typedef Qty<L1,E1,Q1,
               DL1,DE1,DQ1> MulT;
-  /** The type resulting from division of one template type with
-      another. */
+  /** The type resulting from division of the template type */
   typedef Qty<L1,E1,Q1,
               DL1,DE1,DQ1> DivT;
 };
@@ -310,14 +311,10 @@ struct TypeTraits<Qty<L,E,Q,DL,DE,DQ> >
   enum { hasDimension = true };
   /// Type switch set to dimensioned type.
   typedef DimensionT DimType;
-  static const Qty<L,E,Q,DL,DE,DQ> baseunit;
+  /// Base unit
+  static constexpr Qty<L,E,Q,DL,DE,DQ> baseunit() 
+	{ return Qty<L,E,Q,DL,DE,DQ>::baseunit(); }
 };
-
-/** Type traits for alternative code generation*/
-template <int L, int E, int Q, int DL, int DE, int DQ> 
-const Qty<L,E,Q,DL,DE,DQ> 
-TypeTraits<Qty<L,E,Q,DL,DE,DQ> >::baseunit = Qty<L,E,Q,DL,DE,DQ>::baseunit();
-
 
 /** Type traits for alternative code generation*/
 template <int DL, int DE, int DQ> 
@@ -327,13 +324,10 @@ struct TypeTraits<Qty<0,0,0,DL,DE,DQ> >
   enum { hasDimension = false };
   /// Type switch set to standard type.
   typedef StandardT DimType;
-  static const double baseunit;
+  /// Base unit
+  static constexpr double baseunit() { return 1.0; }
 };
 
-/** Type traits for alternative code generation*/
-template <int DL, int DE, int DQ> 
-const double 
-TypeTraits<Qty<0,0,0,DL,DE,DQ> >::baseunit = 1.0;
 //@}
 
 /** @endcond */

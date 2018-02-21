@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // HelicityDefinitions.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_HelicityDefinitions_H
@@ -34,10 +34,10 @@ namespace Helicity {
 /**
  * Enumeration to specify spinor type.
  */
-enum SpinorType {
-  u_spinortype, /**< u spinor. */
-  v_spinortype, /**< v spinor. */
-  unknown_spinortype /**< Undefined spinor type. */
+enum class SpinorType {
+  u, /**< u spinor. */
+  v, /**< v spinor. */
+  unknown /**< Undefined spinor type. */
 };
 
 /** @cond EXCEPTIONCLASSES */

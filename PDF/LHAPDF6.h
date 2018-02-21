@@ -3,7 +3,7 @@
 // LHAPDF6.h is a part of ThePEG - Toolkit for HEP Event Generation
 // Copyright (C) 2014 Leif Lonnblad, David Grellscheid
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_LHAPDF6_H

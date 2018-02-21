@@ -5,8 +5,8 @@ To compile and install ThePEG follow these steps:
 1: run the configure script. To override the defaults: set eg. the
    following environment variables
 
-	CXX: (default g++) your favorite C++ compiler. Must be
-	     standard compliant. g++ version 4.0 or later will do
+	CXX: (default g++) your favorite C++11 compiler. Must be
+	     standard compliant. g++ version 4.8 or later will do
 	     nicely.
 
    To overwrite the default install prefix (/usr/local) use the
@@ -79,10 +79,10 @@ Briefly, the running of ThePEG is divided into two steps:
 ===========================================================================
 
     Toolkit for High Energy Physics Event Generation - ThePEG
-    Copyright (C) 1999-2011 Leif Lonnblad
+    Copyright (C) 1999-2017 Leif Lonnblad
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License version 2 as 
+    it under the terms of the GNU General Public License version 3 as 
     published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,

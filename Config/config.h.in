@@ -148,10 +148,7 @@
 /* define if log1p is available */
 #undef ThePEG_HAS_LOG1P
 
-/* define if units should be checked */
-#undef ThePEG_HAS_UNITS_CHECKING
-
-/* Rivet histogram variant (1=AIDA or 2=YODA) */
+/* Rivet major version (1,2,3) */
 #undef ThePEG_RIVET_VERSION
 
 /* Version number of package */

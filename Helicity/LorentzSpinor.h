@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // LorentzSpinor.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_LorentzSpinor_H
@@ -17,6 +17,7 @@
 #include "LorentzSpinorBar.h"
 #include "LorentzPolarizationVector.h"
 #include "LorentzTensor.h"
+#include <array>
 
 namespace ThePEG{
 namespace Helicity{
@@ -49,12 +50,12 @@ namespace Helicity{
  * \f]
  *
  *  The type of the spinor is also stored using the SpinorType
- *  enumeration.  There are three types supported u_spinortype,
- *  v_spinortype, unknown_spinortype.  This information is intended
+ *  enumeration.  There are three types supported SpinorType::u,
+ *  SpinorType::v, SpinorType::unknown.  This information is intended
  *  mainly for use in the case of Majorana particles where matrix
  *  elements can be calculated with either u or v type spinors and
  *  knowledge of which was used will be needed in order to give the
- *  correct correlations. The unknown_spinortypee is intended for
+ *  correct correlations. The SpinorType::unknowne is intended for
  *  cases where either the spinor for an off-shell line in a matrix
  *  element calculation or the information is genuinely unknown.
  *
@@ -75,9 +76,7 @@ public:
   /**
    * Default zero constructor, optionally specifying \a t, the type.
    */
-  LorentzSpinor(SpinorType t = unknown_spinortype) : _type(t) {
-    for(unsigned int ix=0;ix<4;++ix) _spin[ix]=Value();
-  }
+  LorentzSpinor(SpinorType t = SpinorType::unknown) : _type(t), _spin() {}
 
   /**
    * Constructor with complex numbers specifying the components,
@@ -85,12 +84,7 @@ public:
    */
   LorentzSpinor(complex<Value> a,complex<Value> b,
 		complex<Value> c,complex<Value> d,
-		SpinorType s = unknown_spinortype) : _type(s) {
-    _spin[0]=a;
-    _spin[1]=b;
-    _spin[2]=c;
-    _spin[3]=d;
-  }
+		SpinorType s = SpinorType::unknown) : _type(s), _spin{{a,b,c,d}} {}
   //@}
 
   /** @name Access the components. */
@@ -255,6 +249,46 @@ public:
 
   /** @name Functions to calculate certain currents. */
   //@{
+  /**
+   *   Apply \f$p\!\!\!\!\!\not\f$
+   */
+  template<typename ValueB> 
+  LorentzSpinor<typename BinaryOpTraits<Value,ValueB>::MulT>
+  slash(const LorentzVector<ValueB> & p) const {
+    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
+    LorentzSpinor<ResultT> spin;
+    static const Complex ii(0.,1.);
+    complex<ValueB> p0pp3=p.t()+p.z();
+    complex<ValueB> p0mp3=p.t()-p.z();
+    complex<ValueB> p1pp2=p.x()+ii*p.y();
+    complex<ValueB> p1mp2=p.x()-ii*p.y();
+    spin.setS1(p0mp3*s3()-p1mp2*s4());
+    spin.setS2(p0pp3*s4()-p1pp2*s3());
+    spin.setS3(p0pp3*s1()+p1mp2*s2());
+    spin.setS4(p0mp3*s2()+p1pp2*s1());
+    return spin;
+  }
+
+  /**
+   *   Apply \f$p\!\!\!\!\!\not\f$
+   */
+  template<typename ValueB> 
+  LorentzSpinor<typename BinaryOpTraits<Value,ValueB>::MulT>
+  slash(const LorentzVector<complex<ValueB> > & p) const {
+    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
+    LorentzSpinor<ResultT> spin;
+    static const Complex ii(0.,1.);
+    complex<ValueB> p0pp3=p.t()+p.z();
+    complex<ValueB> p0mp3=p.t()-p.z();
+    complex<ValueB> p1pp2=p.x()+ii*p.y();
+    complex<ValueB> p1mp2=p.x()-ii*p.y();
+    spin.setS1(p0mp3*s3()-p1mp2*s4());
+    spin.setS2(p0pp3*s4()-p1pp2*s3());
+    spin.setS3(p0pp3*s1()+p1mp2*s2());
+    spin.setS4(p0mp3*s2()+p1pp2*s1());
+    return spin;
+  }
+
   /**
    *  Calculate the left-handed current \f$\bar{f}\gamma^\mu P_Lf\f$.
    * @param fb The barred spinor.
@@ -446,7 +480,7 @@ private:
   /**
    * Storage of the components.
    */
-  complex<Value> _spin[4];
+  std::array<complex<Value>,4> _spin;
 };
 
 }

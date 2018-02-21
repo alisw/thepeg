@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // HepMCConverter.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -217,9 +217,25 @@ HepMCConverter<HepMCEventT,Traits>::createParticle(tcPPtr p) const {
     long id = p->data().id();
     if ( BaryonMatcher::Check(id) || MesonMatcher::Check(id) ||
 	 id == ParticleID::muminus || id == ParticleID::muplus ||
-	 id == ParticleID::tauminus || id == ParticleID::tauplus )
-      if ( p->mass() <= p->data().massMax() &&
-	   p->mass() >= p->data().massMin() ) status = 2;
+	 id == ParticleID::tauminus || id == ParticleID::tauplus ) {
+      bool child = false;
+      for(unsigned int ix=0;ix<nChildren;++ix) {
+	if(p->children()[ix]->id()==id) {
+	  child = true;
+	  break;
+	}
+      }
+      if ( !child ) {
+	if(p->data().widthCut()!=ZERO) {
+	  if(p->mass() <= p->data().massMax() &&
+	     p->mass() >= p->data().massMin() )
+	    status = 2;
+	}
+	else {
+	  status = 2;
+	}
+      }
+    }
   }
   GenParticle * gp =
     Traits::newParticle(p->momentum(), p->id(), status, energyUnit);

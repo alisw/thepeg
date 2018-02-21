@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // PersistentOStream.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_PersistentOStream_H
@@ -220,7 +220,7 @@ public:
    * Write a double.
    */
   PersistentOStream & operator<<(double d) {
-    if ( std::isnan(d) || std::isinf(d) )
+    if ( ! isfinite(d) )
       throw WriteError()
 	<< "Tried to write a NaN or Inf double to a persistent stream."
 	<< Exception::runerror;
@@ -233,7 +233,7 @@ public:
    * Write a float.
    */
   PersistentOStream & operator<<(float f) {
-    if ( std::isnan(f) || std::isinf(f) )
+    if ( ! isfinite(f) )
       throw WriteError()
 	<< "Tried to write a NaN or Inf float to a persistent stream."
 	<< Exception::runerror;

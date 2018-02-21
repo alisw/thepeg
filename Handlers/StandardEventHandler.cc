@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // StandardEventHandler.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -283,16 +283,23 @@ void StandardEventHandler::statistics(ostream & os) const {
      << "                                       "
      << "   events     attempts             (nb)\n";
 
-  os << line << "Total (from   weighted events): including vetoed events" << setw(23)
+  os << line << "Total (from attempted events): including vetoed events" << setw(23)
      << ouniterr(sampler()->integratedXSec(), 
 		 sampler()->integratedXSecErr(), nanobarn)
      << endl;
-  os << line << "Total (from "
-     << (weighted() ? "  weighted" : "unweighted") << " events):" 
+  os << line << "Total (from generated events):" 
      << setw(17) << tot.accepted() << setw(13)
      << tot.attempts() << setw(17)
      << ouniterr(tot.xSec(sampler()->attempts()),tot.xSecErr(sampler()->attempts()) , nanobarn)
-     << endl << line;
+     << "\n";
+  os << "Events carry ";
+  if ( weighted() )
+    os << "varying weights.";
+  else if ( sampler()->almostUnweighted() )
+    os << "varying weights, most of which are unit weights.";    
+  else
+    os << "unit weights.";
+  os << endl << line;
 
   if ( statLevel() == 1 ) return;
 
@@ -543,6 +550,16 @@ void StandardEventHandler::Init() {
   static SwitchOption interfaceCollisionCutsOff
     (interfaceCollisionCuts,
      "Off",
+     "Switch off cuts on collision cuts",
+     false);
+  static SwitchOption interfaceCollisionCutsYes
+    (interfaceCollisionCuts,
+     "Yes",
+     "Switch on cuts on collision objects",
+     true);
+  static SwitchOption interfaceCollisionCutsNo
+    (interfaceCollisionCuts,
+     "No",
      "Switch off cuts on collision cuts",
      false);
 

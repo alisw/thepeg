@@ -106,8 +106,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/Config/config.h \
-	$(top_builddir)/Config/ThePEG_Qty.h
+CONFIG_HEADER = $(top_builddir)/Config/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -497,7 +496,7 @@ pkglib_LTLIBRARIES = LWHFactory.la XSecCheck.la ProgressLog.la \
 @HAVE_RIVET_TRUE@RivetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(RIVETINCLUDE) $(HEPMCINCLUDE)
 @HAVE_RIVET_TRUE@RivetAnalysis_la_LIBADD = $(HEPMCLIBS) $(RIVETLIBS)
 @HAVE_RIVET_TRUE@RivetAnalysis_la_SOURCES = RivetAnalysis.cc NLORivetAnalysis.cc $(INCLUDEFILES)
-@HAVE_RIVET_TRUE@RivetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 20:2:0
+@HAVE_RIVET_TRUE@RivetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 25:1:0
 INCLUDEFILES = $(DOCFILES) 
 LWHINCLUDE = -I$(top_builddir)/include/ThePEG/Analysis/LWH
 LWHFactory_la_SOURCES = $(mySOURCES) $(INCLUDEFILES)
@@ -512,7 +511,7 @@ libThePEGHist_la_SOURCES = \
   FactoryBase.cc FactoryBase.fh FactoryBase.h AIDA_helper.h
 
 libThePEGHist_la_CPPFLAGS = $(AM_CPPFLAGS) $(LWHINCLUDE)
-@HAVE_HEPMC_TRUE@HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 20:1:0
+@HAVE_HEPMC_TRUE@HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 @HAVE_HEPMC_TRUE@HepMCAnalysis_la_SOURCES = HepMCFile.h    HepMCFile.cc    NLOHepMCFile.h    NLOHepMCFile.cc	HIHepMCFile.h HIHepMCFile.cc
 @HAVE_HEPMC_TRUE@HepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
 @HAVE_HEPMC_TRUE@HepMCAnalysis_la_LIBADD = $(HEPMCLIBS)

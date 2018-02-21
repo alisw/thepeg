@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // VSelector.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_VSelector_H
@@ -135,7 +135,7 @@ public:
    * a uniform random number in the interval ]0,1[ calculated from the
    * fraction of rnd which was in the range of the selected object.
    */
-  T & select(double rnd, double * remainder = 0) throw(range_error) {
+  T & select(double rnd, double * remainder = 0) {
     return theObjects[iselect(rnd, remainder)];
   }
 
@@ -146,7 +146,7 @@ public:
    * inserted. If rnd <= 0 or if rnd >= 1 or the Selector is empty, a
    * range_error will be thrown.
    */
-  T & operator[](double rnd) throw(range_error) {
+  T & operator[](double rnd) {
     return select(rnd, 0);
   }
 
@@ -161,7 +161,7 @@ public:
    * a uniform random number in the interval ]0,1[ calculated from the
    * fraction of rnd which was in the range of the selected object.
    */
-  const T & select(double rnd, double * remainder = 0) const throw(range_error) {
+  const T & select(double rnd, double * remainder = 0) const {
     return theObjects[iselect(rnd, remainder)];
   }
 
@@ -172,7 +172,7 @@ public:
    * inserted. If rnd <= 0 or if rnd >= 1 or the Selector is empty, a
    * range_error will be thrown.
    */
-  const T & operator[](double rnd) const throw(range_error) {
+  const T & operator[](double rnd) const {
     return select(rnd, 0);
   }
 
@@ -189,7 +189,7 @@ public:
    * selected object.
    */
   template <typename RNDGEN>
-  T & select(RNDGEN & rnd) throw(range_error) {
+  T & select(RNDGEN & rnd) {
     double rem = 0.0;
     T & t = select(rnd(), &rem);
     rnd.push_back(rem);
@@ -209,7 +209,7 @@ public:
    * selected object.
    */
   template <typename RNDGEN>
-  const T & select(RNDGEN & rnd) const throw(range_error) {
+  const T & select(RNDGEN & rnd) const {
     double rem = 0.0;
     const T & t = select(rnd(), &rem);
     rnd.push_back(rem);
@@ -282,7 +282,7 @@ protected:
   /**
    * Internal selection engine.
    */
-  size_type iselect(double rnd, double * remainder) const throw(range_error);
+  size_type iselect(double rnd, double * remainder) const;
 
 private:
 

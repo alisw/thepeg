@@ -42,7 +42,7 @@ pkglib_LTLIBRARIES += FastJetFinder.la
 FastJetFinder_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
 FastJetFinder_la_LIBADD = $(FASTJETLIBS) 
-FastJetFinder_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 21:0:0
+FastJetFinder_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 FastJetFinder_la_SOURCES = FastJetFinder.cc FastJetFinder.h
 endif
 

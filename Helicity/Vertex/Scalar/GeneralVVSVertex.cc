@@ -77,18 +77,48 @@ ScalarWaveFunction GeneralVVSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   complex<Energy2> p1Ep2 = eps.dot(pvec1);
   Complex output = UnitRemoval::InvE2 * (_a00*e1e2*p1p2 + _aEp*p1Ep2 + 
   _a11*e1p1*e2p1 + _a12*e1p1*e2p2 + _a21*e1p2*e2p1+ _a22*e1p2*e2p2);
-  output *=  -norm()*prop;
+  output *= norm()*prop;
   return ScalarWaveFunction(pout,out,output);
 }
 
-VectorWaveFunction GeneralVVSVertex::evaluate(Energy2 ,int ,tcPDPtr ,
-					      const VectorWaveFunction & ,
-					      const ScalarWaveFunction & ,
-					      complex<Energy>,
-					      complex<Energy>) {
-  throw Exception() << "GeneralVVSVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "and off-shell scalar not the off-shell vector"
-		    << Exception::runerror;
+VectorWaveFunction GeneralVVSVertex::evaluate(Energy2 q2,int iopt,tcPDPtr out,
+					      const VectorWaveFunction & vec,
+					      const ScalarWaveFunction & sca,
+					      complex<Energy> mass,
+					      complex<Energy> width) {
+  Lorentz5Momentum pSca = sca.momentum();
+  Lorentz5Momentum pvec1 = vec.momentum()+sca.momentum();
+  Lorentz5Momentum pvec2 = vec.momentum();
+  // calculate kinematics
+  if(kinematics()) calculateKinematics(pSca,pvec1,pvec2);
+  // calculate coupling
+  setCoupling(q2, out, vec.particle(), sca.particle());
+  // prefactor
+  Energy2 p2    = pvec1.m2();
+  if(mass.real() < ZERO) mass   = out->mass();
+  complex<Energy2> mass2 = sqr(mass);
+  Complex fact = -norm()* sca.wave() * propagator(iopt,p2,out,mass,width);
+  // vertex as polarization vector
+  complex<Energy> e2p1(vec.wave().dot(pvec1));
+  complex<Energy> e2p2(vec.wave().dot(pvec2));
+  complex<Energy2> p1p2(invariant(1,2));
+  LorentzPolarizationVector pv =  (UnitRemoval::InvE2*_a00*p1p2*vec.wave() +
+				   UnitRemoval::InvE2*_a11*e2p1*pvec1 +
+				   UnitRemoval::InvE2*_a12*e2p2*pvec1 +
+				   UnitRemoval::InvE2*_a21*e2p1*pvec2 +
+				   UnitRemoval::InvE2*_a22*e2p2*pvec2 -
+				   UnitRemoval::InvE2*_aEp*epsilon(pvec1,vec.wave(),pvec2));
+  // evaluate the wavefunction
+  LorentzPolarizationVector vect;
+  // massless case
+  if(mass.real()==ZERO) {
+    vect = fact*pv;
+  }
+  // massive case
+  else {
+    complex<InvEnergy> dot = pv.dot(pvec1)/mass2;
+    vect = fact*(pv-dot*pvec1);
+  }
+  return VectorWaveFunction(pvec1,out,vect);
 }
 

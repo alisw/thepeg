@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // ThePEG.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef ThePEG_H
@@ -113,17 +113,10 @@ struct Stop {};
  * standard C++ library.
  */
 template <typename T>
-inline typename BinaryOpTraits<T,T>::MulT sqr(const T& x) {
+inline constexpr 
+typename BinaryOpTraits<T,T>::MulT 
+sqr(const T& x) {
   return x*x;
-}
-
-/**
- * The templated abs function should really have been included in the
- * standard C++ library.
- */
-template <typename T>
-inline T abs(const T & t) {
-  return t < T()? -t: t;
 }
 
 // Debugging in ThePEG may be swithced off completely by this

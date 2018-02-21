@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Matcher.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -46,11 +46,9 @@ namespace ThePEG {
   THEPEG_MATCH_DESC(MatchNeutrino)
 }
 
-using namespace ThePEG;
-
 namespace {
 
-void dummy() {
+  using namespace ThePEG;
   static MatchAny m00;
   static MatchStandardQCDParton m01;
   static MatchLightAntiQuark m02;
@@ -64,6 +62,5 @@ void dummy() {
   static MatchPositive m11;
   static MatchCharged m12;
   static MatchNeutrino m13;
-}
 
 }

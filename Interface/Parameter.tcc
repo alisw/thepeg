@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // Parameter.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2011 Leif Lonnblad
+// Copyright (C) 1999-2017 Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 //
@@ -54,8 +54,43 @@ ParameterTBase<Type>::setImpl(InterfacedBase & i,
   istringstream is(newValue);
   double t;
   is >> t;
+  // if 'is' has no more chars, all stream ops below are no-ops
+  is.ignore(); // skip the connecting char
+  string suffix;
+  is >> suffix;
+  checkUnitConsistency(suffix);
   tset(i, t*unit());
 }
+  
+    // Macs need a visible template specialization.
+template <>
+void ParameterTBase<Energy>::
+checkUnitConsistency(string suffix) const;
+  
+template <>
+void ParameterTBase<Energy2>::
+checkUnitConsistency(string suffix) const;
+  
+template <>
+void ParameterTBase<Length>::
+checkUnitConsistency(string suffix) const;
+  
+
+template <typename T>
+void ParameterTBase<T>::
+checkUnitConsistency(string suffix) const {
+  if ( ! suffix.empty() ) {
+     Throw<InterfaceException>()
+       << name() 
+       << ": unit suffix " << suffix << " will be ignored.\n"
+       << "The unit specified in the parameter definition is used instead.\n\n"
+       << "To proceed, remove the unit suffix in the input file or \n"
+       << "request unit support for " << suffix << " to be added.\n\n"
+       << Exception::setuperror;
+  }
+}
+  
+  
 
 template <typename T>
 void ParameterTBase<T>::
@@ -245,7 +280,7 @@ namespace {
   template <typename T>
   inline
   void ostreamInsert(ostream & os, T v, DimensionT) {
-    os << ounit(v,T::baseunit());
+    os << ounit(v, T::baseunit());
   }
   
   template <typename T>

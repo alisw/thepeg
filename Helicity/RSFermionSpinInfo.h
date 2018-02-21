@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
 // RSFermionSpinInfo.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2011 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
 //
-// ThePEG is licenced under version 2 of the GPL, see COPYING for details.
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #ifndef THEPEG_RSFermionSpinInfo_H
@@ -13,6 +13,7 @@
 #include "ThePEG/EventRecord/SpinInfo.h"
 #include "ThePEG/Helicity/LorentzRSSpinor.h"
 #include "RSFermionSpinInfo.fh"
+#include <array>
 
 namespace ThePEG {
 namespace Helicity {
@@ -48,9 +49,7 @@ public:
   /**
    * Default constructor.
    */
-  RSFermionSpinInfo()  : SpinInfo(PDT::Spin3Half), _productionstates(4),
-			 _decaystates(4), _currentstates(4), 
-			 _decaycalc(false) {}
+  RSFermionSpinInfo()  : SpinInfo(PDT::Spin3Half), _decaycalc(false) {}
 
   /**
    * Standard Constructor.
@@ -58,9 +57,7 @@ public:
    * @param time true if the particle is time-like.
    */
   RSFermionSpinInfo(const Lorentz5Momentum & p,bool time)
-    : SpinInfo(PDT::Spin3Half, p, time),
-      _productionstates(4), _decaystates(4), _currentstates(4), 
-      _decaycalc(false) {}
+    : SpinInfo(PDT::Spin3Half, p, time), _decaycalc(false) {}
   //@}
 
 public:
@@ -148,17 +145,17 @@ private:
   /**
    * Basis states in the frame in which the particle was produced.
    */
-  mutable vector<LorentzRSSpinor<SqrtEnergy> > _productionstates;
+  mutable std::array<LorentzRSSpinor<SqrtEnergy>,4> _productionstates;
 
   /**
    * Basis states in the frame in which the particle decays.
    */
-  mutable vector<LorentzRSSpinor<SqrtEnergy> > _decaystates;
+  mutable std::array<LorentzRSSpinor<SqrtEnergy>,4> _decaystates;
 
   /**
    * Basis states in the current frame of the particle
    */
-  mutable vector<LorentzRSSpinor<SqrtEnergy> > _currentstates;
+  mutable std::array<LorentzRSSpinor<SqrtEnergy>,4> _currentstates;
 
   /**
    * True if the decay state has been set.
