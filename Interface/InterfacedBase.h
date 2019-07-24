@@ -443,7 +443,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  InterfacedBase & operator=(const InterfacedBase &);
+  InterfacedBase & operator=(const InterfacedBase &) = delete;
 
 protected:
 

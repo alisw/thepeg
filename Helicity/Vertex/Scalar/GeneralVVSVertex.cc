@@ -5,16 +5,17 @@
 //
 
 #include "GeneralVVSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<GeneralVVSVertex> GeneralVVSVertex::initGeneralVVSVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<GeneralVVSVertex,AbstractVVSVertex>
+describeThePEGGeneralVVSVertex("ThePEG::GeneralVVSVertex", "libThePEG.so");
 
 void GeneralVVSVertex::Init() {
 
@@ -61,7 +62,7 @@ ScalarWaveFunction GeneralVVSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   Lorentz5Momentum pout = pvec1 + pvec2;
   pout.rescaleMass();
   // calculate kinematics if needed
-  if(kinematics()) calculateKinematics(pout,pvec1,pvec2);
+  if(kinematics()) calculateKinematics(-pout,pvec1,pvec2);
   // calculate coupling
   setCoupling(q2,Pvec1,Pvec2,out);
   // propagator
@@ -90,7 +91,7 @@ VectorWaveFunction GeneralVVSVertex::evaluate(Energy2 q2,int iopt,tcPDPtr out,
   Lorentz5Momentum pvec1 = vec.momentum()+sca.momentum();
   Lorentz5Momentum pvec2 = vec.momentum();
   // calculate kinematics
-  if(kinematics()) calculateKinematics(pSca,pvec1,pvec2);
+  if(kinematics()) calculateKinematics(pSca,-pvec1,pvec2);
   // calculate coupling
   setCoupling(q2, out, vec.particle(), sca.particle());
   // prefactor
@@ -99,15 +100,15 @@ VectorWaveFunction GeneralVVSVertex::evaluate(Energy2 q2,int iopt,tcPDPtr out,
   complex<Energy2> mass2 = sqr(mass);
   Complex fact = -norm()* sca.wave() * propagator(iopt,p2,out,mass,width);
   // vertex as polarization vector
-  complex<Energy> e2p1(vec.wave().dot(pvec1));
+  complex<Energy> e2p1(-vec.wave().dot(pvec1));
   complex<Energy> e2p2(vec.wave().dot(pvec2));
   complex<Energy2> p1p2(invariant(1,2));
-  LorentzPolarizationVector pv =  (UnitRemoval::InvE2*_a00*p1p2*vec.wave() +
-				   UnitRemoval::InvE2*_a11*e2p1*pvec1 +
-				   UnitRemoval::InvE2*_a12*e2p2*pvec1 +
-				   UnitRemoval::InvE2*_a21*e2p1*pvec2 +
-				   UnitRemoval::InvE2*_a22*e2p2*pvec2 -
-				   UnitRemoval::InvE2*_aEp*epsilon(pvec1,vec.wave(),pvec2));
+  LorentzPolarizationVector pv =  (LorentzPolarizationVector(UnitRemoval::InvE2*_a00*p1p2*vec.wave()) -
+				   LorentzPolarizationVector(UnitRemoval::InvE2*_a11*e2p1*pvec1) -
+				   LorentzPolarizationVector(UnitRemoval::InvE2*_a12*e2p2*pvec1) +
+				   LorentzPolarizationVector(UnitRemoval::InvE2*_a21*e2p1*pvec2) +
+				   LorentzPolarizationVector(UnitRemoval::InvE2*_a22*e2p2*pvec2) +
+				   LorentzPolarizationVector(UnitRemoval::InvE2*_aEp*epsilon(pvec1,vec.wave(),pvec2)));
   // evaluate the wavefunction
   LorentzPolarizationVector vect;
   // massless case

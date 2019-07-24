@@ -145,7 +145,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  DalitzDecayer & operator=(const DalitzDecayer &);
+  DalitzDecayer & operator=(const DalitzDecayer &) = delete;
 
 };
 

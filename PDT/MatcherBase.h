@@ -390,7 +390,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MatcherBase & operator=(const MatcherBase &);
+  MatcherBase & operator=(const MatcherBase &) = delete;
 
 };
 

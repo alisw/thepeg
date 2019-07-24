@@ -525,6 +525,7 @@ DMPtr DecayMode::constructDecayMode(string & tag, vector<DMPtr> * save) {
       } break;
     case '=':
       dolink = true;
+      [[fallthrough]]; 
     case ',':
     case ']':
       tag = tag.substr(1);

@@ -32,6 +32,11 @@ public:
     : theName(newName) {}
 
   /**
+   *  Explicit default copy-constructor (too avoid compiler warnings)
+   */
+  Named(const Named & ) = default;
+  
+  /**
    * Return name.
    */
   const string & name() const { return theName; }
@@ -39,16 +44,14 @@ public:
   /**
    * Test for equality.
    */
-  bool operator == (const Named & other) const 
-  { 
+  bool operator == (const Named & other) const { 
     return theName == other.name(); 
   }
 
   /**
    * Lexicographical comparison.
    */
-  bool operator < (const Named & other) const 
-  { 
+  bool operator < (const Named & other) const { 
     return theName < other.name(); 
   }
 
@@ -57,8 +60,7 @@ protected:
   /**
    * Assignment.
    */
-  const Named & operator = (const Named & other) 
-  { 
+  const Named & operator = (const Named & other) {
     if (this != &other)
       theName = other.name(); 
     return *this; 
@@ -67,8 +69,7 @@ protected:
   /**
    * Set new name.
    */
-  const string & name(const string & newName) 
-  { 
+  const string & name(const string & newName) { 
     return theName = newName; 
   } 
 

@@ -286,7 +286,7 @@ tDMPtr ParticleData::selectMode(Particle & p) const {
 	local.insert((*mit)->brat(p), *mit);
     return local.select(UseRandom::current());
   }
-  catch (range_error) {
+  catch (range_error & e) {
     return tDMPtr();
   }
 }

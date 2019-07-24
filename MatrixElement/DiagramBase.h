@@ -197,7 +197,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  DiagramBase & operator=(const DiagramBase &);
+  DiagramBase & operator=(const DiagramBase &) = delete;
 
 };
 

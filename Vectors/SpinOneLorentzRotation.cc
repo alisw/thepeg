@@ -19,7 +19,7 @@ SpinOneLorentzRotation(double xx, double xy, double xz, double xt,
 		       double yx, double yy, double yz, double yt,
 		       double zx, double zy, double zz, double zt,
 		       double tx, double ty, double tz, double tt)
-  : matrix_(16) {
+{
   xx_() = xx; xy_() = xy; xz_() = xz; xt_() = xt;
   yx_() = yx; yy_() = yy; yz_() = yz; yt_() = yt;
   zx_() = zx; zy_() = zy; zz_() = zz; zt_() = zt;

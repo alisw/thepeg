@@ -25,6 +25,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <array>
 #include <vector>
 #include <list>
 #include <iostream>
@@ -62,6 +63,7 @@ struct less<const type_info *> :
 
 namespace ThePEG {
 
+using std::array;
 using std::deque;
 using std::stack;
 using std::vector;

@@ -77,6 +77,7 @@ ParExGetUnknown::ParExGetUnknown(const InterfaceBase & i,
 namespace {
   const std::map<std::string, ThePEG::Energy> 
   energymapping = {
+  	{"TeV",ThePEG::TeV},
   	{"GeV",ThePEG::GeV},
   	{"MeV",ThePEG::MeV}
   };

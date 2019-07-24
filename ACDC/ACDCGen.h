@@ -754,7 +754,7 @@ private:
   /**
    * Assignment is private and not implemented.
    */
-  ACDCGen & operator=(const ACDCGen &);
+  ACDCGen & operator=(const ACDCGen &) = delete;
 
 };
 

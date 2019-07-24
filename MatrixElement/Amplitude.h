@@ -100,7 +100,7 @@ public:
   /**
    *  Private and non-existent assignment operator.
    */
-  Amplitude & operator=(const Amplitude &);
+  Amplitude & operator=(const Amplitude &) = delete;
 
 };
 

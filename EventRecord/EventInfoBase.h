@@ -56,7 +56,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  EventInfoBase & operator=(const EventInfoBase &);
+  EventInfoBase & operator=(const EventInfoBase &) = delete;
 
 };
 

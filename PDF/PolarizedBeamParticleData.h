@@ -116,7 +116,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  PolarizedBeamParticleData & operator=(const PolarizedBeamParticleData &);
+  PolarizedBeamParticleData & operator=(const PolarizedBeamParticleData &) = delete;
 
 };
 

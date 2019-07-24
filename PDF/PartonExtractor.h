@@ -429,7 +429,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  PartonExtractor & operator=(const PartonExtractor &);
+  PartonExtractor & operator=(const PartonExtractor &) = delete;
 
 };
 

@@ -144,7 +144,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  BlobDiagram & operator=(const BlobDiagram &);
+  BlobDiagram & operator=(const BlobDiagram &) = delete;
 
 };
 

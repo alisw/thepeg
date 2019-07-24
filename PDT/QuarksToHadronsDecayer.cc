@@ -150,7 +150,7 @@ distribute(const Particle & parent, PVector & children) const {
     try {
       SimplePhaseSpace::CMSn(children, parent.mass());
     }
-    catch ( ImpossibleKinematics ) {
+    catch ( ImpossibleKinematics & e) {
       children.clear();
       return;
     }

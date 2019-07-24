@@ -468,7 +468,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  StandardModelBase & operator=(const StandardModelBase &);
+  StandardModelBase & operator=(const StandardModelBase &) = delete;
 
 };
 

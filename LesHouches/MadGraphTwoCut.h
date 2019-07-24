@@ -32,7 +32,7 @@ public:
   /**
    * Enumerate the different kinds of cuts made by MadGraph.
    */
-  enum CutType {
+  enum class Cut {
     INVMASS, /**< The minimum invariant mass of two particles. */
     DELTAR   /**< The minimum pseudo-rapidity--azimuth-angle distance
                   between two particles. */
@@ -41,7 +41,7 @@ public:
   /**
    * Enumerate the types of particles the cut is made on.
    */
-  enum PType {
+  enum class P {
     JET, /**< Coloured particles (jets). */
     LEP, /**< Leptons. */
     PHO, /**< Photons. */
@@ -52,7 +52,7 @@ public:
   /**
    * Enumerate the types of particles pairs the cut is made on.
    */
-  enum PPType {
+  enum class PP {
     JETJET, /**< The cut applies only to pairs of coloured particles (jets). */
     LEPLEP, /**< The cut applies only to lepton pairs (in case of INVMASS
                  lepton--anti-lepton pairs of same flavour). */
@@ -77,7 +77,7 @@ public:
    * The default constructor.
    */
   MadGraphTwoCut()
-    : cutType(DELTAR), pairType(JETJET), theCut(0.0) {}
+    : cutType(Cut::DELTAR), pairType(PP::JETJET), theCut(0.0) {}
 
   /**
    * The constructor used by the MadGraphReader.
@@ -85,7 +85,7 @@ public:
    * @param p is the type of particles the cut is applied to.
    * @param c is the value of the cut (in units of GeV where applicable).
    */
-  MadGraphTwoCut(CutType t, PPType p, double c)
+  MadGraphTwoCut(Cut t, PP p, double c)
     : cutType(t), pairType(p), theCut(c) {}
 
   //@}
@@ -156,7 +156,7 @@ protected:
   /**
    * Get the type of particle \a p.
    */
-  PType getType(tcPDPtr p) const;
+  P getType(tcPDPtr p) const;
 
 public:
 
@@ -206,12 +206,12 @@ private:
   /**
    * The type of this cut.
    */
-  CutType cutType;
+  Cut cutType;
 
   /**
    * The type of particle pairs this cut applies to.
    */
-  PPType pairType;
+  PP pairType;
 
   /**
    * The value of the cut to be applied.
@@ -230,7 +230,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MadGraphTwoCut & operator=(const MadGraphTwoCut &);
+  MadGraphTwoCut & operator=(const MadGraphTwoCut &) = delete;
 
 };
 

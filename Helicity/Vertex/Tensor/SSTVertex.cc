@@ -12,15 +12,16 @@
 //
 
 #include "SSTVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<SSTVertex> SSTVertex::initSSTVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<SSTVertex,AbstractSSTVertex>
+describeThePEGSSTVertex("ThePEG::SSTVertex", "libThePEG.so");
 
 void SSTVertex::Init() {
   
@@ -85,8 +86,8 @@ TensorWaveFunction SSTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   if(mass.real()!=ZERO) {
     Complex norm1=dot1/mass2;
     Complex norm2=dot2/mass2;
-    a = UnitRemoval::InvE2 * ((mphi2+dot12)*(Complex(2.*p2/mass2)-5.)
-			      +4.*(dot12-dot1*dot2/mass2))/3.;
+    a = Complex(UnitRemoval::InvE2 * ((mphi2+dot12)*(Complex(2.*p2/mass2)-5.)
+				      +4.*(dot12-dot1*dot2/mass2)))/3.;
     b = -(-(mphi2+dot12)*(2.+p2/mass2)+4.*(dot12-dot1*(dot2/mass2)))/3./mass2;
     vec1 = LorentzPolarizationVectorE(sca1.momentum()) - 
       LorentzPolarizationVectorE(norm1 * pout);
@@ -109,7 +110,7 @@ TensorWaveFunction SSTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
       complex<Energy2> temp = -2.*( vec1_tmp[ix]*vec2_tmp[iy] +
 				    vec1_tmp[ix]*vec2_tmp[iy])
 	-b*pout_tmp[ix]*pout_tmp[iy];
-      ten[ix][iy]= UnitRemoval::InvE2 * temp;
+      ten[ix][iy]= Complex(UnitRemoval::InvE2 * temp);
     }
   }
   ten[3][3]=ten[3][3]-a;

@@ -123,7 +123,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  GRV94M & operator=(const GRV94M &);
+  GRV94M & operator=(const GRV94M &) = delete;
 
 };
 

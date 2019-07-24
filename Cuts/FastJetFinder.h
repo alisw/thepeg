@@ -178,7 +178,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FastJetFinder & operator=(const FastJetFinder &);
+  FastJetFinder & operator=(const FastJetFinder &) = delete;
 
 };
 

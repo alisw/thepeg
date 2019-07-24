@@ -116,7 +116,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Tau2HadronsDecayer & operator=(const Tau2HadronsDecayer &);
+  Tau2HadronsDecayer & operator=(const Tau2HadronsDecayer &) = delete;
 
 };
 

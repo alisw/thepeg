@@ -489,7 +489,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MEGroup & operator=(const MEGroup &);
+  MEGroup & operator=(const MEGroup &) = delete;
 
 };
 

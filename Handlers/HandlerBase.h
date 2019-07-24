@@ -167,7 +167,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  HandlerBase & operator=(const HandlerBase &);
+  HandlerBase & operator=(const HandlerBase &) = delete;
 
 };
 

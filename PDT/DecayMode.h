@@ -577,7 +577,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  DecayMode & operator=(const DecayMode &);
+  DecayMode & operator=(const DecayMode &) = delete;
 
 };
 

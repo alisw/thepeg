@@ -418,7 +418,7 @@ private:
   /**
    * The assignment operator is private and not implemented.
    */
-  Event & operator=(const Event&);
+  Event & operator=(const Event&) = delete;
 
 };
 

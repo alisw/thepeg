@@ -123,6 +123,14 @@ public:
    */
   virtual void transform(const LorentzMomentum &,const LorentzRotation &);
 
+  /**
+   *  Undecay
+   */
+  virtual void undecay() const {
+    _decaycalc=false;
+    SpinInfo::undecay();
+  }
+  
 public:
 
   /**
@@ -138,14 +146,9 @@ public:
 private:
 
   /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<FermionSpinInfo> initFermionSpinInfo;
-
-  /**
    * Private and non-existent assignment operator.
    */
-  FermionSpinInfo & operator=(const FermionSpinInfo &);
+  FermionSpinInfo & operator=(const FermionSpinInfo &) = delete;
 
 private:
 
@@ -176,34 +179,5 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * This template specialization informs ThePEG about the base class of
- * FermionSpinInfo.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::FermionSpinInfo,1>
-  : public ClassTraitsType {
-  /** Typedef of the base class of FermionSpinInfo. */
-  typedef ThePEG::SpinInfo NthBase;
-};
-
-/**
- * This template specialization informs ThePEG about the name of the
- * FermionSpinInfo class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::FermionSpinInfo>
-  : public ClassTraitsBase<ThePEG::Helicity::FermionSpinInfo> {
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::Helicity::FermionSpinInfo"; }
-};
-
-/** @endcond */
-
 }
-
 #endif /* ThePEG_FermionSpinInfo_H */

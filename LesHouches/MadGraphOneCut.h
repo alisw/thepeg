@@ -32,7 +32,7 @@ public:
   /**
    * Enumerate the different kinds of cuts made by MadGraph.
    */
-  enum CutType {
+  enum class Cut {
     PT,  /**< The minimum transverse momentum of a particle. */
     ETA, /**< The maximum (absolute value of) pseudo-rapidity of a particle. */
     XPT  /**< The minimum transverse momentum of the particle with
@@ -42,7 +42,7 @@ public:
   /**
    * Enumerate the types of particles the cut is made on.
    */
-  enum PType {
+  enum class P {
     JET, /**< The cut applies only to coloured particles. */
     LEP, /**< The cut applies only to leptons. */
     PHO, /**< The cut applies only to photons. */
@@ -56,7 +56,7 @@ public:
   /**
    * The default constructor.
    */
-  MadGraphOneCut() : cutType(PT), particleType(JET), theCut(0.0) {}
+  MadGraphOneCut() : cutType(Cut::PT), particleType(P::JET), theCut(0.0) {}
 
   /**
    * The constructor used by the MadGraphReader.
@@ -64,7 +64,7 @@ public:
    * @param p is the type of particles the cut is applied to.
    * @param c is the value of the cut (in units of GeV where applicable).
    */
-  MadGraphOneCut(CutType t, PType p, double c)
+  MadGraphOneCut(Cut t, P p, double c)
     : cutType(t), particleType(p), theCut(c) {}
   //@}
 
@@ -163,12 +163,12 @@ private:
   /**
    * The type of this cut.
    */
-  CutType cutType;
+  Cut cutType;
 
   /**
    * The type of particles this cut applies to.
    */
-  PType particleType;
+  P particleType;
 
   /**
    * The value of the cut to be applied.
@@ -187,7 +187,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MadGraphOneCut & operator=(const MadGraphOneCut &);
+  MadGraphOneCut & operator=(const MadGraphOneCut &) = delete;
 
 };
 

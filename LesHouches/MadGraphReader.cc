@@ -300,7 +300,7 @@ bool MadGraphReader::doReadEvent() {
     for ( int i = 0; i < hepeup.NUP; ++i ) cfile >> hepeup.SPINUP[i];
   }
 
-  hepeup.PUP.resize(hepeup.NUP, vector<double>(5));
+  hepeup.PUP.resize(hepeup.NUP);
   for ( int i = 0; i < hepeup.NUP; ++i ) {
     if ( !cfile.readline() ) return false;
     int dummy = 0;
@@ -389,46 +389,46 @@ CutsPtr MadGraphReader::initCuts() {
   vector<string> tnames;
   for ( map<string,double>::iterator i = cuts.begin(); i != cuts.end(); ++i ) {
     if ( i->second <= 0.0 ) continue;
-    MadGraphOneCut::CutType t = MadGraphOneCut::PT;
+    MadGraphOneCut::Cut t = MadGraphOneCut::Cut::PT;
     char p = 0;
     if ( i->first.substr(0, 2) == "pt" ) {
-      t = MadGraphOneCut::PT;
+      t = MadGraphOneCut::Cut::PT;
       p = i->first[2];
     }
     else if  ( i->first.substr(0, 3) == "eta" ) {
-      t = MadGraphOneCut::ETA;
+      t = MadGraphOneCut::Cut::ETA;
       p = i->first[3];
     }
     else if  ( i->first.substr(0, 3) == "xpt" ) {
-      t = MadGraphOneCut::XPT;
+      t = MadGraphOneCut::Cut::XPT;
       p = i->first[3];
     }
     if ( p ) {
-      MadGraphOneCut::PType pt = MadGraphOneCut::JET;
+      MadGraphOneCut::P pt = MadGraphOneCut::P::JET;
       switch ( p ) {
-      case 'j':	pt = MadGraphOneCut::JET; break;
-      case 'b':	pt = MadGraphOneCut::BOT; break;
-      case 'a':	pt = MadGraphOneCut::PHO; break;
-      case 'l':	pt = MadGraphOneCut::LEP; break;
+      case 'j':	pt = MadGraphOneCut::P::JET; break;
+      case 'b':	pt = MadGraphOneCut::P::BOT; break;
+      case 'a':	pt = MadGraphOneCut::P::PHO; break;
+      case 'l':	pt = MadGraphOneCut::P::LEP; break;
       }
       ones.push_back(new_ptr(MadGraphOneCut(t, pt, i->second)));
       onames.push_back(i->first);
       continue;
     }
     if ( i->first.substr(0, 2) == "dr" || i->first.substr(0, 2) == "mm" ) {
-      MadGraphTwoCut::CutType tt = MadGraphTwoCut::DELTAR;
-      if ( i->first.substr(0, 2) == "mm" ) tt = MadGraphTwoCut::INVMASS;
-      MadGraphTwoCut::PPType pp = MadGraphTwoCut::JETJET;
-      if ( i->first.substr(2, 2) == "jj" ) pp = MadGraphTwoCut::JETJET;
-      else if ( i->first.substr(2, 2) == "bb" )	pp = MadGraphTwoCut::BOTBOT;
-      else if ( i->first.substr(2, 2) == "aa" )	pp = MadGraphTwoCut::PHOPHO;
-      else if ( i->first.substr(2, 2) == "ll" )	pp = MadGraphTwoCut::LEPLEP;
-      else if ( i->first.substr(2, 2) == "bj" )	pp = MadGraphTwoCut::BOTJET;
-      else if ( i->first.substr(2, 2) == "aj" )	pp = MadGraphTwoCut::PHOJET;
-      else if ( i->first.substr(2, 2) == "jl" )	pp = MadGraphTwoCut::JETLEP;
-      else if ( i->first.substr(2, 2) == "ab" )	pp = MadGraphTwoCut::PHOBOT;
-      else if ( i->first.substr(2, 2) == "bl" )	pp = MadGraphTwoCut::BOTLEP;
-      else if ( i->first.substr(2, 2) == "al" )	pp = MadGraphTwoCut::PHOLEP;
+      MadGraphTwoCut::Cut tt = MadGraphTwoCut::Cut::DELTAR;
+      if ( i->first.substr(0, 2) == "mm" ) tt = MadGraphTwoCut::Cut::INVMASS;
+      MadGraphTwoCut::PP pp = MadGraphTwoCut::PP::JETJET;
+      if ( i->first.substr(2, 2) == "jj" ) pp = MadGraphTwoCut::PP::JETJET;
+      else if ( i->first.substr(2, 2) == "bb" )	pp = MadGraphTwoCut::PP::BOTBOT;
+      else if ( i->first.substr(2, 2) == "aa" )	pp = MadGraphTwoCut::PP::PHOPHO;
+      else if ( i->first.substr(2, 2) == "ll" )	pp = MadGraphTwoCut::PP::LEPLEP;
+      else if ( i->first.substr(2, 2) == "bj" )	pp = MadGraphTwoCut::PP::BOTJET;
+      else if ( i->first.substr(2, 2) == "aj" )	pp = MadGraphTwoCut::PP::PHOJET;
+      else if ( i->first.substr(2, 2) == "jl" )	pp = MadGraphTwoCut::PP::JETLEP;
+      else if ( i->first.substr(2, 2) == "ab" )	pp = MadGraphTwoCut::PP::PHOBOT;
+      else if ( i->first.substr(2, 2) == "bl" )	pp = MadGraphTwoCut::PP::BOTLEP;
+      else if ( i->first.substr(2, 2) == "al" )	pp = MadGraphTwoCut::PP::PHOLEP;
       twos.push_back(new_ptr(MadGraphTwoCut(tt, pp, i->second)));
       tnames.push_back(i->first);
     }
@@ -470,46 +470,46 @@ string MadGraphReader::scanCuts(string) {
   vector<string> tnames;
   for ( map<string,double>::iterator i = cuts.begin(); i != cuts.end(); ++i ) {
     if ( i->second <= 0.0 ) continue;
-    MadGraphOneCut::CutType t = MadGraphOneCut::PT;
+    MadGraphOneCut::Cut t = MadGraphOneCut::Cut::PT;
     char p = 0;
     if ( i->first.substr(0, 2) == "pt" ) {
-      t = MadGraphOneCut::PT;
+      t = MadGraphOneCut::Cut::PT;
       p = i->first[2];
     }
     else if  ( i->first.substr(0, 3) == "eta" ) {
-      t = MadGraphOneCut::ETA;
+      t = MadGraphOneCut::Cut::ETA;
       p = i->first[3];
     }
     else if  ( i->first.substr(0, 3) == "xpt" ) {
-      t = MadGraphOneCut::XPT;
+      t = MadGraphOneCut::Cut::XPT;
       p = i->first[3];
     }
     if ( p ) {
-      MadGraphOneCut::PType pt = MadGraphOneCut::JET;
+      MadGraphOneCut::P pt = MadGraphOneCut::P::JET;
       switch ( p ) {
-      case 'j':	pt = MadGraphOneCut::JET; break;
-      case 'b':	pt = MadGraphOneCut::BOT; break;
-      case 'a':	pt = MadGraphOneCut::PHO; break;
-      case 'l':	pt = MadGraphOneCut::LEP; break;
+      case 'j':	pt = MadGraphOneCut::P::JET; break;
+      case 'b':	pt = MadGraphOneCut::P::BOT; break;
+      case 'a':	pt = MadGraphOneCut::P::PHO; break;
+      case 'l':	pt = MadGraphOneCut::P::LEP; break;
       }
       ones.push_back(new_ptr(MadGraphOneCut(t, pt, i->second)));
       onames.push_back(i->first);
       continue;
     }
     if ( i->first.substr(0, 2) == "dr" || i->first.substr(0, 2) == "mm" ) {
-      MadGraphTwoCut::CutType tt = MadGraphTwoCut::DELTAR;
-      if ( i->first.substr(0, 2) == "mm" ) tt = MadGraphTwoCut::INVMASS;
-      MadGraphTwoCut::PPType pp = MadGraphTwoCut::JETJET;
-      if ( i->first.substr(2, 2) == "jj" ) pp = MadGraphTwoCut::JETJET;
-      else if ( i->first.substr(2, 2) == "bb" )	pp = MadGraphTwoCut::BOTBOT;
-      else if ( i->first.substr(2, 2) == "aa" )	pp = MadGraphTwoCut::PHOPHO;
-      else if ( i->first.substr(2, 2) == "ll" )	pp = MadGraphTwoCut::LEPLEP;
-      else if ( i->first.substr(2, 2) == "bj" )	pp = MadGraphTwoCut::BOTJET;
-      else if ( i->first.substr(2, 2) == "aj" )	pp = MadGraphTwoCut::PHOJET;
-      else if ( i->first.substr(2, 2) == "jl" )	pp = MadGraphTwoCut::JETLEP;
-      else if ( i->first.substr(2, 2) == "ab" )	pp = MadGraphTwoCut::PHOBOT;
-      else if ( i->first.substr(2, 2) == "bl" )	pp = MadGraphTwoCut::BOTLEP;
-      else if ( i->first.substr(2, 2) == "al" )	pp = MadGraphTwoCut::PHOLEP;
+      MadGraphTwoCut::Cut tt = MadGraphTwoCut::Cut::DELTAR;
+      if ( i->first.substr(0, 2) == "mm" ) tt = MadGraphTwoCut::Cut::INVMASS;
+      MadGraphTwoCut::PP pp = MadGraphTwoCut::PP::JETJET;
+      if ( i->first.substr(2, 2) == "jj" ) pp = MadGraphTwoCut::PP::JETJET;
+      else if ( i->first.substr(2, 2) == "bb" )	pp = MadGraphTwoCut::PP::BOTBOT;
+      else if ( i->first.substr(2, 2) == "aa" )	pp = MadGraphTwoCut::PP::PHOPHO;
+      else if ( i->first.substr(2, 2) == "ll" )	pp = MadGraphTwoCut::PP::LEPLEP;
+      else if ( i->first.substr(2, 2) == "bj" )	pp = MadGraphTwoCut::PP::BOTJET;
+      else if ( i->first.substr(2, 2) == "aj" )	pp = MadGraphTwoCut::PP::PHOJET;
+      else if ( i->first.substr(2, 2) == "jl" )	pp = MadGraphTwoCut::PP::JETLEP;
+      else if ( i->first.substr(2, 2) == "ab" )	pp = MadGraphTwoCut::PP::PHOBOT;
+      else if ( i->first.substr(2, 2) == "bl" )	pp = MadGraphTwoCut::PP::BOTLEP;
+      else if ( i->first.substr(2, 2) == "al" )	pp = MadGraphTwoCut::PP::PHOLEP;
       twos.push_back(new_ptr(MadGraphTwoCut(tt, pp, i->second)));
       tnames.push_back(i->first);
     }

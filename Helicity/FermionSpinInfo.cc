@@ -14,13 +14,16 @@
 //
 
 #include "FermionSpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
-NoPIOClassDescription<FermionSpinInfo> FermionSpinInfo::initFermionSpinInfo;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<FermionSpinInfo,SpinInfo>
+describeThePEGFermionSpinInfo("ThePEG::FermionSpinInfo", "libThePEG.so");
 
 void FermionSpinInfo::Init() {}
 

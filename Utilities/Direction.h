@@ -149,7 +149,7 @@ private:
   /**
    * Default ctors and assignment is private and not implemented.
    */
-  Direction & operator=(const Direction &);
+  Direction & operator=(const Direction &) = delete;
 
 };
 

@@ -405,7 +405,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SimpleFlavour & operator=(const SimpleFlavour &);
+  SimpleFlavour & operator=(const SimpleFlavour &) = delete;
 
 };
 

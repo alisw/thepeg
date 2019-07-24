@@ -48,7 +48,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  TestLHAPDF & operator=(const TestLHAPDF &);
+  TestLHAPDF & operator=(const TestLHAPDF &) = delete;
 
 };
 

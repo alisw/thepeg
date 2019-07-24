@@ -149,7 +149,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  O1AlphaS & operator=(const O1AlphaS &);
+  O1AlphaS & operator=(const O1AlphaS &) = delete;
 
 };
 

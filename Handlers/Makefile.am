@@ -28,7 +28,7 @@ INCLUDEFILES = $(DOCFILES) HandlerGroup.tcc \
 
 
 noinst_LTLIBRARIES = libThePEGHandlers.la
-pkglib_LTLIBRARIES = FixedCMSLuminosity.la \
+pkglib_LTLIBRARIES = FixedCMSLuminosity.la FixedTargetLuminosity.la \
           ACDCSampler.la SimpleFlavour.la GaussianPtGenerator.la \
           SimpleZGenerator.la
 
@@ -39,6 +39,11 @@ libThePEGHandlers_la_SOURCES = $(mySOURCES) $(INCLUDEFILES)
 # function is changed
 FixedCMSLuminosity_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 FixedCMSLuminosity_la_SOURCES = FixedCMSLuminosity.cc FixedCMSLuminosity.h
+
+# Version info should be updated if any interface or persistent I/O
+# function is changed
+FixedTargetLuminosity_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
+FixedTargetLuminosity_la_SOURCES = FixedTargetLuminosity.cc FixedTargetLuminosity.h
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed

@@ -128,7 +128,7 @@ public:
     assert(iSpin()==4);
     for (unsigned int i=0; i<4; ++i)
       for(unsigned int j=0; j<4; ++j)
-	_wf(i,j)=wave(i,j)*UnitRemoval::InvSqrtE;
+	_wf(i,j)=Complex(wave(i,j)*UnitRemoval::InvSqrtE);
   }
 
   /**

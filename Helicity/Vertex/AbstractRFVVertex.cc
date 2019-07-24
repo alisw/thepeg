@@ -5,13 +5,15 @@
 //
 
 #include "AbstractRFVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<AbstractRFVVertex> 
-AbstractRFVVertex::initAbstractRFVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<AbstractRFVVertex,VertexBase>
+describeThePEGAbstractRFVVertex("ThePEG::AbstractRFVVertex", "libThePEG.so");
 
 void AbstractRFVVertex::Init() {
 

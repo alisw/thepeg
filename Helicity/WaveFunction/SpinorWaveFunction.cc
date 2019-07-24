@@ -59,7 +59,7 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel) {
       InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
       SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz); 
       hel_wf[0] = denominator*rtppluspz;
-      hel_wf[1] = denominator/rtppluspz*complex<Energy>(ppx,ppy);
+      hel_wf[1] = Complex(denominator/rtppluspz*complex<Energy>(ppx,ppy));
     }
   }
   // compute the - spinor for - helicty particles and + helicity antiparticles
@@ -79,7 +79,7 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel) {
     else {
       InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
       SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz);
-      hel_wf[0] = denominator/rtppluspz*complex<Energy>(-ppx,ppy);
+      hel_wf[0] = Complex(denominator/rtppluspz*complex<Energy>(-ppx,ppy));
       hel_wf[1] = denominator*rtppluspz;
     }
   }
@@ -110,10 +110,10 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel) {
   }
   // now finally we can construct the spinors
   _wf = LorentzSpinor<double>( (dir==incoming) ? SpinorType::u : SpinorType::v);
-  _wf[0]=upper*hel_wf[0]*UnitRemoval::InvSqrtE;
-  _wf[1]=upper*hel_wf[1]*UnitRemoval::InvSqrtE;
-  _wf[2]=lower*hel_wf[0]*UnitRemoval::InvSqrtE;
-  _wf[3]=lower*hel_wf[1]*UnitRemoval::InvSqrtE;
+  _wf[0] = Complex(upper*hel_wf[0]*UnitRemoval::InvSqrtE);
+  _wf[1] = Complex(upper*hel_wf[1]*UnitRemoval::InvSqrtE);
+  _wf[2] = Complex(lower*hel_wf[0]*UnitRemoval::InvSqrtE);
+  _wf[3] = Complex(lower*hel_wf[1]*UnitRemoval::InvSqrtE);
 }
 
 SpinorBarWaveFunction SpinorWaveFunction::bar() {

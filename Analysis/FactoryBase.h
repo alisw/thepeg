@@ -515,7 +515,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FactoryBase & operator=(const FactoryBase &);
+  FactoryBase & operator=(const FactoryBase &) = delete;
 
 };
 

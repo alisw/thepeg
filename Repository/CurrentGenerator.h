@@ -269,7 +269,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  CurrentGenerator & operator=(const CurrentGenerator &);
+  CurrentGenerator & operator=(const CurrentGenerator &) = delete;
 
 };
 

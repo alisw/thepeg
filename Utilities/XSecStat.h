@@ -54,8 +54,8 @@ public:
    */
   XSecStat() 
     : theMaxXSec(ZERO), theAttempts(0), theAccepted(0), theVetoed(0),
-      theSumWeights (vector<double>(4,0.0)),
-      theSumWeights2(vector<double>(4,0.0)), theLastWeight(0.0) {}
+      theSumWeights (),
+      theSumWeights2(), theLastWeight(0.0) {}
 
   /**
    * Constructor taking the overestimated cross section, \a xsecmax,
@@ -63,22 +63,13 @@ public:
    */
   explicit XSecStat(CrossSection xsecmax) 
     : theMaxXSec(xsecmax), theAttempts(0), theAccepted(0), theVetoed(0),
-      theSumWeights (vector<double>(4,0.0)),
-      theSumWeights2(vector<double>(4,0.0)), theLastWeight(0.0) {}
+      theSumWeights (),
+      theSumWeights2(), theLastWeight(0.0) {}
 
   /**
    * The assignment operator.
    */
-  XSecStat & operator=(const XSecStat & x) {
-    theMaxXSec     = x.theMaxXSec;
-    theAttempts    = x.theAttempts;
-    theAccepted    = x.theAccepted;
-    theVetoed      = x.theVetoed;
-    theSumWeights  = x.theSumWeights;
-    theSumWeights2 = x.theSumWeights2;
-    theLastWeight  = x.theLastWeight;
-    return *this;
-  }
+  XSecStat & operator=(const XSecStat & x) = default;
 
   /**
    * Add the contents of another XSecStat.
@@ -100,7 +91,7 @@ public:
    */
   void reset() {
     theAttempts = theAccepted = theVetoed = 0;
-    theSumWeights = theSumWeights2 = vector<double>(4,0.0);
+    theSumWeights = theSumWeights2 = {};
     theLastWeight = 0.0;
   }
 
@@ -299,12 +290,12 @@ private:
   /**
    * The sum of the weights so far.
    */
-  vector<double> theSumWeights;
+  array<double,4> theSumWeights;
 
   /**
    * The sum of the squared weights so far.
    */
-  vector<double> theSumWeights2;
+  array<double,4> theSumWeights2;
 
   /**
    * The last selected weight, ignoring reweighting.

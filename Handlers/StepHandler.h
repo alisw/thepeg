@@ -148,7 +148,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  StepHandler & operator=(const StepHandler &);
+  StepHandler & operator=(const StepHandler &) = delete;
 
 };
 

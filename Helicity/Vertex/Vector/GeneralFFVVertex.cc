@@ -12,15 +12,17 @@
 //
 
 #include "GeneralFFVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
 // Definition of the static class description member
-AbstractNoPIOClassDescription<GeneralFFVVertex> GeneralFFVVertex::initGeneralFFVVertex;
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<GeneralFFVVertex,AbstractFFVVertex>
+describeThePEGGeneralFFVVertex("ThePEG::GeneralFFVVertex", "libThePEG.so");
     
 void GeneralFFVVertex::Init() {
       
@@ -64,23 +66,23 @@ Complex GeneralFFVVertex::evaluate(Energy2 q2,
   }
   // left sigma piece
   if(_leftSigma!=zero) {
-  vertex += -ii * _leftSigma *
-    (sbar.s1()*sp.s1()*(-vec. e()*vec.z() + vec.pz()*vec.t() 
-			  -ii*(vec.py()*vec.x()-vec.px()*vec.y()))+
-     sbar.s2()*sp.s1()*(   p1p2*e0p3 - p0p3*e1p2 ) +
-     sbar.s1()*sp.s2()*( + p1m2*e0m3 - p0m3*e1m2 ) +
-     sbar.s2()*sp.s2()*( vec. e()*vec.z() - vec.pz()*vec.t()
-			  -ii*(vec.px()*vec.y()-vec.py()*vec.x())));
+    vertex -= Complex(ii * _leftSigma *
+		       (sbar.s1()*sp.s1()*(-vec. e()*vec.z() + vec.pz()*vec.t() 
+					   -ii*(vec.py()*vec.x()-vec.px()*vec.y()))+
+			sbar.s2()*sp.s1()*(   p1p2*e0p3 - p0p3*e1p2 ) +
+			sbar.s1()*sp.s2()*( + p1m2*e0m3 - p0m3*e1m2 ) +
+			sbar.s2()*sp.s2()*( vec. e()*vec.z() - vec.pz()*vec.t()
+					    -ii*(vec.px()*vec.y()-vec.py()*vec.x()))));
   }
   // right sigma piece
   if(_rightSigma!=zero) {
-    vertex += ii * _rightSigma *
-      (sbar.s3()*sp.s3()*(-vec.e()*vec.z()+vec.pz()*vec.t()
-			    -ii*(vec.px()*vec.y()-vec.py()*vec.x()))+
-       sbar.s4()*sp.s3()*(   p1p2*e0m3 - p0m3*e1p2 ) +
-       sbar.s3()*sp.s4()*(   p1m2*e0p3 - p0p3*e1m2 ) +
-       sbar.s4()*sp.s4()*( vec.e()*vec.z()-vec.pz()*vec.t()
-			     +ii*(vec.px()*vec.y()-vec.py()*vec.x())));
+    vertex += Complex(ii * _rightSigma *
+		      (sbar.s3()*sp.s3()*(-vec.e()*vec.z()+vec.pz()*vec.t()
+					  -ii*(vec.px()*vec.y()-vec.py()*vec.x()))+
+		       sbar.s4()*sp.s3()*(   p1p2*e0m3 - p0m3*e1p2 ) +
+		       sbar.s3()*sp.s4()*(   p1m2*e0p3 - p0p3*e1m2 ) +
+		       sbar.s4()*sp.s4()*( vec.e()*vec.z()-vec.pz()*vec.t()
+					   +ii*(vec.px()*vec.y()-vec.py()*vec.x()))));
   }
   vertex *= ii;
   // final factors
@@ -125,17 +127,17 @@ SpinorWaveFunction GeneralFFVVertex::evaluate(Energy2 q2, int iopt,tcPDPtr  out,
   Complex a4 = fact*( sp.s1()*e1p2+sp.s2()*e0m3);
   // left piece
   if(_left!=0.) {
-    s1 +=UnitRemoval::InvE * _left * (p0m3*a3-p1m2*a4);
-    s2 +=UnitRemoval::InvE * _left * (-p1p2*a3+p0p3*a4);
-    s3 +=UnitRemoval::InvE * _left * a3*mass;
-    s4 +=UnitRemoval::InvE * _left * a4*mass;
+    s1 += Complex(UnitRemoval::InvE * _left * (p0m3*a3-p1m2*a4));
+    s2 += Complex(UnitRemoval::InvE * _left * (-p1p2*a3+p0p3*a4));
+    s3 += Complex(UnitRemoval::InvE * _left * a3*mass);
+    s4 += Complex(UnitRemoval::InvE * _left * a4*mass);
   }
   // right piece
   if(_right!=0.) {
-    s1 +=UnitRemoval::InvE * _right * a1*mass;
-    s2 +=UnitRemoval::InvE * _right * a2*mass;
-    s3 +=UnitRemoval::InvE * _right * (p0p3*a1+p1m2*a2);
-    s4 +=UnitRemoval::InvE * _right * (p1p2*a1+p0m3*a2);
+    s1 += Complex(UnitRemoval::InvE * _right * a1*mass);
+    s2 += Complex(UnitRemoval::InvE * _right * a2*mass);
+    s3 += Complex(UnitRemoval::InvE * _right * (p0p3*a1+p1m2*a2));
+    s4 += Complex(UnitRemoval::InvE * _right * (p1p2*a1+p0m3*a2));
   }
   complex<Energy> p0p3b = vec. e() +    vec.pz();
   complex<Energy> p0m3b = vec. e() -    vec.pz();
@@ -147,29 +149,29 @@ SpinorWaveFunction GeneralFFVVertex::evaluate(Energy2 q2, int iopt,tcPDPtr  out,
   complex<Energy> b4 = fact*( sp.s1()*p1p2b + sp.s2()*p0m3b);
   // left sigma piece
   if(_leftSigma!=zero) {
-    s1 += -0.5*ii*UnitRemoval::InvE *mass*_leftSigma*
-      ( - a3*p0m3b + a4*p1m2b + b3*e0m3 - b4*e1m2);
-    s2 +=  0.5*ii*UnitRemoval::InvE *mass*_leftSigma*
-      ( - a3*p1p2b + a4*p0p3b + b3*e1p2 - b4*e0p3);
-    s3 += -0.5*ii*UnitRemoval::InvE*_leftSigma*
-      ( + p0p3*( - a3*p0m3b + a4*p1m2b + b3*e0m3 - b4*e1m2 )
-        + p1m2*(   a3*p1p2b - a4*p0p3b - b3*e1p2 + b4*e0p3 ) );
-    s4 +=  0.5*ii*UnitRemoval::InvE*_leftSigma*
-      ( + p1p2*( + a3*p0m3b - a4*p1m2b - b3*e0m3 + b4*e1m2 )
-        + p0m3*( - a3*p1p2b + a4*p0p3b + b3*e1p2 - b4*e0p3 ) );
+    s1 += Complex(-0.5*ii*UnitRemoval::InvE *mass*_leftSigma*
+		  ( - a3*p0m3b + a4*p1m2b + b3*e0m3 - b4*e1m2));
+    s2 += Complex( 0.5*ii*UnitRemoval::InvE *mass*_leftSigma*
+		   ( - a3*p1p2b + a4*p0p3b + b3*e1p2 - b4*e0p3));
+    s3 += Complex(-0.5*ii*UnitRemoval::InvE*_leftSigma*
+		  ( + p0p3*( - a3*p0m3b + a4*p1m2b + b3*e0m3 - b4*e1m2 )
+		    + p1m2*(   a3*p1p2b - a4*p0p3b - b3*e1p2 + b4*e0p3 ) ));
+    s4 += Complex( 0.5*ii*UnitRemoval::InvE*_leftSigma*
+		   ( + p1p2*( + a3*p0m3b - a4*p1m2b - b3*e0m3 + b4*e1m2 )
+		     + p0m3*( - a3*p1p2b + a4*p0p3b + b3*e1p2 - b4*e0p3 ) ));
   }
   // right sigma piece
   if(_rightSigma!=zero) {
-    s1 +=  0.5*ii*UnitRemoval::InvE *_rightSigma*
-      ( + p0m3*( + a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 )
-	+ p1m2*( - a1*p1p2b - a2*p0m3b + b1*e1p2 + b2*e0m3 ) );
-    s2 += -0.5*ii*UnitRemoval::InvE *_rightSigma*
-      ( + p1p2*( + a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 )
-	+ p0p3*( - a1*p1p2b - a2*p0m3b + b1*e1p2 + b2*e0m3 ) );
-    s3 +=  0.5*ii*UnitRemoval::InvE *mass*_rightSigma*
-      (  a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 );
-    s4 += -0.5*ii*UnitRemoval::InvE *mass*_rightSigma*
-      ( -a1*p1p2b - a2*p0m3b + b2*e0m3 + b1*e1p2 );
+    s1 +=Complex(  0.5*ii*UnitRemoval::InvE *_rightSigma*
+		   ( + p0m3*( + a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 )
+		     + p1m2*( - a1*p1p2b - a2*p0m3b + b1*e1p2 + b2*e0m3 ) ));
+    s2 +=Complex( -0.5*ii*UnitRemoval::InvE *_rightSigma*
+		  ( + p1p2*( + a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 )
+		    + p0p3*( - a1*p1p2b - a2*p0m3b + b1*e1p2 + b2*e0m3 ) ));
+    s3 += Complex( 0.5*ii*UnitRemoval::InvE *mass*_rightSigma*
+		   (  a1*p0p3b + a2*p1m2b - b1*e0p3 - b2*e1m2 ));
+    s4 +=Complex( -0.5*ii*UnitRemoval::InvE *mass*_rightSigma*
+		  ( -a1*p1p2b - a2*p0m3b + b2*e0m3 + b1*e1p2 ));
   }
   // return the wavefunction
   return SpinorWaveFunction(pout,out,s1,s2,s3,s4);
@@ -218,43 +220,43 @@ SpinorBarWaveFunction GeneralFFVVertex::evaluate(Energy2 q2,int iopt,tcPDPtr  ou
   complex<Energy> b4 = fact*(-sbar.s1()*p1m2b+sbar.s2()*p0p3b);
   // left piece
   if(_left!=0.) {
-    s1 += UnitRemoval::InvE*_left*a1*mass;
-    s2 += UnitRemoval::InvE*_left*a2*mass;
-    s3 += UnitRemoval::InvE*_left*(-p0m3*a1+p1p2*a2);
-    s4 += UnitRemoval::InvE*_left*(+p1m2*a1-p0p3*a2);
+    s1 += Complex(UnitRemoval::InvE*_left*a1*mass);
+    s2 += Complex(UnitRemoval::InvE*_left*a2*mass);
+    s3 += Complex(UnitRemoval::InvE*_left*(-p0m3*a1+p1p2*a2));
+    s4 += Complex(UnitRemoval::InvE*_left*(+p1m2*a1-p0p3*a2));
   }
   // right piece
   if(_right!=0.) {
-    s1 += UnitRemoval::InvE*_right*(-p0p3*a3-p1p2*a4);
-    s2 += UnitRemoval::InvE*_right*(-p1m2*a3-p0m3*a4);
-    s3 += UnitRemoval::InvE*_right*a3*mass;
-    s4 += UnitRemoval::InvE*_right*a4*mass; 
+    s1 += Complex(UnitRemoval::InvE*_right*(-p0p3*a3-p1p2*a4));
+    s2 += Complex(UnitRemoval::InvE*_right*(-p1m2*a3-p0m3*a4));
+    s3 += Complex(UnitRemoval::InvE*_right*a3*mass);
+    s4 += Complex(UnitRemoval::InvE*_right*a4*mass); 
   }
   // left sigma piece
   if(_leftSigma!=zero) {
-    s1 +=  0.5*ii*UnitRemoval::InvE*_leftSigma*mass*
-      ( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2);
-    s2 += -0.5*ii*UnitRemoval::InvE*_leftSigma*mass*
-      ( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3);
-    s3 += -0.5*ii*UnitRemoval::InvE*_leftSigma*
-      (+p0m3*( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2)
-       +p1p2*( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3));
-    s4 += +0.5*ii*UnitRemoval::InvE*_leftSigma*
-      (+p1m2*( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2)
-       +p0p3*( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3));
+    s1 +=Complex(  0.5*ii*UnitRemoval::InvE*_leftSigma*mass*
+		   ( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2));
+    s2 +=Complex( -0.5*ii*UnitRemoval::InvE*_leftSigma*mass*
+		  ( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3));
+    s3 +=Complex( -0.5*ii*UnitRemoval::InvE*_leftSigma*
+		  (+p0m3*( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2)
+		   +p1p2*( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3)));
+    s4 +=Complex( +0.5*ii*UnitRemoval::InvE*_leftSigma*
+		  (+p1m2*( + a3*p0p3b + a4*p1p2b - b3*e0p3 - b4*e1p2)
+		   +p0p3*( - a3*p1m2b - a4*p0m3b + b3*e1m2 + b4*e0m3)));
   }
   // right sigma piece
   if(_rightSigma!=zero) {
-    s1 += +0.5*ii*UnitRemoval::InvE*_rightSigma*
-      (+p0p3*( - a1*p0m3b + a2*p1p2b + b1*e0m3 - b2*e1p2)
-       +p1p2*( + a1*p1m2b - a2*p0p3b - b1*e1m2 + b2*e0p3));
-    s2 += -0.5*ii*UnitRemoval::InvE*_rightSigma*
-      (+p1m2*( + a1*p0m3b - a2*p1p2b - b1*e0m3 + b2*e1p2)
-       +p0m3*( - a1*p1m2b + a2*p0p3b + b1*e1m2 - b2*e0p3));
-    s3 += -0.5*ii*UnitRemoval::InvE*_rightSigma*mass*
-      ( - a1*p0m3b + a2*p1p2b + b1*e0m3 - b2*e1p2 );
-    s4 +=  0.5*ii*UnitRemoval::InvE*_rightSigma*mass*
-      ( - a1*p1m2b + a2*p0p3b + b1*e1m2 - b2*e0p3 );
+    s1 +=Complex( +0.5*ii*UnitRemoval::InvE*_rightSigma*
+		  (+p0p3*( - a1*p0m3b + a2*p1p2b + b1*e0m3 - b2*e1p2)
+		   +p1p2*( + a1*p1m2b - a2*p0p3b - b1*e1m2 + b2*e0p3)));
+    s2 +=Complex( -0.5*ii*UnitRemoval::InvE*_rightSigma*
+		  (+p1m2*( + a1*p0m3b - a2*p1p2b - b1*e0m3 + b2*e1p2)
+		   +p0m3*( - a1*p1m2b + a2*p0p3b + b1*e1m2 - b2*e0p3)));
+    s3 +=Complex( -0.5*ii*UnitRemoval::InvE*_rightSigma*mass*
+		  ( - a1*p0m3b + a2*p1p2b + b1*e0m3 - b2*e1p2 ));
+    s4 +=Complex(  0.5*ii*UnitRemoval::InvE*_rightSigma*mass*
+		   ( - a1*p1m2b + a2*p0p3b + b1*e1m2 - b2*e0p3 ));
   }
   return SpinorBarWaveFunction(pout,out,s1,s2,s3,s4);
 }
@@ -299,33 +301,33 @@ VectorWaveFunction GeneralFFVVertex::evaluate(Energy2 q2,int iopt,tcPDPtr  out,
   }
   // left sigma
   if(_leftSigma==zero) {
-    vec[0] += -0.5*ii*_leftSigma*
-      (+sp.s1()*sbar.s1()*(p1p2-p1m2)+2.*sp.s1()*sbar.s2()*p0p3
-       -sp.s2()*sbar.s2()*(p1p2-p1m2)+2.*sp.s2()*sbar.s1()*p0m3);
-    vec[1] += -0.5   *_leftSigma*
-      (+sp.s1()*sbar.s1()*(p1m2-p1p2)+2.*sp.s1()*sbar.s2()*p0p3
-       +sp.s2()*sbar.s2()*(p1p2+p1m2)-2.*sp.s2()*sbar.s1()*p0m3);
-    vec[2] += -0.5*ii*_leftSigma*
-      (+sp.s1()*sbar.s1()*(p0p3+p0m3)-2.*sp.s1()*sbar.s2()*p1p2
-       -sp.s2()*sbar.s2()*(p0p3+p0m3)+2.*sp.s2()*sbar.s1()*p1m2);
-    vec[3] +=  0.5*ii*_leftSigma*
-      (-sp.s1()*sbar.s1()*(p0p3-p0m3)-2.*sp.s1()*sbar.s2()*p1p2
-       +sp.s2()*sbar.s2()*(p0p3-p0m3)-2.*sp.s2()*sbar.s1()*p1m2);
+    vec[0] +=Complex( -0.5*ii*_leftSigma*
+		      (+sp.s1()*sbar.s1()*(p1p2-p1m2)+2.*sp.s1()*sbar.s2()*p0p3
+		       -sp.s2()*sbar.s2()*(p1p2-p1m2)+2.*sp.s2()*sbar.s1()*p0m3));
+    vec[1] +=Complex( -0.5   *_leftSigma*
+		      (+sp.s1()*sbar.s1()*(p1m2-p1p2)+2.*sp.s1()*sbar.s2()*p0p3
+		       +sp.s2()*sbar.s2()*(p1p2+p1m2)-2.*sp.s2()*sbar.s1()*p0m3));
+    vec[2] +=Complex( -0.5*ii*_leftSigma*
+		      (+sp.s1()*sbar.s1()*(p0p3+p0m3)-2.*sp.s1()*sbar.s2()*p1p2
+		       -sp.s2()*sbar.s2()*(p0p3+p0m3)+2.*sp.s2()*sbar.s1()*p1m2));
+    vec[3] +=Complex(  0.5*ii*_leftSigma*
+		       (-sp.s1()*sbar.s1()*(p0p3-p0m3)-2.*sp.s1()*sbar.s2()*p1p2
+			+sp.s2()*sbar.s2()*(p0p3-p0m3)-2.*sp.s2()*sbar.s1()*p1m2));
   }
   // right sigma
   if(_rightSigma==zero) {
-    vec[0] +=  0.5*ii*_rightSigma*
-      (-sp.s3()*sbar.s3()*(p1p2-p1m2)+2.*sp.s3()*sbar.s4()*p0m3
-       +sp.s4()*sbar.s4()*(p1p2-p1m2)+2.*sp.s4()*sbar.s3()*p0p3);
-    vec[1] +=  0.5*   _rightSigma*
-      (-sp.s3()*sbar.s3()*(p1p2+p1m2)-2.*sp.s3()*sbar.s4()*p0m3
-       +sp.s4()*sbar.s4()*(p1p2+p1m2)+2.*sp.s4()*sbar.s3()*p0p3);
-    vec[2] +=  0.5*ii*_rightSigma*
-      (+sp.s3()*sbar.s3()*(p0p3+p0m3)+2.*sp.s3()*sbar.s4()*p1p2
-       -sp.s4()*sbar.s4()*(p0p3+p0m3)-2.*sp.s4()*sbar.s3()*p1m2);
-    vec[3] +=  -0.5*ii*_rightSigma*
-      (-sp.s3()*sbar.s3()*(p0p3-p0m3)-2.*sp.s3()*sbar.s4()*p1p2
-       +sp.s4()*sbar.s4()*(p0p3-p0m3)-2.*sp.s4()*sbar.s3()*p1m2);
+    vec[0] +=Complex(  0.5*ii*_rightSigma*
+		       (-sp.s3()*sbar.s3()*(p1p2-p1m2)+2.*sp.s3()*sbar.s4()*p0m3
+			+sp.s4()*sbar.s4()*(p1p2-p1m2)+2.*sp.s4()*sbar.s3()*p0p3));
+    vec[1] +=Complex(  0.5*   _rightSigma*
+		       (-sp.s3()*sbar.s3()*(p1p2+p1m2)-2.*sp.s3()*sbar.s4()*p0m3
+			+sp.s4()*sbar.s4()*(p1p2+p1m2)+2.*sp.s4()*sbar.s3()*p0p3));
+    vec[2] +=Complex(  0.5*ii*_rightSigma*
+		       (+sp.s3()*sbar.s3()*(p0p3+p0m3)+2.*sp.s3()*sbar.s4()*p1p2
+			-sp.s4()*sbar.s4()*(p0p3+p0m3)-2.*sp.s4()*sbar.s3()*p1m2));
+    vec[3] +=Complex(  -0.5*ii*_rightSigma*
+		       (-sp.s3()*sbar.s3()*(p0p3-p0m3)-2.*sp.s3()*sbar.s4()*p1p2
+			+sp.s4()*sbar.s4()*(p0p3-p0m3)-2.*sp.s4()*sbar.s3()*p1m2));
   }
   // massless boson
   if(mass.real()==ZERO) {

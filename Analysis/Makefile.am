@@ -18,7 +18,7 @@ if HAVE_RIVET
   RivetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(RIVETINCLUDE) $(HEPMCINCLUDE)
   RivetAnalysis_la_LIBADD = $(HEPMCLIBS) $(RIVETLIBS)
   RivetAnalysis_la_SOURCES = RivetAnalysis.cc NLORivetAnalysis.cc $(INCLUDEFILES)
-  RivetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module -version-info 25:1:0
+  RivetAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 else
   DOCFILES = $(AIDAWRAPPERS) $(LWHHEADERS)
 endif

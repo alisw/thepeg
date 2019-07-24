@@ -25,7 +25,9 @@ SpinInfo::SpinInfo(const SpinInfo & x)
   : EventInfoBase(x), _production(x._production), _decay(x._decay),
     _timelike(x._timelike),
     _prodloc(x._prodloc), _decayloc(x._decayloc),
-    _decayed(x._decayed), _developed(x._developed),_rhomatrix(x._rhomatrix),
+    _decayed(x._decayed), _developed(x._developed),
+    _oldDeveloped(x._oldDeveloped),
+    _rhomatrix(x._rhomatrix),
     _Dmatrix(x._Dmatrix),_spin(x._spin),
     _productionmomentum(x._productionmomentum),
     _decaymomentum(x._decaymomentum),
@@ -102,18 +104,31 @@ void SpinInfo::decay(bool recursive) const {
   // otherwise we need to obtain the correct rho (timelike) or D (spacelike) matrix
   assert(_developed!=NeedsUpdate);
   if(_timelike) {
-    if(_developed==Developed&&iSpin()!=PDT::Spin0) _developed=NeedsUpdate;
+    if(_developed==Developed&&iSpin()!=PDT::Spin0) {
+      if(_developed!=NeedsUpdate) _oldDeveloped=_developed;
+      _developed=NeedsUpdate;
+    }
     if(productionVertex()) {
       if(recursive) redecay();
       else _rhomatrix = productionVertex()->getRhoMatrix(_prodloc,true);
     }
   }
   else {
-    if(_developed==Developed&&iSpin()!=PDT::Spin0) _developed=NeedsUpdate;
+    if(_developed==Developed&&iSpin()!=PDT::Spin0) {
+      if(_developed!=NeedsUpdate) _oldDeveloped=_developed;
+      _developed=NeedsUpdate;
+    }
     if(_production) _Dmatrix = _production->getDMatrix(_prodloc);
   }
   _decaymomentum = _currentmomentum;
   _decayed=true;
+}
+
+void SpinInfo::undecay() const {
+  // if the particle has not been decayed do nothing
+  if(!_decayed) return;
+  _decayed=false;
+  _developed=_oldDeveloped;
 }
 
 void SpinInfo::redevelop() const {
@@ -128,6 +143,7 @@ void SpinInfo::redevelop() const {
       decayVertex()->getRhoMatrix(decayLocation(),false) :  RhoDMatrix(iSpin());
   }
   // update the D matrix of this spininfo
+  if(_developed!=NeedsUpdate) _oldDeveloped=_developed;
   _developed = Developed;
   // update the parent if needed
   if(productionVertex() &&
@@ -156,6 +172,7 @@ void SpinInfo::develop() const {
       if(_decay) _rhomatrix = _decay->getRhoMatrix(_decayloc,false);
       else       _rhomatrix = RhoDMatrix(iSpin());
     }
+    if(_developed!=NeedsUpdate) _oldDeveloped=_developed;
     _developed=Developed;
     return;
   }
@@ -180,3 +197,4 @@ void SpinInfo::redecay() const {
   else
     _Dmatrix   = productionVertex()->getDMatrix(_prodloc);
 }
+

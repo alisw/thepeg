@@ -241,14 +241,9 @@ protected:
 private:
   
   /**
-   * Describe an abstract class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<RFVVertex> initRFVVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  RFVVertex & operator=(const RFVVertex &);
+  RFVVertex & operator=(const RFVVertex &) = delete;
   
 private:
 
@@ -265,34 +260,5 @@ private:
 };
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of RFVVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::RFVVertex,1> {
-  /** Typedef of the base class of RFVVertex. */
-  typedef ThePEG::Helicity::AbstractRFVVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::RFVVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::RFVVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::RFVVertex"; }
-};
-
-/** @endcond */
-
 }
-
 #endif /* ThePEG_RFVVertex_H */

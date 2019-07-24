@@ -116,7 +116,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  LeptonLeptonPDF & operator=(const LeptonLeptonPDF &);
+  LeptonLeptonPDF & operator=(const LeptonLeptonPDF &) = delete;
 
 };
 

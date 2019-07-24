@@ -14,6 +14,7 @@
 //
 
 #include "VectorSpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
@@ -23,8 +24,10 @@ EIPtr VectorSpinInfo::clone() const {
   return const_ptr_cast<SpinPtr>(temp);
 }
 
-NoPIOClassDescription<VectorSpinInfo> VectorSpinInfo::initVectorSpinInfo;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<VectorSpinInfo,SpinInfo>
+describeThePEGVectorSpinInfo("ThePEG::VectorSpinInfo", "libThePEG.so");
 
 void VectorSpinInfo::Init() {}
 

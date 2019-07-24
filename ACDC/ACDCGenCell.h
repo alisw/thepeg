@@ -229,7 +229,7 @@ private:
   /**
    * Assignment is private and not implemented.
    */
-  ACDCGenCell & operator=(const ACDCGenCell &);
+  ACDCGenCell & operator=(const ACDCGenCell &) = delete;
 
 };
 

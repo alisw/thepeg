@@ -274,7 +274,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ColourLine & operator=(const ColourLine &);
+  ColourLine & operator=(const ColourLine &) = delete;
 
 };
 

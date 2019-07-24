@@ -46,7 +46,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MultipleInteractionHandler & operator=(const MultipleInteractionHandler &);
+  MultipleInteractionHandler & operator=(const MultipleInteractionHandler &) = delete;
 
 };
 

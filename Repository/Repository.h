@@ -333,7 +333,7 @@ private:
    * It makes no sense to copy a Repository, so this assignment is
    * not implemented
    */
-  Repository & operator=(const Repository &);
+  Repository & operator=(const Repository &) = delete;
 
   /**
    * Count the number of repositorys instantiated.

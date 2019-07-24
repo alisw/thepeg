@@ -184,7 +184,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  RemnantHandler & operator=(const RemnantHandler &);
+  RemnantHandler & operator=(const RemnantHandler &) = delete;
 
 };
 

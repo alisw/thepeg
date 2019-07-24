@@ -234,7 +234,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  PartonBin & operator=(const PartonBin &);
+  PartonBin & operator=(const PartonBin &) = delete;
 
 };
 

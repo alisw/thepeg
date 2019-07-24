@@ -309,7 +309,7 @@ private:
   /**
    * Assignment is forbidden.
    */
-  SubProcess & operator=(const SubProcess &);
+  SubProcess & operator=(const SubProcess &) = delete;
 
 };
 

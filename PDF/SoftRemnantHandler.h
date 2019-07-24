@@ -170,7 +170,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  SoftRemnantHandler & operator=(const SoftRemnantHandler &);
+  SoftRemnantHandler & operator=(const SoftRemnantHandler &) = delete;
 
 };
 

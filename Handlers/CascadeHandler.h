@@ -198,7 +198,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  CascadeHandler & operator=(const CascadeHandler &);
+  CascadeHandler & operator=(const CascadeHandler &) = delete;
 
 };
 

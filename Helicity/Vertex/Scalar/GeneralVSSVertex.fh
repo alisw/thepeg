@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralVSSVertex class.
+//
+#ifndef ThePEG_GeneralVSSVertex_FH
+#define ThePEG_GeneralVSSVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+class GeneralVSSVertex;
+ThePEG_DECLARE_POINTERS(GeneralVSSVertex,GeneralVSSVertexPtr);
+
+}
+}
+
+#endif

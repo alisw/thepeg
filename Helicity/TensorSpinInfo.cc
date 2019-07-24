@@ -14,12 +14,15 @@
 //
 
 #include "TensorSpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
-NoPIOClassDescription<TensorSpinInfo> TensorSpinInfo::initTensorSpinInfo;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<TensorSpinInfo,SpinInfo>
+describeThePEGTensorSpinInfo("ThePEG::TensorSpinInfo", "libThePEG.so");
 
 void TensorSpinInfo::Init() {}
 

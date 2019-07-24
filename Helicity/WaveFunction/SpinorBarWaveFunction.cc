@@ -58,7 +58,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel) {
       InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
       SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz); 
       hel_wf[0] = denominator*rtppluspz;
-      hel_wf[1] = denominator/rtppluspz*complex<Energy>(ppx,-ppy);
+      hel_wf[1] = Complex(denominator/rtppluspz*complex<Energy>(ppx,-ppy));
     }
   }
   // compute the - spinor for - helicty particles and + helicity antiparticles
@@ -78,7 +78,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel) {
     else {
       InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
       SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz);
-      hel_wf[0] = denominator/rtppluspz*complex<Energy>(-ppx,-ppy);
+      hel_wf[0] = Complex(denominator/rtppluspz*complex<Energy>(-ppx,-ppy));
       hel_wf[1] = denominator*rtppluspz;
     }
   }
@@ -108,10 +108,10 @@ void SpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel) {
   }
   // now finally we can construct the spinors
   _wf = LorentzSpinorBar<double>((dir==incoming) ? SpinorType::v : SpinorType::u);
-  _wf[0] = upper*hel_wf[0]*UnitRemoval::InvSqrtE;
-  _wf[1] = upper*hel_wf[1]*UnitRemoval::InvSqrtE;
-  _wf[2] = lower*hel_wf[0]*UnitRemoval::InvSqrtE;
-  _wf[3] = lower*hel_wf[1]*UnitRemoval::InvSqrtE;
+  _wf[0] = Complex(upper*hel_wf[0]*UnitRemoval::InvSqrtE);
+  _wf[1] = Complex(upper*hel_wf[1]*UnitRemoval::InvSqrtE);
+  _wf[2] = Complex(lower*hel_wf[0]*UnitRemoval::InvSqrtE);
+  _wf[3] = Complex(lower*hel_wf[1]*UnitRemoval::InvSqrtE);
 }
 
 void SpinorBarWaveFunction::conjugate() {
@@ -295,7 +295,7 @@ constructSpinInfo(const vector<LorentzSpinorBar<SqrtEnergy> > & waves,
     dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());
   if(inspin) {
     for(unsigned int ix=0;ix<2;++ix) {
-      if(( dir == outgoing &&  time) || 
+      if(( dir == outgoing &&  time) ||
 	 ( dir == incoming && !time))
 	inspin->setBasisState(ix,waves[ix].bar());
       else
@@ -306,7 +306,7 @@ constructSpinInfo(const vector<LorentzSpinorBar<SqrtEnergy> > & waves,
     FermionSpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
     part->spinInfo(temp);
     for(unsigned int ix=0;ix<2;++ix) {
-      if(( dir == outgoing &&  time) || 
+      if(( dir == outgoing &&  time) ||
 	 ( dir == incoming && !time))
 	temp->setBasisState(ix,waves[ix].bar());
       else
@@ -323,14 +323,17 @@ constructSpinInfo(const vector<SpinorBarWaveFunction> & waves,
     dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());
   if(inspin) {
     for(unsigned int ix=0;ix<2;++ix)
-      if (dir==outgoing) inspin->setBasisState(ix,waves[ix].dimensionedWf().bar());
-      else               inspin->setDecayState(ix,waves[ix].dimensionedWf().bar());
+      if(( dir == outgoing &&  time) ||
+	 ( dir == incoming && !time))
+	inspin->setBasisState(ix,waves[ix].dimensionedWf().bar());
+      else
+	inspin->setDecayState(ix,waves[ix].dimensionedWf().bar());
   }
   else {
     FermionSpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
     part->spinInfo(temp);
     for(unsigned int ix=0;ix<2;++ix) {
-      if(( dir == outgoing &&  time) || 
+      if(( dir == outgoing &&  time) ||
 	 ( dir == incoming && !time))
 	temp->setBasisState(ix,waves[ix].dimensionedWf().bar());
       else

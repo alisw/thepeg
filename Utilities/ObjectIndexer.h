@@ -175,7 +175,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ObjectIndexer & operator=(const ObjectIndexer &);
+  ObjectIndexer & operator=(const ObjectIndexer &) = delete;
 
 };
 

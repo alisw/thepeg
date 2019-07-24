@@ -30,7 +30,7 @@ public:
   /**
    * Default constructor. Gives a unit matrix.
    */
-  SpinOneLorentzRotation() : matrix_(16) {
+  SpinOneLorentzRotation() {
     xx_() = yy_() = zz_() = tt_() = 1.0;
   }
   
@@ -42,7 +42,7 @@ public:
    * @param gamma The \f$\gamma\f$ factor (optional)
    */
   SpinOneLorentzRotation (double bx, double by, double bz, double gamma=-1.) 
-    : matrix_(16) {
+  {
     setBoost(bx,by,bz,gamma);
   }
 
@@ -52,7 +52,7 @@ public:
    * @param gamma The \f$\gamma\f$ factor (optional)
    */
   explicit SpinOneLorentzRotation (const Boost & b, double gamma=-1.)
-    : matrix_(16) {
+  {
     setBoost(b.x(), b.y(), b.z(),gamma);
   }
   //@}
@@ -344,7 +344,7 @@ private:
   template<typename Value> friend class Helicity::LorentzRSSpinorBar;
 
   /// Matrix components, order: \f$(xx, xy, \ldots, tz, tt)\f$.
-  vector<double> matrix_;
+  array<double,16> matrix_ = {};
 
   /// Constructor from doubles.
   SpinOneLorentzRotation (double xx, double xy, double xz, double xt,

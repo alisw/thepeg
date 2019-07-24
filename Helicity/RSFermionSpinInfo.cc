@@ -14,14 +14,17 @@
 //
 
 #include "RSFermionSpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
-NoPIOClassDescription<RSFermionSpinInfo> RSFermionSpinInfo::initRSFermionSpinInfo;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<RSFermionSpinInfo,SpinInfo>
+describeThePEGRSFermionSpinInfo("ThePEG::RSFermionSpinInfo", "libThePEG.so");
 
 void RSFermionSpinInfo::Init() {
 

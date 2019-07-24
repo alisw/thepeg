@@ -6,6 +6,9 @@
 /* Define to 1 if you have <boost/test/unit_test.hpp> */
 #undef HAVE_BOOST_TEST_UNIT_TEST_HPP
 
+/* Defined if the Boost unit_test_framework library is available */
+#undef HAVE_BOOST_UNIT_TEST_FRAMEWORK
+
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 

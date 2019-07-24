@@ -2,11 +2,26 @@ ThePEG News	-*- outline -*-
 ===============================
 
 Numbered bugs can be found at
- https://herwig.hepforge.org/trac/ticket/NN
+ https://phab.hepforge.org/TNN
 where NN is the bug number.
 
 The latest version of ThePEG can be found at http://www.thep.lu.se/ThePEG
 or at https:///herwig.hepforge.org/
+
+* ThePEG-2.1.5 release: 2019-04-04
+
+** Improvements to template instantation of templates with gcc9 and icc T23
+** Change in assignment operator definition, add delete, to avoid warnings with gcc9
+** Minor changes for compilation with gcc8,9, icc and clang
+
+* ThePEG-2.1.4 release: 2018-28-06
+
+** Improvements to helicity libraries to support more BSM models
+** Added FixedTargetLuminosity for fixed target collisions
+
+* ThePEG-2.1.3 release: 2018-04-05
+
+** Use std::array<> where suitable
 
 
 

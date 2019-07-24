@@ -443,7 +443,7 @@ transformRemnants(LorentzMomentum & Ph, LorentzMomentum & Pr,
       Utilities::getBoostFromCM(make_pair(k, P))*rpt;
     Ph.transform(rpt);
     Pr.transform(rpt);
-  } catch ( ImpossibleKinematics ) {}
+  } catch ( ImpossibleKinematics & e ) {}
 }
 
 

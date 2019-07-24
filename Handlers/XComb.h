@@ -606,7 +606,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  XComb & operator=(const XComb &);
+  XComb & operator=(const XComb &) = delete;
 
 };
 

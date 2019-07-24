@@ -140,7 +140,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  Current<T> & operator=(const Current<T> &);
+  Current<T> & operator=(const Current<T> &) = delete;
 
 };
 

@@ -280,7 +280,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  UseRandom & operator=(const UseRandom &);
+  UseRandom & operator=(const UseRandom &) = delete;
 
 };
 

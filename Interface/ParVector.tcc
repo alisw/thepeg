@@ -66,6 +66,16 @@ setImpl(InterfacedBase & i, string newValue, int place, StandardT)
   }
 }
 
+template<>
+inline void ParVectorTBase<bool>::
+setImpl(InterfacedBase & i, string newValue, int place, StandardT) 
+  const {
+  istringstream is(newValue);
+  bool t;
+  is >> t;
+  tset(i, t, place);
+}
+  
 template <typename Type>
 inline void ParVectorTBase<Type>::
 setImpl(InterfacedBase & i, string newValue, int place, DimensionT) 
@@ -97,6 +107,16 @@ insertImpl(InterfacedBase & i, string newValue, int place, StandardT)
     is >> t;
     tinsert(i, t, place);
   }
+}
+
+template <>
+inline void ParVectorTBase<bool>::
+insertImpl(InterfacedBase & i, string newValue, int place, StandardT) 
+  const {
+  istringstream is(newValue);
+  bool t;
+  is >> t;
+  tinsert(i, t, place);
 }
 
 template <typename Type>

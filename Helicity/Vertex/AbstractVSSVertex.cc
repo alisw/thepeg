@@ -5,14 +5,16 @@
 //
 
 #include "AbstractVSSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<AbstractVSSVertex> 
-AbstractVSSVertex::initAbstractVSSVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<AbstractVSSVertex,VertexBase>
+describeThePEGAbstractVSSVertex("ThePEG::AbstractVSSVertex", "libThePEG.so");
 
 void AbstractVSSVertex::Init() {
 

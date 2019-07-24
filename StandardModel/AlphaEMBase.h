@@ -43,7 +43,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  AlphaEMBase & operator=(const AlphaEMBase &);
+  AlphaEMBase & operator=(const AlphaEMBase &) = delete;
 
 };
 

@@ -57,7 +57,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 				    fact*ppy*opt);
       epsp[1]=phase*complex<double>(-ppz*ppy*opabs*opt,
 				    -fact*ppx*opt);
-      epsp[2]=pt*opabs*phase;
+      epsp[2]=Complex(pt*opabs*phase);
       epsp[3]=0.;
     }
   }
@@ -87,7 +87,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 				    fact*ppy*opt);
       epsm[1]=phase*complex<double>(ppz*ppy*opabs*opt,
 				    -fact*ppx*opt);
-      epsm[2]=-pt*opabs*phase;
+      epsm[2]=-Complex(pt*opabs*phase);
       epsm[3]=0.;
     }
   }

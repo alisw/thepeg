@@ -95,7 +95,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  FixedCMSLuminosity & operator=(const FixedCMSLuminosity &);
+  FixedCMSLuminosity & operator=(const FixedCMSLuminosity &) = delete;
 
 };
 

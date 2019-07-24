@@ -374,7 +374,7 @@ private:
   /**
    * The assignment operator is private and not implemented.
    */
-  Collision & operator=(const Collision &);
+  Collision & operator=(const Collision &) = delete;
 
   /** Output to a standard ostream. */
   friend ostream & operator<<(ostream & os, const Collision & c);

@@ -203,14 +203,9 @@ public:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<FFVTVertex> initFFVTVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  FFVTVertex & operator=(const FFVTVertex &);
+  FFVTVertex & operator=(const FFVTVertex &) = delete;
   
 private:
 
@@ -227,35 +222,5 @@ private:
 };
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of FFVTVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::FFVTVertex,1> {
-  /** Typedef of the base class of FFVTVertex. */
-  typedef ThePEG::Helicity::AbstractFFVTVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::FFVTVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::FFVTVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::FFVTVertex"; }
-};
-  
-/** @endcond */
-  
 }
-
-
 #endif /* ThePEG_FFVTVertex_H */

@@ -120,7 +120,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  ColourPairDecayer & operator=(const ColourPairDecayer &);
+  ColourPairDecayer & operator=(const ColourPairDecayer &) = delete;
 
 };
 

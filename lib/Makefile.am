@@ -16,7 +16,7 @@ CLEANFILES = Makefile.dist Makefile.common
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed
-libThePEG_la_LDFLAGS = $(AM_LDFLAGS) -version-info 26:1:1 -export-dynamic
+libThePEG_la_LDFLAGS = $(AM_LDFLAGS) $(LIBTOOLVERSIONINFO) -export-dynamic
 libThePEG_la_SOURCES =
 libThePEG_la_LIBADD = \
 	$(top_builddir)/Utilities/libThePEGUtilities.la \

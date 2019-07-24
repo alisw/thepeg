@@ -64,7 +64,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ThePEGStrategy & operator=(const ThePEGStrategy &);
+  ThePEGStrategy & operator=(const ThePEGStrategy &) = delete;
 
 };
 

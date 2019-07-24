@@ -181,9 +181,11 @@ public:
    *   Apply \f$p\!\!\!\!\!\not\,\,\,+m\f$
    */
   template<typename ValueB> 
-  LorentzSpinorBar<typename BinaryOpTraits<Value,ValueB>::MulT>
-  projectionOperator(const LorentzVector<ValueB> & p, const ValueB & m) const {
-    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
+  auto projectionOperator(const LorentzVector<ValueB> & p, 
+                          const ValueB & m) const 
+  -> LorentzSpinorBar<decltype(m*Value())>
+  {
+    typedef decltype(m*Value()) ResultT;
     LorentzSpinorBar<ResultT> spin;
     static const Complex ii(0.,1.);
     complex<ValueB> p0pp3=p.t()+p.z();

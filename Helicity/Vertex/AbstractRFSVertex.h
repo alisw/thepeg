@@ -171,47 +171,18 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class without persistent data.
-   */
-  static AbstractNoPIOClassDescription<AbstractRFSVertex> initAbstractRFSVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  AbstractRFSVertex & operator=(const AbstractRFSVertex &);
+  AbstractRFSVertex & operator=(const AbstractRFSVertex &) = delete;
 
 };
 
 }
 }
 
-#include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of AbstractRFSVertex. */
-template <>
-struct BaseClassTrait<Helicity::AbstractRFSVertex,1> {
-  /** Typedef of the first base class of AbstractRFSVertex. */
-  typedef VertexBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the AbstractRFSVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Helicity::AbstractRFSVertex>
-  : public ClassTraitsBase<Helicity::AbstractRFSVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Helicity::AbstractRFSVertex"; }
-};
-
-/** @endcond */
-
 }
-
 #endif /* HELICITY_AbstractRFSVertex_H */

@@ -145,7 +145,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  AlphaSBase & operator=(const AlphaSBase &);
+  AlphaSBase & operator=(const AlphaSBase &) = delete;
 
 };
 

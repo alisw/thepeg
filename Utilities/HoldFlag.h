@@ -77,7 +77,7 @@ private:
   /**
    * Assignment is private and not implemented.
    */
-  HoldFlag & operator=(const HoldFlag &);
+  HoldFlag & operator=(const HoldFlag &) = delete;
 
 };
 
@@ -138,7 +138,7 @@ private:
   /**
    * Assignment is private and not implemented.
    */
-  HoldFlag & operator=(const HoldFlag &);
+  HoldFlag & operator=(const HoldFlag &) = delete;
 
 };
 

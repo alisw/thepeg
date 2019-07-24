@@ -145,7 +145,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  WeizsackerWilliamsPDF & operator=(const WeizsackerWilliamsPDF &);
+  WeizsackerWilliamsPDF & operator=(const WeizsackerWilliamsPDF &) = delete;
 
 private:
 

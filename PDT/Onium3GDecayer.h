@@ -155,7 +155,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Onium3GDecayer & operator=(const Onium3GDecayer &);
+  Onium3GDecayer & operator=(const Onium3GDecayer &) = delete;
 
 };
 

@@ -12,15 +12,17 @@
 //
 
 #include "FFTVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
 // Definition of the static class description member
-AbstractNoPIOClassDescription<FFTVertex> FFTVertex::initFFTVertex;
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<FFTVertex,AbstractFFTVertex>
+describeThePEGFFTVertex("ThePEG::FFTVertex", "libThePEG.so");
     
 void FFTVertex::Init() {
   
@@ -110,15 +112,15 @@ SpinorWaveFunction FFTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Complex ferm[4];
   complex<Energy> p0p3=pout.e() +   pout.z();
   complex<Energy> p0m3=pout.e() -   pout.z();
-  ferm[0] = UnitRemoval::InvE2 * fact*( p0m3*vec.z()-p1m2*vec.t());
-  ferm[1] = UnitRemoval::InvE2 * fact*(-p1p2*vec.z()+p0p3*vec.t());
-  ferm[2] = UnitRemoval::InvE2 * fact*( p0p3*vec.x()+p1m2*vec.y());
-  ferm[3] = UnitRemoval::InvE2 * fact*( p1p2*vec.x()+p0m3*vec.y());
+  ferm[0] = Complex(UnitRemoval::InvE2 * fact*( p0m3*vec.z()-p1m2*vec.t()));
+  ferm[1] = Complex(UnitRemoval::InvE2 * fact*(-p1p2*vec.z()+p0p3*vec.t()));
+  ferm[2] = Complex(UnitRemoval::InvE2 * fact*( p0p3*vec.x()+p1m2*vec.y()));
+  ferm[3] = Complex(UnitRemoval::InvE2 * fact*( p1p2*vec.x()+p0m3*vec.y()));
   if(mass.real()!=ZERO) {
-    ferm[0] += UnitRemoval::InvE2 * fact*(mass*vec.x());
-    ferm[1] += UnitRemoval::InvE2 * fact*(mass*vec.y());
-    ferm[2] += UnitRemoval::InvE2 * fact*(mass*vec.z());
-    ferm[3] += UnitRemoval::InvE2 * fact*(mass*vec.t());
+    ferm[0] += Complex(UnitRemoval::InvE2 * fact*(mass*vec.x()));
+    ferm[1] += Complex(UnitRemoval::InvE2 * fact*(mass*vec.y()));
+    ferm[2] += Complex(UnitRemoval::InvE2 * fact*(mass*vec.z()));
+    ferm[3] += Complex(UnitRemoval::InvE2 * fact*(mass*vec.t()));
   }
   // return the wavefunction
   return SpinorWaveFunction(pout,out,ferm[0],ferm[1],ferm[2],ferm[3]);
@@ -179,15 +181,15 @@ SpinorBarWaveFunction FFTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Complex ferm[4];
   complex<Energy> p0p3=pout.e() +   pout.z();
   complex<Energy> p0m3=pout.e() -   pout.z();
-  ferm[0] = UnitRemoval::InvE2 * fact*(-p0p3*vec.z()-p1p2*vec.t());
-  ferm[1] = UnitRemoval::InvE2 * fact*(-p1m2*vec.z()-p0m3*vec.t());
-  ferm[2] = UnitRemoval::InvE2 * fact*(-p0m3*vec.x()+p1p2*vec.y());
-  ferm[3] = UnitRemoval::InvE2 * fact*( p1m2*vec.x()-p0p3*vec.y());
+  ferm[0] = Complex(UnitRemoval::InvE2 * fact*(-p0p3*vec.z()-p1p2*vec.t()));
+  ferm[1] = Complex(UnitRemoval::InvE2 * fact*(-p1m2*vec.z()-p0m3*vec.t()));
+  ferm[2] = Complex(UnitRemoval::InvE2 * fact*(-p0m3*vec.x()+p1p2*vec.y()));
+  ferm[3] = Complex(UnitRemoval::InvE2 * fact*( p1m2*vec.x()-p0p3*vec.y()));
   if(mass.real()!=ZERO) {
-    ferm[0] += UnitRemoval::InvE2 * fact*mass*vec.x();
-    ferm[1] += UnitRemoval::InvE2 * fact*mass*vec.y();
-    ferm[2] += UnitRemoval::InvE2 * fact*mass*vec.z();
-    ferm[3] += UnitRemoval::InvE2 * fact*mass*vec.t();
+    ferm[0] += Complex(UnitRemoval::InvE2 * fact*mass*vec.x());
+    ferm[1] += Complex(UnitRemoval::InvE2 * fact*mass*vec.y());
+    ferm[2] += Complex(UnitRemoval::InvE2 * fact*mass*vec.z());
+    ferm[3] += Complex(UnitRemoval::InvE2 * fact*mass*vec.t());
   }
   // return the wavefunction
   return SpinorBarWaveFunction(pout,out,ferm[0],ferm[1],ferm[2],ferm[3]);
@@ -225,8 +227,8 @@ TensorWaveFunction FFTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   // mass dependent term
   Complex ffbar;
   if(sp.particle()->mass()!=ZERO) {
-    ffbar = UnitRemoval::InvE * (sp.particle()->mass())*
-      (sp.s1()*sbar.s1()+sp.s2()*sbar.s2()+sp.s3()*sbar.s3()+sp.s4()*sbar.s4());
+    ffbar = Complex(UnitRemoval::InvE * (sp.particle()->mass())*
+		    (sp.s1()*sbar.s1()+sp.s2()*sbar.s2()+sp.s3()*sbar.s3()+sp.s4()*sbar.s4()));
   }
   else {
     ffbar = 0.;
@@ -246,21 +248,21 @@ TensorWaveFunction FFTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Complex veca[4],vecb[4];
 
   veca[0] = aspin[0]-UnitRemoval::InvE2*dotka*pout.x();
-  vecb[0] = UnitRemoval::InvE*(sp.px()-sbar.px()-diffm*pout.x());
+  vecb[0] = Complex(UnitRemoval::InvE*(sp.px()-sbar.px()-diffm*pout.x()));
   
   veca[1] = aspin[1]-UnitRemoval::InvE2*dotka*pout.y();
-  vecb[1] = UnitRemoval::InvE*(sp.py()-sbar.py()-diffm*pout.y());
+  vecb[1] = Complex(UnitRemoval::InvE*(sp.py()-sbar.py()-diffm*pout.y()));
   
   veca[2] = aspin[2]-UnitRemoval::InvE2*dotka*pout.z();
-  vecb[2] = UnitRemoval::InvE*(sp.pz()-sbar.pz()-diffm*pout.z());
+  vecb[2] = Complex(UnitRemoval::InvE*(sp.pz()-sbar.pz()-diffm*pout.z()));
   
   veca[3] = aspin[3]-UnitRemoval::InvE2*dotka*pout.e();
-  vecb[3] = UnitRemoval::InvE*(sp.e()-sbar.e()-diffm*pout.e());
+  vecb[3] = Complex(UnitRemoval::InvE*(sp.e()-sbar.e()-diffm*pout.e()));
   
   // coefficients fr hte second two terms
   Complex temp = UnitRemoval::InvE*(p2m*dot12a-dotkam*diff);
   Complex coeff1 = -4./3.*(2.*ffbar*(1.-p2m) + temp);
-  temp = UnitRemoval::InvE*(-3.*dot12a+2.*p2m*dot12a+diffm*dotka);
+  temp = Complex(UnitRemoval::InvE*(-3.*dot12a+2.*p2m*dot12a+diffm*dotka));
   Complex coeff2 = -4./3./mass2*( 4.*ffbar*(1.-p2m) + temp)*UnitRemoval::E2;
   // construct the tensor
   Complex ten[4][4];

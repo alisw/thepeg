@@ -121,7 +121,7 @@ private:
   /**
    * Private and unimplemented assignment operator.
    */
-  ClassDocumentationBase & operator=(const ClassDocumentationBase &);
+  ClassDocumentationBase & operator=(const ClassDocumentationBase &) = delete;
 
 };
 
@@ -191,7 +191,7 @@ private:
   /**
    * Private and unimplemented assignment operator.
    */
-  ClassDocumentation & operator=(const ClassDocumentation &);
+  ClassDocumentation & operator=(const ClassDocumentation &) = delete;
 
 };
 

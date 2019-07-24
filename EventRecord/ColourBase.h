@@ -35,13 +35,6 @@ public:
 
   /** ColourLine is a good friend. */
   friend class ColourLine;
-  
-public:
-
-  /**
-   * Destructor.
-   */
-  virtual ~ColourBase();
 
 public:
 
@@ -166,7 +159,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ColourBase & operator=(const ColourBase &);
+  ColourBase & operator=(const ColourBase &) = delete;
 
 };
 

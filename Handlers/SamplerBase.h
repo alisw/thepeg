@@ -360,7 +360,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  SamplerBase & operator=(const SamplerBase &);
+  SamplerBase & operator=(const SamplerBase &) = delete;
 
 };
 

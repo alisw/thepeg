@@ -198,7 +198,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  LuminosityFunction & operator=(const LuminosityFunction &);
+  LuminosityFunction & operator=(const LuminosityFunction &) = delete;
 
 };
 
