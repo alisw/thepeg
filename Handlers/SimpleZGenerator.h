@@ -102,7 +102,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SimpleZGenerator & operator=(const SimpleZGenerator &);
+  SimpleZGenerator & operator=(const SimpleZGenerator &) = delete;
 
 };
 

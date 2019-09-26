@@ -279,7 +279,7 @@ private:
   /**
    * Assignment is private.
    */
-  HandlerGroupBase & operator=(const HandlerGroupBase &);
+  HandlerGroupBase & operator=(const HandlerGroupBase &) = delete;
   
 };
 
@@ -420,7 +420,7 @@ private:
   /**
    * Assignment is private.
    */
-  HandlerGroup<HDLR> & operator=(const HandlerGroup<HDLR> &);
+  HandlerGroup<HDLR> & operator=(const HandlerGroup<HDLR> &) = delete;
   
 };
 

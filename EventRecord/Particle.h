@@ -1134,7 +1134,7 @@ private:
   /**
    * Private and non-existent assignment.
    */
-  Particle & operator=(const Particle &);
+  Particle & operator=(const Particle &) = delete;
 
   /**
    * Describe concrete class with persistent data.

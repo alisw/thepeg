@@ -327,6 +327,7 @@ ostream & Particle::print(ostream & os, tcStepPtr step) const {
 	break;
       case 'P':
 	fullColour = true;
+	[[fallthrough]];
       case 'p':
 	open = *++pos;
 	sep = *++pos;
@@ -369,6 +370,7 @@ ostream & Particle::print(ostream & os, tcStepPtr step) const {
 	break;
       case 'C':
 	fullColour = true;
+	[[fallthrough]];
       case 'c':
 	open = *++pos;
 	sep = *++pos;
@@ -457,6 +459,7 @@ ostream & Particle::print(ostream & os, tcStepPtr step) const {
 	  writePrecision(os, ++pos, 10, 3, vertex().e()/mm);
 	  break;
 	}
+	break;
       case 'L':
 	switch ( *++pos ) {
 	case 'x':

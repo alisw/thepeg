@@ -475,7 +475,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  const StandardEventHandler & operator=(const StandardEventHandler &);
+  const StandardEventHandler & operator=(const StandardEventHandler &) = delete;
 
 };
 

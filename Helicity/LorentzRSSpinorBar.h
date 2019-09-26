@@ -312,10 +312,11 @@ public:
    * @param right The right-handed coupling, \f$c_R\f$.
    */
   template <typename ValueB>
-  LorentzVector<complex<
-    typename BinaryOpTraits<Value,ValueB>::MulT> >
-    generalCurrent(LorentzSpinor<ValueB>& f, Complex left, Complex right) {
-      typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto generalCurrent(LorentzSpinor<ValueB>& f, 
+                      Complex left, Complex right) 
+  -> LorentzVector<decltype(left*ts1()*f.s1())>
+  {
+      typedef decltype(left*ts1()*f.s1()) ResultT;
       ResultT output[4];
       unsigned int iz;
       for(iz=0;iz<4;++iz){

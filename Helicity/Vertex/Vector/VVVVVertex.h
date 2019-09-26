@@ -133,14 +133,9 @@ protected:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<VVVVVertex> initVVVVVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  VVVVVertex & operator=(const VVVVVertex &);
+  VVVVVertex & operator=(const VVVVVertex &) = delete;
   
 private:
 
@@ -152,17 +147,17 @@ private:
   /**  
    * Order of the particles.
    */
-  int _iorder[4];
+  array<int,4> _iorder;
 
   /**
    *  Intermediate particles
    */
-  tcPDPtr _inter[2];
+  array<tcPDPtr,2> _inter;
 
   /**
    * Couplings of the intermediate particles.
    */
-  Complex _coup[2];
+  array<Complex,2> _coup;
 
 };
 }
@@ -170,34 +165,5 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of VVVVVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::VVVVVertex,1> {
-  /** Typedef of the base class of VVVVVertex. */
-  typedef ThePEG::Helicity::AbstractVVVVVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::VVVVVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::VVVVVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::VVVVVertex"; }
-};
-
-/** @endcond */
-  
 }
-
 #endif /* ThePEG_VVVVVertex_H */

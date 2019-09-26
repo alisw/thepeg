@@ -181,7 +181,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  FlavourGenerator & operator=(const FlavourGenerator &);
+  FlavourGenerator & operator=(const FlavourGenerator &) = delete;
 
 };
 

@@ -189,6 +189,14 @@ ostream & ThePEG::operator<<(ostream & os, const Event & e) {
   if ( e.handler() ) os << "performed by "
 			<<  EventConfig::nameHandler(e.handler());
   os << endl;
+  os << "Weight: " << e.weight();
+  if ( ! e.optionalWeights().empty() ) {
+    os << " [ ";
+    for ( auto w : e.optionalWeights() )
+      os << w.first << ':' << w.second << ' ';
+    os << " ]";
+  }
+  os << endl;
   for ( unsigned int i = 0; i < e.collisions().size(); ++i ) {
     os << string(78, '=') << endl;
     if ( e.collisions().size() != 1 ) {

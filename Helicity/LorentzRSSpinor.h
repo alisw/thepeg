@@ -355,9 +355,11 @@ public:
    * @param right The right-handed coupling, \f$c_R\f$.
    */
   template <typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  generalScalar(LorentzRSSpinorBar<ValueB>& fbar, Complex left, Complex right) {
-    complex<typename BinaryOpTraits<Value,ValueB>::MulT> output; 
+  auto generalScalar(LorentzRSSpinorBar<ValueB>& fbar, 
+                     Complex left, Complex right) 
+  -> decltype(left*fbar(3,0)*ts1())
+  {
+    decltype(left*fbar(3,0)*ts1()) output; 
     unsigned int iz;
     output = 
       left*(fbar(3,0)*_spin[3][0]+fbar(3,1)*_spin[3][1])
@@ -377,9 +379,11 @@ public:
    * @param right The right-handed coupling, \f$c_R\f$.
    */
   template <typename ValueB>
-  LorentzVector<complex<typename BinaryOpTraits<Value,ValueB>::MulT> >
-  generalCurrent(LorentzSpinorBar<ValueB>& fbar, Complex left, Complex right) {
-    typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto generalCurrent(LorentzSpinorBar<ValueB>& fbar, 
+                      Complex left, Complex right) 
+  -> LorentzVector<decltype(left*fbar.s1()*ts1())>
+  {
+    typedef decltype(left*fbar.s1()*ts1()) ResultT;
     ResultT output[4];
     for(size_t iz=0;iz<4;++iz)
       output[iz]= left*(fbar.s1()*_spin[iz][0]+fbar.s2()*_spin[iz][1])

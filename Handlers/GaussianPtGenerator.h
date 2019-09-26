@@ -116,7 +116,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  GaussianPtGenerator & operator=(const GaussianPtGenerator &);
+  GaussianPtGenerator & operator=(const GaussianPtGenerator &) = delete;
 
 };
 

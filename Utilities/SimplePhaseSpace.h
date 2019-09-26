@@ -29,7 +29,7 @@ namespace ThePEG {
  * properly. When needed, random numbers are generated with the
  * generator given by the static UseRandom class.
  */
-struct SimplePhaseSpace {
+namespace SimplePhaseSpace {
 
   /**
    * Set two momenta in their center of mass system. Their total
@@ -44,7 +44,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(Energy2 s, PType & p1, PType & p2);
+  void CMS(Energy2 s, PType & p1, PType & p2);
 
   /**
    * Set two momenta in their center of mass system. Their total
@@ -62,7 +62,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(PType & p1, PType & p2, Energy2 s,
+  void CMS(PType & p1, PType & p2, Energy2 s,
 		  double cosTheta, double phi);
 
   /**
@@ -82,7 +82,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(PType & p1, PType & p2, Energy2 s, Energy2 t, double phi,
+  void CMS(PType & p1, PType & p2, Energy2 s, Energy2 t, double phi,
 		  const PType & p0);
 
   /**
@@ -97,7 +97,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(PType & p1, PType & p2, Energy2 s);
+  void CMS(PType & p1, PType & p2, Energy2 s);
 
   /**
    * Set two momenta in their center of mass system. Their total
@@ -110,7 +110,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PPairType>
-  static void CMS(const PPairType & p, Energy2 s)
+  void CMS(const PPairType & p, Energy2 s)
   {
     CMS(*p.first, *p.second, s);
   }
@@ -133,7 +133,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(PType & p1, PType & p2, PType & p3, Energy2 s,
+  void CMS(PType & p1, PType & p2, PType & p3, Energy2 s,
 		  double x1, double x3);
 
   /**
@@ -159,7 +159,7 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename PType>
-  static void CMS(PType & p1, PType & p2, PType & p3, Energy2 s,
+  void CMS(PType & p1, PType & p2, PType & p3, Energy2 s,
 		  double x1, double x3, double phii = 0.0,
 		  double theta = 0.0, double phi = 0.0);
 
@@ -173,7 +173,7 @@ struct SimplePhaseSpace {
    * @throw ImpossibleKinematics if the sum of the masses was
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
-  static Energy getMagnitude(Energy2 s, Energy m1, Energy m2);
+  Energy getMagnitude(Energy2 s, Energy m1, Energy m2);
 
   /**
    * Return a three-vector given the absolute momentum, cos(theta) and
@@ -182,7 +182,7 @@ struct SimplePhaseSpace {
    * @param costheta the cosine of the polar angle.
    * @param phi the azimuth angle.
    */
-  static Momentum3 polar3Vector(Energy p, double costheta, double phi)
+  inline Momentum3 polar3Vector(Energy p, double costheta, double phi)
   {
     return Momentum3(p*sqrt(1.0 - sqr(costheta))*sin(phi),
 		     p*sqrt(1.0 - sqr(costheta))*cos(phi),
@@ -203,7 +203,7 @@ struct SimplePhaseSpace {
    * @throw ImpossibleKinematics if the sum of the masses was
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
-  static vector<LorentzMomentum>
+  vector<LorentzMomentum>
   CMSn(Energy m0, const vector<Energy> & m);
 
   /**
@@ -219,9 +219,9 @@ struct SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   template <typename Container>
-  static void CMSn(Container & particles, Energy m0);
+  void CMSn(Container & particles, Energy m0);
 
-};
+}
 
 }
 

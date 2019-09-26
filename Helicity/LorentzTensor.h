@@ -10,7 +10,7 @@
 #define ThePEG_LorentzTensor_H
 // This is the declaration of the LorentzTensor class.
 
-
+#include "ThePEG/Config/PhysicalQtyComplex.h"
 #include "ThePEG/Config/ThePEG.h"
 #include "LorentzPolarizationVector.h"
 
@@ -49,13 +49,13 @@ public:
    * Constructor specifyign all components.
    */
   LorentzTensor(complex<Value> xx, complex<Value> xy, 
-		complex<Value> xz, complex<Value> xt,
-		complex<Value> yx, complex<Value> yy,
-		complex<Value> yz, complex<Value> yt,
-		complex<Value> zx, complex<Value> zy,
-		complex<Value> zz, complex<Value> zt,
-		complex<Value> tx, complex<Value> ty,
-		complex<Value> tz, complex<Value> tt)
+                complex<Value> xz, complex<Value> xt,
+                complex<Value> yx, complex<Value> yy,
+                complex<Value> yz, complex<Value> yt,
+                complex<Value> zx, complex<Value> zy,
+                complex<Value> zz, complex<Value> zt,
+                complex<Value> tx, complex<Value> ty,
+                complex<Value> tz, complex<Value> tt)
   : _tensor{{ {{xx,xy,xz,xt}},
               {{yx,yy,yz,yt}},
               {{zx,zy,zz,zt}},
@@ -64,7 +64,7 @@ public:
    * Constructor in terms of two polarization vectors.
    */
   LorentzTensor(const LorentzPolarizationVector & p,
-		const LorentzPolarizationVector & q) {
+                const LorentzPolarizationVector & q) {
     setXX(p.x() * q.x()); setYX(p.y() * q.x());
     setZX(p.z() * q.x()); setTX(p.t() * q.x());
     setXY(p.x() * q.y()); setYY(p.y() * q.y());
@@ -277,12 +277,12 @@ public:
     complex<Value> temp;
     for(ix=0;ix<4;++ix) {
       for(iy=0;iy<4;++iy) {
-	temp=complex<Value>();
-	for(ixa=0;ixa<4;++ixa) {
-	  for(iya=0;iya<4;++iya)
-	    temp+=r(ix,ixa)*r(iy,iya)*(*this)(ixa,iya);
-	}
-	output(ix,iy)=temp;
+        temp=complex<Value>();
+        for(ixa=0;ixa<4;++ixa) {
+          for(iya=0;iya<4;++iya)
+            temp+=r(ix,ixa)*r(iy,iya)*(*this)(ixa,iya);
+        }
+        output(ix,iy)=temp;
       }
     }
     *this=output;
@@ -294,9 +294,9 @@ public:
    */
   LorentzTensor<Value> conjugate() {
     return LorentzTensor<Value>(conj(xx()), conj(xy()), conj(xz()), conj(xt()),
-				conj(yx()), conj(yy()), conj(yz()), conj(yt()),
-				conj(zx()), conj(zy()), conj(zz()), conj(zt()),
-				conj(tx()), conj(ty()), conj(tz()), conj(tt()));
+                                conj(yx()), conj(yy()), conj(yz()), conj(yt()),
+                                conj(zx()), conj(zy()), conj(zz()), conj(zt()),
+                                conj(tx()), conj(ty()), conj(tz()), conj(tt()));
   }
 
   //@}
@@ -316,17 +316,19 @@ public:
    * Scalar product with other tensor
    */
   template <typename T, typename U>
-  friend complex<typename BinaryOpTraits<T,U>::MulT> 
-  operator*(const LorentzTensor<T> & t, const LorentzTensor<U> & u);
+  friend auto
+  operator*(const LorentzTensor<T> & t, const LorentzTensor<U> & u)
+  -> decltype(t.xx()*u.xx())
+  ;
     
   /**
    * Addition.
    */
   LorentzTensor<Value> operator+(const LorentzTensor<Value> & in) const {
     return LorentzTensor<Value>(xx()+in.xx(),xy()+in.xy(),xz()+in.xz(),xt()+in.xt(),
-				yx()+in.yx(),yy()+in.yy(),yz()+in.yz(),yt()+in.yt(),
-				zx()+in.zx(),zy()+in.zy(),zz()+in.zz(),zt()+in.zt(),
-				tx()+in.tx(),ty()+in.ty(),tz()+in.tz(),tt()+in.tt());
+                                yx()+in.yx(),yy()+in.yy(),yz()+in.yz(),yt()+in.yt(),
+                                zx()+in.zx(),zy()+in.zy(),zz()+in.zz(),zt()+in.zt(),
+                                tx()+in.tx(),ty()+in.ty(),tz()+in.tz(),tt()+in.tt());
   }
   
   /**
@@ -334,9 +336,9 @@ public:
    */
   LorentzTensor<Value> operator-(const LorentzTensor<Value> & in) const {
     return LorentzTensor<Value>(xx()-in.xx(),xy()-in.xy(),xz()-in.xz(),xt()-in.xt(),
-				yx()-in.yx(),yy()-in.yy(),yz()-in.yz(),yt()-in.yt(),
-				zx()-in.zx(),zy()-in.zy(),zz()-in.zz(),zt()-in.zt(),
-				tx()-in.tx(),ty()-in.ty(),tz()-in.tz(),tt()-in.tt());
+                                yx()-in.yx(),yy()-in.yy(),yz()-in.yz(),yt()-in.yt(),
+                                zx()-in.zx(),zy()-in.zy(),zz()-in.zz(),zt()-in.zt(),
+                                tx()-in.tx(),ty()-in.ty(),tz()-in.tz(),tt()-in.tt());
   }
 
   /**
@@ -357,13 +359,13 @@ public:
   LorentzVector<complex<Value> > preDot (const LorentzPolarizationVector & vec) const {
     LorentzVector<complex<Value> > output;
     output.setX(vec.t()*_tensor[3][0]-vec.x()*_tensor[0][0]-
-		vec.y()*_tensor[1][0]-vec.z()*_tensor[2][0]);
+                vec.y()*_tensor[1][0]-vec.z()*_tensor[2][0]);
     output.setY(vec.t()*_tensor[3][1]-vec.x()*_tensor[0][1]-
-		vec.y()*_tensor[1][1]-vec.z()*_tensor[2][1]);
+                vec.y()*_tensor[1][1]-vec.z()*_tensor[2][1]);
     output.setZ(vec.t()*_tensor[3][2]-vec.x()*_tensor[0][2]-
-		vec.y()*_tensor[1][2]-vec.z()*_tensor[2][2]);
+                vec.y()*_tensor[1][2]-vec.z()*_tensor[2][2]);
     output.setT(vec.t()*_tensor[3][3]-vec.x()*_tensor[0][3]-
-		vec.y()*_tensor[1][3]-vec.z()*_tensor[2][3]);
+                vec.y()*_tensor[1][3]-vec.z()*_tensor[2][3]);
     return output;
   }
 
@@ -373,47 +375,49 @@ public:
   LorentzVector<complex<Value> > postDot(const LorentzPolarizationVector & vec) const {
     LorentzVector<complex<Value> > output;
     output.setX(vec.t()*_tensor[0][3]-vec.x()*_tensor[0][0]-
-		vec.y()*_tensor[0][1]-vec.z()*_tensor[0][2]);
+                vec.y()*_tensor[0][1]-vec.z()*_tensor[0][2]);
     output.setY(vec.t()*_tensor[1][3]-vec.x()*_tensor[1][0]-
-		vec.y()*_tensor[1][1]-vec.z()*_tensor[1][2]);
+                vec.y()*_tensor[1][1]-vec.z()*_tensor[1][2]);
     output.setZ(vec.t()*_tensor[2][3]-vec.x()*_tensor[2][0]-
-		vec.y()*_tensor[2][1]-vec.z()*_tensor[2][2]);
+                vec.y()*_tensor[2][1]-vec.z()*_tensor[2][2]);
     output.setT(vec.t()*_tensor[3][3]-vec.x()*_tensor[3][0]-
-		vec.y()*_tensor[3][1]-vec.z()*_tensor[3][2]);
+                vec.y()*_tensor[3][1]-vec.z()*_tensor[3][2]);
     return output;
   }
 
   /**
    *  First index dot product with momentum
-   */
-  LorentzVector<complex<typename BinaryOpTraits<Value,Energy>::MulT> > 
-  preDot (const Lorentz5Momentum & vec) const {
-    LorentzVector<complex<typename BinaryOpTraits<Value,Energy>::MulT> > output;
+   */ 
+  auto preDot (const Lorentz5Momentum & vec) const 
+  -> LorentzVector<decltype(vec.x()*xx())>
+  {
+    LorentzVector<decltype(vec.x()*xx())> output;
     output.setX(vec.t()*_tensor[3][0]-vec.x()*_tensor[0][0]-
-		vec.y()*_tensor[1][0]-vec.z()*_tensor[2][0]);
+                vec.y()*_tensor[1][0]-vec.z()*_tensor[2][0]);
     output.setY(vec.t()*_tensor[3][1]-vec.x()*_tensor[0][1]-
-		vec.y()*_tensor[1][1]-vec.z()*_tensor[2][1]);
+                vec.y()*_tensor[1][1]-vec.z()*_tensor[2][1]);
     output.setZ(vec.t()*_tensor[3][2]-vec.x()*_tensor[0][2]-
-		vec.y()*_tensor[1][2]-vec.z()*_tensor[2][2]);
+                vec.y()*_tensor[1][2]-vec.z()*_tensor[2][2]);
     output.setT(vec.t()*_tensor[3][3]-vec.x()*_tensor[0][3]-
-		vec.y()*_tensor[1][3]-vec.z()*_tensor[2][3]);
+                vec.y()*_tensor[1][3]-vec.z()*_tensor[2][3]);
     return output;
   }
 
   /**
    *  Second index dot product with momentum
-   */
-  LorentzVector<complex<typename BinaryOpTraits<Value,Energy>::MulT> > 
-  postDot(const Lorentz5Momentum & vec) const {
-    LorentzVector<complex<typename BinaryOpTraits<Value,Energy>::MulT> > output;
+   */ 
+  auto postDot(const Lorentz5Momentum & vec) const 
+  -> LorentzVector<decltype(vec.x()*xx())>
+  {
+    LorentzVector<decltype(vec.x()*xx())> output;
     output.setX(vec.t()*_tensor[0][3]-vec.x()*_tensor[0][0]-
-		vec.y()*_tensor[0][1]-vec.z()*_tensor[0][2]);
+                vec.y()*_tensor[0][1]-vec.z()*_tensor[0][2]);
     output.setY(vec.t()*_tensor[1][3]-vec.x()*_tensor[1][0]-
-		vec.y()*_tensor[1][1]-vec.z()*_tensor[1][2]);
+                vec.y()*_tensor[1][1]-vec.z()*_tensor[1][2]);
     output.setZ(vec.t()*_tensor[2][3]-vec.x()*_tensor[2][0]-
-		vec.y()*_tensor[2][1]-vec.z()*_tensor[2][2]);
+                vec.y()*_tensor[2][1]-vec.z()*_tensor[2][2]);
     output.setT(vec.t()*_tensor[3][3]-vec.x()*_tensor[3][0]-
-		vec.y()*_tensor[3][1]-vec.z()*_tensor[3][2]);
+                vec.y()*_tensor[3][1]-vec.z()*_tensor[3][2]);
     return output;
   }
   //@}
@@ -430,31 +434,35 @@ private:
  * Multiplication by a complex number.
  */
 template<typename T, typename U> 
-inline LorentzTensor<typename BinaryOpTraits<T,U>::MulT> 
-operator*(complex<U> a, const LorentzTensor<T> & t) {
-  return LorentzTensor<typename BinaryOpTraits<T,U>::MulT>
-    (a*t.xx(), a*t.xy(), a*t.xz(), a*t.xt(),
+inline auto
+operator*(complex<U> a, const LorentzTensor<T> & t) 
+-> LorentzTensor<decltype(a.real()*t.xx().real())>
+{
+  return 
+    {a*t.xx(), a*t.xy(), a*t.xz(), a*t.xt(),
      a*t.yx(), a*t.yy(), a*t.yz(), a*t.yt(),
      a*t.zx(), a*t.zy(), a*t.zz(), a*t.zt(),
-     a*t.tx(), a*t.ty(), a*t.tz(), a*t.tt());
+     a*t.tx(), a*t.ty(), a*t.tz(), a*t.tt()};
 }
 
 /**
  * Multiply a LorentzVector by a LorentzTensor.
  */
 template<typename T, typename U> 
-inline LorentzVector<typename BinaryOpTraits<complex<T>,U>::MulT>
-operator*(const LorentzVector<U> & invec, 
-	  const LorentzTensor<T> & inten) {
-  LorentzVector<typename BinaryOpTraits<complex<T>,U>::MulT> outvec;
-  outvec.setX(invec.t()*inten(3,0)-invec.x()*inten(0,0)
-	      -invec.y()*inten(1,0)-invec.z()*inten(2,0));
-  outvec.setY(invec.t()*inten(3,1)-invec.x()*inten(0,1)
-	      -invec.y()*inten(1,1)-invec.z()*inten(2,1));
-  outvec.setZ(invec.t()*inten(3,2)-invec.x()*inten(0,2)
-	      -invec.y()*inten(1,2)-invec.z()*inten(2,2));
-  outvec.setT(invec.t()*inten(3,3)-invec.x()*inten(0,3)
-	      -invec.y()*inten(1,3)-invec.z()*inten(2,3));
+inline auto
+operator*(const LorentzVector<U> & v, 
+          const LorentzTensor<T> & t) 
+-> LorentzVector<decltype(v.t()*t(3,0))>
+{
+  LorentzVector<decltype(v.t()*t(3,0))> outvec;
+  outvec.setX( v.t()*t(3,0)-v.x()*t(0,0)
+              -v.y()*t(1,0)-v.z()*t(2,0));
+  outvec.setY( v.t()*t(3,1)-v.x()*t(0,1)
+              -v.y()*t(1,1)-v.z()*t(2,1));
+  outvec.setZ( v.t()*t(3,2)-v.x()*t(0,2)
+              -v.y()*t(1,2)-v.z()*t(2,2));
+  outvec.setT( v.t()*t(3,3)-v.x()*t(0,3)
+              -v.y()*t(1,3)-v.z()*t(2,3));
   return outvec;
 }
 
@@ -462,17 +470,19 @@ operator*(const LorentzVector<U> & invec,
  * Multiply a LorentzTensor by a LorentzVector.
  */
 template<typename T, typename U> 
-inline LorentzVector<typename BinaryOpTraits<complex<T>,U>::MulT>
-operator*(const LorentzTensor<T> & inten, const LorentzVector<U> & invec){
-  LorentzVector<typename BinaryOpTraits<complex<T>,U>::MulT> outvec;
-  outvec.setX(invec.t()*inten(0,3)-invec.x()*inten(0,0)
-	      -invec.y()*inten(0,1)-invec.z()*inten(0,2));
-  outvec.setY(invec.t()*inten(1,3)-invec.x()*inten(1,0)
-	      -invec.y()*inten(1,1)-invec.z()*inten(1,2));
-  outvec.setZ(invec.t()*inten(2,3)-invec.x()*inten(2,0)
-	      -invec.y()*inten(2,1)-invec.z()*inten(2,2));
-  outvec.setT(invec.t()*inten(3,3)-invec.x()*inten(3,0)
-	      -invec.y()*inten(3,1)-invec.z()*inten(3,2));
+inline auto
+operator*(const LorentzTensor<T> & t, const LorentzVector<U> & v)
+-> LorentzVector<decltype(v.t()*t(0,3))>
+{
+  LorentzVector<decltype(v.t()*t(0,3))> outvec;
+  outvec.setX( v.t()*t(0,3)-v.x()*t(0,0)
+              -v.y()*t(0,1)-v.z()*t(0,2));
+  outvec.setY( v.t()*t(1,3)-v.x()*t(1,0)
+              -v.y()*t(1,1)-v.z()*t(1,2));
+  outvec.setZ( v.t()*t(2,3)-v.x()*t(2,0)
+              -v.y()*t(2,1)-v.z()*t(2,2));
+  outvec.setT( v.t()*t(3,3)-v.x()*t(3,0)
+              -v.y()*t(3,1)-v.z()*t(3,2));
   return outvec;
 }
 
@@ -480,9 +490,12 @@ operator*(const LorentzTensor<T> & inten, const LorentzVector<U> & invec){
  * Multiply a LorentzTensor by a LorentzTensor
  */
 template <typename T, typename U>
-inline complex<typename BinaryOpTraits<T,U>::MulT>
-operator*(const LorentzTensor<T> & t, const LorentzTensor<U> & u) {
-  typedef complex<typename BinaryOpTraits<T,U>::MulT> RetT;
+inline auto
+operator*(const LorentzTensor<T> & t, 
+          const LorentzTensor<U> & u) 
+-> decltype(t.xx()*u.xx())
+{
+  using RetT = decltype(t.xx()*u.xx());
   RetT output=RetT(),temp;
   for(unsigned int ix=0;ix<4;++ix) {
     temp = t._tensor[ix][3]*u._tensor[ix][3];

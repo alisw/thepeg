@@ -213,7 +213,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  Strategy & operator=(const Strategy &);
+  Strategy & operator=(const Strategy &) = delete;
 
 };
 

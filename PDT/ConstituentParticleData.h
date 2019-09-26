@@ -133,7 +133,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ConstituentParticleData & operator=(const ConstituentParticleData &);
+  ConstituentParticleData & operator=(const ConstituentParticleData &) = delete;
 
 };
 

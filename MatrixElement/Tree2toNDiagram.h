@@ -314,7 +314,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  Tree2toNDiagram & operator=(const Tree2toNDiagram &);
+  Tree2toNDiagram & operator=(const Tree2toNDiagram &) = delete;
 
 };
 

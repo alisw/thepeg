@@ -257,7 +257,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  const SubProcessHandler & operator=(const SubProcessHandler &);
+  const SubProcessHandler & operator=(const SubProcessHandler &) = delete;
 
 };
 

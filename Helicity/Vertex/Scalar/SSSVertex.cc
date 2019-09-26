@@ -12,15 +12,16 @@
 //
 
 #include "SSSVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<SSSVertex> SSSVertex::initSSSVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<SSSVertex,AbstractSSSVertex>
+describeThePEGSSSVertex("ThePEG::SSSVertex", "libThePEG.so");
 
 void SSSVertex::Init() {
   
@@ -34,6 +35,7 @@ Complex SSSVertex::evaluate(Energy2 q2,
 			    const ScalarWaveFunction & sca1,
 			    const ScalarWaveFunction & sca2,
  			    const ScalarWaveFunction & sca3) {
+  if(kinematics()) calculateKinematics(sca1.momentum(),sca2.momentum(),sca3.momentum());
   // calculate the coupling
   setCoupling(q2,sca1.particle(),sca2.particle(),sca3.particle());
   // return the answer
@@ -47,7 +49,8 @@ ScalarWaveFunction SSSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
 				       complex<Energy> mass,
 				       complex<Energy> width) {
   // outgoing momentum 
-  Lorentz5Momentum pout = sca1.momentum()+sca2.momentum(); 
+  Lorentz5Momentum pout = sca1.momentum()+sca2.momentum();
+  if(kinematics()) calculateKinematics(sca1.momentum(),sca2.momentum(),-pout);
   // calculate the coupling
   setCoupling(q2,sca1.particle(),sca2.particle(),out);
   // wavefunction

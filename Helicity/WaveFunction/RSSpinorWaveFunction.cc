@@ -114,24 +114,24 @@ void RSSpinorWaveFunction::calculateWaveFunction(unsigned int ihel) {
   if(ihel==3) {
     for(ix=0;ix<4;++ix)
       for(iy=0;iy<4;++iy)
-	news(ix,iy)=UnitRemoval::InvSqrtE*vec[0][ix]*spinor[0][iy];
+	news(ix,iy)=Complex(UnitRemoval::InvSqrtE*vec[0][ix]*spinor[0][iy]);
   }
   else if(ihel==2) {
     for(ix=0;ix<4;++ix)
       for(iy=0;iy<4;++iy)
-	news(ix,iy)=UnitRemoval::InvSqrtE*
-	  (or3*vec[0][ix]*spinor[1][iy]+tor3*vec[1][ix]*spinor[0][iy]);
+	news(ix,iy)=Complex(UnitRemoval::InvSqrtE*
+			    (or3*vec[0][ix]*spinor[1][iy]+tor3*vec[1][ix]*spinor[0][iy]));
   }
   else if(ihel==1) {
     for(ix=0;ix<4;++ix)
       for(iy=0;iy<4;++iy)
-	news(ix,iy)=UnitRemoval::InvSqrtE*
-	  (or3*vec[2][ix]*spinor[0][iy]+tor3*vec[1][ix]*spinor[1][iy]);
+	news(ix,iy)=Complex(UnitRemoval::InvSqrtE*
+			    (or3*vec[2][ix]*spinor[0][iy]+tor3*vec[1][ix]*spinor[1][iy]));
   }
   else if(ihel==0) {
     for(ix=0;ix<4;++ix)
       for(iy=0;iy<4;++iy)
-	news(ix,iy)=UnitRemoval::InvSqrtE*vec[2][ix]*spinor[1][iy];
+	news(ix,iy)=Complex(UnitRemoval::InvSqrtE*vec[2][ix]*spinor[1][iy]);
   }
   // spinor is currently along the z axis, rotate so in right direction
   if(pabs/pmm>1e-8) {

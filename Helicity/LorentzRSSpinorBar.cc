@@ -8,4 +8,5 @@
 //
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 #include "LorentzRSSpinorBar.tcc"
+#include "ThePEG/Utilities/DescribeClass.h"
 #endif 

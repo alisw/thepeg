@@ -177,14 +177,9 @@ protected:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<FFSVertex> initFFSVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  FFSVertex & operator=(const FFSVertex &);
+  FFSVertex & operator=(const FFSVertex &) = delete;
   
 private:
 
@@ -201,35 +196,5 @@ private:
 };
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of FFSVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::FFSVertex,1> {
-  /** Typedef of the base class of FFSVertex. */
-  typedef ThePEG::Helicity::AbstractFFSVertex NthBase;
-};
-
-/** 
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::FFSVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::FFSVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::FFSVertex"; }
-};
-
-/** @endcond */
-
 }
-
-
 #endif /* ThePEG_FFSVertex_H */

@@ -76,7 +76,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  BreitWignerMass & operator=(const BreitWignerMass &);
+  BreitWignerMass & operator=(const BreitWignerMass &) = delete;
 
 };
 

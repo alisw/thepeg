@@ -133,7 +133,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MEQG2QG & operator=(const MEQG2QG &);
+  MEQG2QG & operator=(const MEQG2QG &) = delete;
 
 };
 

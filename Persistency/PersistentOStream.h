@@ -529,7 +529,7 @@ private:
   /**
    * Standard ctors and assignment are private and not implemented.
    */
-  PersistentOStream & operator=(const PersistentOStream &);
+  PersistentOStream & operator=(const PersistentOStream &) = delete;
 
 };
 
@@ -628,8 +628,19 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
  */
 template <typename T, typename A>
 inline PersistentOStream & operator<<(PersistentOStream & os,
-				      const vector<T,A> & v) {
+              const vector<T,A> & v) {
   os.putContainer(v);
+  return os;
+}
+
+/**
+ * Output an array of objects.
+ */
+template <typename T, size_t N>
+inline PersistentOStream & operator<<(PersistentOStream & os,
+              const array<T,N> & a) {
+  for ( auto it = a.cbegin(); it != a.cend() && os.good() ; ++it )
+      os << *it;
   return os;
 }
 
@@ -644,7 +655,7 @@ inline PersistentOStream & operator<<(PersistentOStream & os,
 }
 
 /**
- * Output a valarray of objects.
+ * Output a valarray.
  */
 template <typename T>
 inline PersistentOStream & operator<<(PersistentOStream & os,

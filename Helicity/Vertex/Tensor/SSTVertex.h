@@ -128,48 +128,13 @@ public:
 private:
   
   /**
-   * Describe an abstract class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<SSTVertex> initSSTVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  SSTVertex & operator=(const SSTVertex &);
+  SSTVertex & operator=(const SSTVertex &) = delete;
   
 };
 
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of SSTVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::SSTVertex,1> {
-  /** Typedef of the base class of SSTVertex. */
-  typedef ThePEG::Helicity::AbstractSSTVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::SSTVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::SSTVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::SSTVertex"; }
-};
-
-/** @endcond */
-  
 }
-
-
 #endif /* ThePEG_SSTVertex_H */

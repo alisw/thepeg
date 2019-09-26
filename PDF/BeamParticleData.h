@@ -122,7 +122,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  BeamParticleData & operator=(const BeamParticleData &);
+  BeamParticleData & operator=(const BeamParticleData &) = delete;
 
 };
 

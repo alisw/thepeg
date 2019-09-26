@@ -44,6 +44,11 @@ public:
     :IMeasurement(m), val(m.val), errp(m.errp), errm(m.errm) {}
 
   /**
+   *  Default assignment operator (to avoid compiler warnings).
+   */
+  Measurement & operator=(const Measurement &) = default;
+
+  /**
    * Destructor.
    */
   virtual ~Measurement() { /* nop */; }

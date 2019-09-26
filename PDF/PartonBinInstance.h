@@ -438,7 +438,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  PartonBinInstance & operator=(const PartonBinInstance &);
+  PartonBinInstance & operator=(const PartonBinInstance &) = delete;
 
 };
 

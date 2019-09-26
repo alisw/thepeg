@@ -112,7 +112,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MEQq2Qq & operator=(const MEQq2Qq &);
+  MEQq2Qq & operator=(const MEQq2Qq &) = delete;
 
 };
 

@@ -203,7 +203,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ME2to2Base & operator=(const ME2to2Base &);
+  ME2to2Base & operator=(const ME2to2Base &) = delete;
 
 };
 

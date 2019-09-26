@@ -219,7 +219,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  Interfaced & operator=(const Interfaced &);
+  Interfaced & operator=(const Interfaced &) = delete;
 
 };
 

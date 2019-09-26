@@ -127,48 +127,13 @@ public:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<VVSSVertex> initVVSSVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  VVSSVertex & operator=(const VVSSVertex &);
+  VVSSVertex & operator=(const VVSSVertex &) = delete;
   
 };
 
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-  
-/**
- * The following template specialization informs ThePEG about the
- * base class of VVSSVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::VVSSVertex,1> {
-  /** Typedef of the base class of VVSSVertex. */
-  typedef ThePEG::Helicity::AbstractVVSSVertex NthBase;
-};
-  
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::VVSSVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::VVSSVertex> {
-  
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::VVSSVertex"; }
-};
-
-/** @endcond */
-  
 }
-
-
 #endif /* ThePEG_VVSSVertex_H */

@@ -96,7 +96,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  DummyDecayer & operator=(const DummyDecayer &);
+  DummyDecayer & operator=(const DummyDecayer &) = delete;
 
 };
 

@@ -128,7 +128,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  OmegaPhi3PiDecayer & operator=(const OmegaPhi3PiDecayer &);
+  OmegaPhi3PiDecayer & operator=(const OmegaPhi3PiDecayer &) = delete;
 
 };
 

@@ -118,7 +118,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  RunningCoupling & operator=(const RunningCoupling &);
+  RunningCoupling & operator=(const RunningCoupling &) = delete;
 
   /**
    * The scale factor used to rescale the argument of

@@ -198,7 +198,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  UnResolvedRemnant & operator=(const UnResolvedRemnant &);
+  UnResolvedRemnant & operator=(const UnResolvedRemnant &) = delete;
 
 };
 

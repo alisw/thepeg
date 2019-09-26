@@ -56,6 +56,11 @@ public:
   }
 
   /**
+   *  Default assignment operator (to avoid compiler warnings).
+   */
+  DataPoint & operator=(const DataPoint &) = default;
+  
+  /**
    * Destructor.
    */
   virtual ~DataPoint() {}

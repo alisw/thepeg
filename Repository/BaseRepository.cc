@@ -79,8 +79,7 @@ BaseRepository::TypeDocumentationMap & BaseRepository::documentations() {
 }
 
 BaseRepository::DirectorySet & BaseRepository::directories() {
-  static char root[1][2] = {"/"};
-  static DirectorySet theDirectories(root, root+1);
+  static DirectorySet theDirectories = {"/"};
   return theDirectories;
 }
 

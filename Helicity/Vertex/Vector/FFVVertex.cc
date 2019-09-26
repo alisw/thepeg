@@ -12,15 +12,17 @@
 //
 
 #include "FFVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
 
 // Definition of the static class description member
-AbstractNoPIOClassDescription<FFVVertex> FFVVertex::initFFVVertex;
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<FFVVertex,AbstractFFVVertex>
+describeThePEGFFVVertex("ThePEG::FFVVertex", "libThePEG.so");
     
 void FFVVertex::Init() {
       
@@ -95,19 +97,19 @@ SpinorWaveFunction FFVVertex::evaluate(Energy2 q2, int iopt,tcPDPtr  out,
   if(_left!=0.) {
     Complex a3=_left*fact*( spt.s1()*e0p3+spt.s2()*e1m2);
     Complex a4=_left*fact*( spt.s1()*e1p2+spt.s2()*e0m3);
-    s1 +=UnitRemoval::InvE * (p0m3*a3-p1m2*a4);
-    s2 +=UnitRemoval::InvE * (-p1p2*a3+p0p3*a4);
-    s3 +=UnitRemoval::InvE * a3*mass;
-    s4 +=UnitRemoval::InvE * a4*mass;
+    s1 += Complex(UnitRemoval::InvE * (p0m3*a3-p1m2*a4));
+    s2 += Complex(UnitRemoval::InvE * (-p1p2*a3+p0p3*a4));
+    s3 += Complex(UnitRemoval::InvE * a3*mass);
+    s4 += Complex(UnitRemoval::InvE * a4*mass);
   }
   // right piece
   if(_right!=0.) {
     Complex a1=_right*fact*( spt.s3()*e0m3-spt.s4()*e1m2);
     Complex a2=_right*fact*(-spt.s3()*e1p2+spt.s4()*e0p3);
-    s1 +=UnitRemoval::InvE * a1*mass;
-    s2 +=UnitRemoval::InvE * a2*mass;
-    s3 +=UnitRemoval::InvE * (p0p3*a1+p1m2*a2);
-    s4 +=UnitRemoval::InvE * (p1p2*a1+p0m3*a2);
+    s1 += Complex(UnitRemoval::InvE * a1*mass);
+    s2 += Complex(UnitRemoval::InvE * a2*mass);
+    s3 += Complex(UnitRemoval::InvE * (p0p3*a1+p1m2*a2));
+    s4 += Complex(UnitRemoval::InvE * (p1p2*a1+p0m3*a2));
   }
   // return the wavefunction
   return SpinorWaveFunction(pout,out,s1,s2,s3,s4);
@@ -147,19 +149,19 @@ SpinorBarWaveFunction FFVVertex::evaluate(Energy2 q2,int iopt,tcPDPtr  out,
   if(_left!=0.) {
     Complex a1 =  _left*fact*( sbart.s3()*e0p3+sbart.s4()*e1p2);
     Complex a2 =  _left*fact*( sbart.s3()*e1m2+sbart.s4()*e0m3);
-    s1 += UnitRemoval::InvE*a1*mass;
-    s2 += UnitRemoval::InvE*a2*mass;
-    s3 += UnitRemoval::InvE*(-p0m3*a1+p1p2*a2);
-    s4 += UnitRemoval::InvE*(+p1m2*a1-p0p3*a2);
+    s1 += Complex(UnitRemoval::InvE*a1*mass);
+    s2 += Complex(UnitRemoval::InvE*a2*mass);
+    s3 += Complex(UnitRemoval::InvE*(-p0m3*a1+p1p2*a2));
+    s4 += Complex(UnitRemoval::InvE*(+p1m2*a1-p0p3*a2));
   }
   // right piece
   if(_right!=0.) {
     Complex a3 = _right*fact*( sbart.s1()*e0m3-sbart.s2()*e1p2);
     Complex a4 = _right*fact*(-sbart.s1()*e1m2+sbart.s2()*e0p3);
-    s1 += UnitRemoval::InvE*(-p0p3*a3-p1p2*a4);
-    s2 += UnitRemoval::InvE*(-p1m2*a3-p0m3*a4);
-    s3 += UnitRemoval::InvE*a3*mass;
-    s4 += UnitRemoval::InvE*a4*mass;
+    s1 += Complex(UnitRemoval::InvE*(-p0p3*a3-p1p2*a4));
+    s2 += Complex(UnitRemoval::InvE*(-p1m2*a3-p0m3*a4));
+    s3 += Complex(UnitRemoval::InvE*a3*mass);
+    s4 += Complex(UnitRemoval::InvE*a4*mass);
   }
   return SpinorBarWaveFunction(pout,out,s1,s2,s3,s4);
 }

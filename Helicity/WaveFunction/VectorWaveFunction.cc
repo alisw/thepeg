@@ -261,15 +261,21 @@ constructSpinInfo(const vector<LorentzPolarizationVector> & waves,
     dynamic_ptr_cast<tVectorSpinPtr>(part->spinInfo());
   if(inspin) {
     for(unsigned int ix=0;ix<3;++ix)
-      if(dir==outgoing) inspin->setBasisState(ix,waves[ix]);
-      else              inspin->setDecayState(ix,waves[ix]);
+      if(( dir == outgoing &&  time) ||
+	 ( dir == incoming && !time))
+	inspin->setBasisState(ix,waves[ix]);
+      else
+	inspin->setDecayState(ix,waves[ix]);
   }
   else {
     VectorSpinPtr temp = new_ptr(VectorSpinInfo(part->momentum(),time));
     part->spinInfo(temp);
     for(unsigned int ix=0;ix<3;++ix)
-      if(dir==outgoing) temp->setBasisState(ix,waves[ix]);
-      else              temp->setDecayState(ix,waves[ix]);
+      if(( dir == outgoing &&  time) ||
+	 ( dir == incoming && !time))
+	temp->setBasisState(ix,waves[ix]);
+      else
+	temp->setDecayState(ix,waves[ix]);
   }
 }
 
@@ -281,14 +287,20 @@ constructSpinInfo(const vector<VectorWaveFunction> & waves,
     dynamic_ptr_cast<tVectorSpinPtr>(part->spinInfo());
   if(inspin) {
     for(unsigned int ix=0;ix<3;++ix)
-      if(dir==outgoing) inspin->setBasisState(ix,waves[ix].wave());
-      else              inspin->setDecayState(ix,waves[ix].wave());
+      if(( dir == outgoing &&  time) ||
+	 ( dir == incoming && !time))
+	inspin->setBasisState(ix,waves[ix].wave());
+      else
+	inspin->setDecayState(ix,waves[ix].wave());
   }
   else {
     VectorSpinPtr temp = new_ptr(VectorSpinInfo(part->momentum(),time));
     part->spinInfo(temp);
     for(unsigned int ix=0;ix<3;++ix)
-      if(dir==outgoing) temp->setBasisState(ix,waves[ix].wave());
-      else              temp->setDecayState(ix,waves[ix].wave());
+      if(( dir == outgoing &&  time) ||
+	 ( dir == incoming && !time))
+	temp->setBasisState(ix,waves[ix].wave());
+      else
+	temp->setDecayState(ix,waves[ix].wave());
   }
 }

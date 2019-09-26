@@ -12,15 +12,16 @@
 //
 
 #include "VVVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity; 
 
-AbstractNoPIOClassDescription<VVVVertex> VVVVertex::initVVVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<VVVVertex,AbstractVVVVertex>
+describeThePEGVVVVertex("ThePEG::VVVVertex", "libThePEG.so");
   
 void VVVVertex::Init() {
   

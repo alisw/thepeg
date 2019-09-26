@@ -199,16 +199,10 @@ public:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class without persistent data.
-   */
-  static AbstractNoPIOClassDescription<GeneralVVSVertex> initGeneralVVSVertex;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GeneralVVSVertex & operator=(const GeneralVVSVertex &);
+  GeneralVVSVertex & operator=(const GeneralVVSVertex &) = delete;
 
       
 private:
@@ -249,32 +243,4 @@ private:
 
 }
 }
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of GeneralVVSVertex. */
-template <>
-struct BaseClassTrait<Helicity::GeneralVVSVertex,1> {
-  /** Typedef of the first base class of GeneralVVSVertex. */
-  typedef Helicity::AbstractVVSVertex NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the GeneralVVSVertex class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Helicity::GeneralVVSVertex>
-  : public ClassTraitsBase<Helicity::GeneralVVSVertex> {
-  /** Return a platform-independent class name */
-  static string className() { return "Helicity::GeneralVVSVertex"; }
-};
-
-/** @endcond */
-
-}
-
 #endif /* HELICITY_GeneralVVSVertex_H */

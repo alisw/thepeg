@@ -118,7 +118,7 @@ private:
   Rebinder(const Rebinder &);
 
   /** The assignment operator is private and not implemented */
-  Rebinder & operator=(const Rebinder &);
+  Rebinder & operator=(const Rebinder &) = delete;
 
 };
 

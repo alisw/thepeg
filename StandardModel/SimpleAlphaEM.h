@@ -72,7 +72,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  SimpleAlphaEM & operator=(const SimpleAlphaEM &);
+  SimpleAlphaEM & operator=(const SimpleAlphaEM &) = delete;
 
 };
 

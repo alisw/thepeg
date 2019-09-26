@@ -323,11 +323,14 @@ protected:
 
 private:
 
+  using MatrixT = array<array<Complex,4>,4>;
+
+  SpinHalfLorentzRotation(const MatrixT & m) : _mx(m) {}
 
   /**
    * The members of the transformation matrix.
    */
-  vector<vector<Complex> > _mx;
+  MatrixT _mx;
 };
 
 /**

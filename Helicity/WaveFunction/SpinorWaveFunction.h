@@ -102,7 +102,7 @@ public:
   {
     assert(iSpin()==2);
     for (unsigned int i=0; i<4; ++i)
-      _wf[i]=wave[i]*UnitRemoval::InvSqrtE;
+      _wf[i]=Complex(wave[i]*UnitRemoval::InvSqrtE);
   }
 
   /**

@@ -96,7 +96,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  NoPDF & operator=(const NoPDF &);
+  NoPDF & operator=(const NoPDF &) = delete;
 
 };
 

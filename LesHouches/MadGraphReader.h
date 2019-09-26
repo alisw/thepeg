@@ -210,7 +210,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  MadGraphReader & operator=(const MadGraphReader &);
+  MadGraphReader & operator=(const MadGraphReader &) = delete;
 
 };
 

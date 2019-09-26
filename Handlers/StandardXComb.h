@@ -725,7 +725,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  StandardXComb & operator=(const StandardXComb &);
+  StandardXComb & operator=(const StandardXComb &) = delete;
 
 };
 

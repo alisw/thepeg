@@ -96,7 +96,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ReweightBase & operator=(const ReweightBase &);
+  ReweightBase & operator=(const ReweightBase &) = delete;
 
 };
 

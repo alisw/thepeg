@@ -141,7 +141,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  V2PPDecayer & operator=(const V2PPDecayer &);
+  V2PPDecayer & operator=(const V2PPDecayer &) = delete;
 
 };
 

@@ -153,7 +153,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  HelicityVertex & operator=(const HelicityVertex &);
+  HelicityVertex & operator=(const HelicityVertex &) = delete;
 
 private:
 

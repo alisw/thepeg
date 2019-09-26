@@ -14,12 +14,15 @@
 //
 
 #include "ScalarSpinInfo.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
-NoPIOClassDescription<ScalarSpinInfo> ScalarSpinInfo::initScalarSpinInfo;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeNoPIOClass<ScalarSpinInfo,SpinInfo>
+describeThePEGScalarSpinInfo("ThePEG::ScalarSpinInfo", "libThePEG.so");
 
 void ScalarSpinInfo::Init() {}
 

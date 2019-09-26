@@ -96,13 +96,15 @@ void VertexBase::doinit() {
 void VertexBase::persistentOutput(PersistentOStream & os) const {
   os << _npoint << _inpart << _outpart 
      << _particles << _calckinematics
-     << _coupopt << _gs << _ee << _sw;
+     << _coupopt << _gs << _ee << _sw
+     << _ordergEM << _ordergS;
 }
 
 void VertexBase::persistentInput(PersistentIStream & is, int) {
   is >> _npoint >> _inpart >> _outpart 
      >> _particles >> _calckinematics
-     >> _coupopt >> _gs >> _ee >> _sw;
+     >> _coupopt >> _gs >> _ee >> _sw
+     >> _ordergEM >> _ordergS;
 }
 
 // Static variable needed for the type description system in ThePEG.

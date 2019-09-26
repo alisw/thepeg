@@ -668,7 +668,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  EventHandler & operator=(const EventHandler &);
+  EventHandler & operator=(const EventHandler &) = delete;
 
 };
 

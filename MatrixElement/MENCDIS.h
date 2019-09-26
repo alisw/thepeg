@@ -182,7 +182,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MENCDIS & operator=(const MENCDIS &);
+  MENCDIS & operator=(const MENCDIS &) = delete;
 
 };
 

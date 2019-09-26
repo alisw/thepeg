@@ -54,7 +54,7 @@ private:
   /**
    * Assignment is private and not implemented.
    */
-  Level & operator=(const Level &);
+  Level & operator=(const Level &) = delete;
 
 };
 

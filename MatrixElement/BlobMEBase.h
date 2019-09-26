@@ -137,7 +137,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BlobMEBase & operator=(const BlobMEBase &);
+  BlobMEBase & operator=(const BlobMEBase &) = delete;
 
   /**
    * The colour lines object used as a proxy to connect colours in

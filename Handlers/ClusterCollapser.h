@@ -293,7 +293,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ClusterCollapser & operator=(const ClusterCollapser &);
+  ClusterCollapser & operator=(const ClusterCollapser &) = delete;
 
 };
 

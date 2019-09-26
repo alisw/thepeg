@@ -47,7 +47,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  HadronizationHandler & operator=(const HadronizationHandler &);
+  HadronizationHandler & operator=(const HadronizationHandler &) = delete;
 
 };
 

@@ -267,7 +267,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  PDFBase & operator=(const PDFBase &);
+  PDFBase & operator=(const PDFBase &) = delete;
 
 };
 

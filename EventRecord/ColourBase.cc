@@ -19,8 +19,6 @@
 
 using namespace ThePEG;
 
-ColourBase::~ColourBase() {}
-
 EIPtr ColourBase::clone() const {
   return new_ptr(*this);
 }

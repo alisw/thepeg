@@ -77,7 +77,8 @@ public:
    */
   SpinInfo() 
     : _timelike(false), _prodloc(-1), _decayloc(-1), 
-      _decayed(false), _developed(Undeveloped) {}
+      _decayed(false), _developed(Undeveloped),
+      _oldDeveloped(Undeveloped) {}
 
   /**
    * Standard Constructor.
@@ -89,7 +90,8 @@ public:
 	   const Lorentz5Momentum & p = Lorentz5Momentum(), 
 	   bool time = false)
     : _timelike(time), _prodloc(-1), _decayloc(-1),
-      _decayed(false), _developed(Undeveloped),
+      _decayed(false),
+      _developed(Undeveloped), _oldDeveloped(Undeveloped),
       _rhomatrix(s), _Dmatrix(s), _spin(s),
       _productionmomentum(p), _currentmomentum(p) {}
 
@@ -227,6 +229,11 @@ public:
   void decay(bool recursive=false) const ;
 
   /**
+   * Calculate the rho matrix for the decay if not already done.
+   */
+  virtual void undecay() const ;
+
+  /**
    * Set the developed flag and calculate the D matrix for the decay.
    */
   void develop() const ;
@@ -234,7 +241,10 @@ public:
   /**
    *  Needs update
    */
-  void needsUpdate() const {_developed=NeedsUpdate;}
+  void needsUpdate() const {
+    if(_developed!=NeedsUpdate) _oldDeveloped = _developed;
+    _developed=NeedsUpdate;
+  }
 
   /**
    * Return 2s+1 for the particle
@@ -320,7 +330,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  SpinInfo & operator=(const SpinInfo &);
+  SpinInfo & operator=(const SpinInfo &) = delete;
 
 private:
 
@@ -375,6 +385,12 @@ private:
    * the info about the decay been calculated)
    */
   mutable DevelopedStatus _developed;
+
+  /**
+   * Has the particle been developed?  (I.e. has the D matrix encoding
+   * the info about the decay been calculated)
+   */
+  mutable DevelopedStatus _oldDeveloped;
 
   /**
    * Storage of the rho matrix.

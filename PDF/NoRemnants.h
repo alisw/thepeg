@@ -105,7 +105,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  NoRemnants & operator=(const NoRemnants &);
+  NoRemnants & operator=(const NoRemnants &) = delete;
 
 };
 

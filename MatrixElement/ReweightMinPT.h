@@ -109,7 +109,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ReweightMinPT & operator=(const ReweightMinPT &);
+  ReweightMinPT & operator=(const ReweightMinPT &) = delete;
 
 };
 

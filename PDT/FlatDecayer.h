@@ -104,7 +104,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  FlatDecayer & operator=(const FlatDecayer &);
+  FlatDecayer & operator=(const FlatDecayer &) = delete;
 
 };
 

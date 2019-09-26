@@ -5,13 +5,15 @@
 //
 
 #include "AbstractFFVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Helicity;
 
-AbstractNoPIOClassDescription<AbstractFFVVertex> 
-AbstractFFVVertex::initAbstractFFVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<AbstractFFVVertex,VertexBase>
+describeThePEGAbstractFFVVertex("ThePEG::AbstractFFVVertex", "libThePEG.so");
 
 void AbstractFFVVertex::Init() {
 

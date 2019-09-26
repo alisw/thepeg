@@ -15,7 +15,7 @@
 namespace ThePEG {
 
 struct ParticleNumLess {
-  bool operator()(tPPtr p1, tPPtr p2)
+  bool operator() (tPPtr p1, tPPtr p2) const 
     { return p1->number() < p2->number(); }
 };
 

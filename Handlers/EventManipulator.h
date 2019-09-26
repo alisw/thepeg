@@ -71,7 +71,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  EventManipulator & operator=(const EventManipulator &);
+  EventManipulator & operator=(const EventManipulator &) = delete;
 
 };
 

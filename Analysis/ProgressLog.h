@@ -182,7 +182,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ProgressLog & operator=(const ProgressLog &);
+  ProgressLog & operator=(const ProgressLog &) = delete;
 
 };
 

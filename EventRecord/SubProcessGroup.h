@@ -133,7 +133,7 @@ private:
   /**
    * Assignment is forbidden.
    */
-  SubProcessGroup & operator=(const SubProcessGroup &);
+  SubProcessGroup & operator=(const SubProcessGroup &) = delete;
 
 };
 

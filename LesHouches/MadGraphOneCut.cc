@@ -33,30 +33,30 @@ IBPtr MadGraphOneCut::fullclone() const {
 }
 
 Energy MadGraphOneCut::minKT(tcPDPtr p) const {
-  if ( cutType != PT || !checkType(p) ) return ZERO;
+  if ( cutType != Cut::PT || !checkType(p) ) return ZERO;
   return theCut*GeV;
 }
 
 double MadGraphOneCut::minEta(tcPDPtr p) const {
-  if ( cutType != ETA || !checkType(p) ) return -Constants::MaxRapidity;
+  if ( cutType != Cut::ETA || !checkType(p) ) return -Constants::MaxRapidity;
   return -theCut;
 }
 
 double MadGraphOneCut::maxEta(tcPDPtr p) const {
-  if ( cutType != ETA || !checkType(p) ) return Constants::MaxRapidity;
+  if ( cutType != Cut::ETA || !checkType(p) ) return Constants::MaxRapidity;
   return theCut;
 }
 
 Energy MadGraphOneCut::minMaxKT(tcPDPtr p) const {
-  if ( cutType != XPT || !checkType(p) ) return ZERO;
+  if ( cutType != Cut::XPT || !checkType(p) ) return ZERO;
   return theCut*GeV;  
 }
 
 bool MadGraphOneCut::passCuts(tcCutsPtr parent,
 			      tcPDPtr ptype, LorentzMomentum p) const {
   if ( !checkType(ptype) ) return true;
-  if ( cutType == PT ) return p.perp() > theCut*GeV;
-  if ( cutType == ETA ) {
+  if ( cutType == Cut::PT ) return p.perp() > theCut*GeV;
+  if ( cutType == Cut::ETA ) {
     double y = p.rapidity() + parent->Y() + parent->currentYHat();
     return abs(p.mt()*sinh(y)) < p.perp()*sinh(theCut);
   }
@@ -70,18 +70,18 @@ bool MadGraphOneCut::checkType(tcPDPtr p) const {
   case ParticleID::s:
   case ParticleID::c:
   case ParticleID::g:
-    return particleType == JET;
+    return particleType == P::JET;
   case ParticleID::b:
-    return particleType == JET || particleType == BOT;
+    return particleType == P::JET || particleType == P::BOT;
   case ParticleID::gamma:
-    return particleType == PHO;
+    return particleType == P::PHO;
   case ParticleID::eminus:
   case ParticleID::nu_e:
   case ParticleID::muminus:
   case ParticleID::nu_mu:
   case ParticleID::tauminus:
   case ParticleID::nu_tau:
-    return particleType == LEP;
+    return particleType == P::LEP;
   default:
     return false;
   }
@@ -106,51 +106,51 @@ void MadGraphOneCut::Init() {
      "about cuts. It is also possible to create objects by hand and use "
      "it as any other OneCutBase object.");
 
-  static Switch<MadGraphOneCut,CutType> interfaceCutType
+  static Switch<MadGraphOneCut,Cut> interfaceCutType
     ("CutType",
      "The type of cut this object will do.",
-     &MadGraphOneCut::cutType, PT, true, false);
+     &MadGraphOneCut::cutType, Cut::PT, true, false);
   static SwitchOption interfaceCutTypePT
     (interfaceCutType,
      "MinPT",
      "The minimum transverse momentum of a particle.",
-     PT);
+     Cut::PT);
   static SwitchOption interfaceCutTypeMaxEta
     (interfaceCutType,
      "MaxEta",
      "The maximum (absolute value of) pseudo-rapidity of a particle.",
-     ETA);
+     Cut::ETA);
   static SwitchOption interfaceCutTypeMinMaxPT
     (interfaceCutType,
      "MinMaxPT",
      "The minimum transverse momentum of the particle with largest "
      "transverse momentum.",
-     XPT);
+     Cut::XPT);
 
-  static Switch<MadGraphOneCut,PType> interfaceParticleType
+  static Switch<MadGraphOneCut,P> interfaceParticleType
     ("ParticleType",
      "The types of particles this cut is applied to.",
-     &MadGraphOneCut::particleType, JET, true, false);
+     &MadGraphOneCut::particleType, P::JET, true, false);
   static SwitchOption interfaceParticleTypeJets
     (interfaceParticleType,
      "Jets",
      "The cut applies only to coloured particles (jets).",
-     JET);
+     P::JET);
   static SwitchOption interfaceParticleTypeLeptons
     (interfaceParticleType,
      "Leptons",
      "The cut applies only to leptons.",
-     LEP);
+     P::LEP);
   static SwitchOption interfaceParticleTypePhotons
     (interfaceParticleType,
      "Photons",
      "The cut applies only to photons.",
-     PHO);
+     P::PHO);
   static SwitchOption interfaceParticleTypeBottom
     (interfaceParticleType,
      "Bottom",
      "The cut applies only to bottom quarks.",
-     BOT);
+     P::BOT);
 
   static Parameter<MadGraphOneCut,double> interfaceCut
     ("Cut",

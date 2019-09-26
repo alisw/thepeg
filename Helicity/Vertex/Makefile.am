@@ -14,6 +14,7 @@ AbstractVVTVertex.h  AbstractVVTVertex.fh  AbstractVVTVertex.cc  \
 AbstractVVSVertex.h  AbstractVVSVertex.fh  AbstractVVSVertex.cc  \
 AbstractSSTVertex.h  AbstractSSTVertex.fh  AbstractSSTVertex.cc  \
 AbstractVVSSVertex.h AbstractVVSSVertex.fh AbstractVVSSVertex.cc \
+AbstractVVVSVertex.h AbstractVVVSVertex.fh AbstractVVVSVertex.cc \
 AbstractFFVTVertex.h AbstractFFVTVertex.fh AbstractFFVTVertex.cc \
 AbstractVVVTVertex.h AbstractVVVTVertex.fh AbstractVVVTVertex.cc \
 AbstractVVVVVertex.h AbstractVVVVVertex.fh AbstractVVVVVertex.cc \

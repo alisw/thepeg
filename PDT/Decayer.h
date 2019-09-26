@@ -176,7 +176,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  Decayer & operator=(const Decayer &);
+  Decayer & operator=(const Decayer &) = delete;
 
   /**
    * A possible null pointer to an amplitude associated with this

@@ -192,7 +192,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  JetCuts & operator=(const JetCuts &);
+  JetCuts & operator=(const JetCuts &) = delete;
 
 };
 

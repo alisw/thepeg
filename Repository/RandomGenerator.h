@@ -454,7 +454,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  RandomGenerator & operator=(const RandomGenerator &);
+  RandomGenerator & operator=(const RandomGenerator &) = delete;
 
 };
 

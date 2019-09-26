@@ -105,48 +105,13 @@ public:
 private:
   
   /**
-   * Describe an abstract base class with persistent data.
-   */
-  static AbstractNoPIOClassDescription<SSSVertex> initSSSVertex;
-  
-  /**
    * Private and non-existent assignment operator.
    */
-  SSSVertex & operator=(const SSSVertex &);
+  SSSVertex & operator=(const SSSVertex &) = delete;
   
 };
 
 }
 
-/** @cond TRAITSPECIALIZATIONS */
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of SSSVertex.
- */
-template <>
-struct BaseClassTrait<ThePEG::Helicity::SSSVertex,1> {
-  /** Typedef of the base class of SSSVertex. */
-  typedef ThePEG::Helicity::AbstractSSSVertex NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<ThePEG::Helicity::SSSVertex>
-  : public ClassTraitsBase<ThePEG::Helicity::SSSVertex> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "ThePEG::SSSVertex"; }
-};
-
-/** @endcond */
-
 }
-
-
 #endif /* ThePEG_SSSVertex_H */

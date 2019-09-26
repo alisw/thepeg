@@ -8,4 +8,5 @@
 //
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 #include "LorentzSpinor.tcc"
+#include "ThePEG/Utilities/DescribeClass.h"
 #endif 

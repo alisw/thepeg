@@ -363,7 +363,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  GRVBase & operator=(const GRVBase &);
+  GRVBase & operator=(const GRVBase &) = delete;
 
 };
 

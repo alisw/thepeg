@@ -104,7 +104,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  Main & operator=(const Main &);
+  Main & operator=(const Main &) = delete;
 
 };
 

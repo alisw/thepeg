@@ -60,7 +60,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MassGenerator & operator=(const MassGenerator &);
+  MassGenerator & operator=(const MassGenerator &) = delete;
 
 };
 

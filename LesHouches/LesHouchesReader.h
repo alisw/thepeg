@@ -929,7 +929,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  LesHouchesReader & operator=(const LesHouchesReader &);
+  LesHouchesReader & operator=(const LesHouchesReader &) = delete;
 
 public:
 

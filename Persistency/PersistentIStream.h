@@ -528,7 +528,7 @@ private:
   /**
    * Standard ctors and assignment are private and not implemented.
    */
-  PersistentIStream & operator=(const PersistentIStream &);
+  PersistentIStream & operator=(const PersistentIStream &) = delete;
 
 };
 
@@ -629,11 +629,19 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 /** Input a vector of objects. */
 template <typename T, typename A>
 inline PersistentIStream & operator>>(PersistentIStream & is, 
-				      vector<T,A> & v) {
+              vector<T,A> & v) {
   is.getContainer(v);
   return is;
 }
 
+/** Input an array of objects. */
+template <typename T, size_t N>
+inline PersistentIStream & operator>>(PersistentIStream & is, 
+              array<T,N> & a) {
+  for ( size_t i = 0; i < N && is.good(); ++i ) 
+    is >> a[i];
+  return is;
+}
 
 /** Input a deque of objects. */
 template <typename T, typename A>
@@ -643,7 +651,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
   return is;
 }
 
-/** Input a deque of objects. */
+/** Input a valarray. */
 template <typename T>
 inline PersistentIStream & operator>>(PersistentIStream & is, 
 				      std::valarray<T> & v) {

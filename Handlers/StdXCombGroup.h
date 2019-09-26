@@ -159,7 +159,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  StdXCombGroup & operator=(const StdXCombGroup &);
+  StdXCombGroup & operator=(const StdXCombGroup &) = delete;
 
 };
 

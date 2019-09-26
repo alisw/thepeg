@@ -228,7 +228,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  MultiEventGenerator & operator=(const MultiEventGenerator &);
+  MultiEventGenerator & operator=(const MultiEventGenerator &) = delete;
 
 };
 

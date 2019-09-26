@@ -216,10 +216,11 @@ public:
    *   Apply \f$p\!\!\!\!\!\not\,\,\,+m\f$
    */
   template<typename ValueB> 
-  LorentzSpinor<typename BinaryOpTraits<Value,ValueB>::MulT>
-  projectionOperator(const LorentzVector<ValueB> & p, const ValueB & m) const {
-    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
-    LorentzSpinor<ResultT> spin;
+  auto projectionOperator(const LorentzVector<ValueB> & p, 
+                          const ValueB & m) const 
+  -> LorentzSpinor<decltype(m*Value())>
+  {
+    LorentzSpinor<decltype(m*Value())> spin;
     static const Complex ii(0.,1.);
     complex<ValueB> p0pp3=p.t()+p.z();
     complex<ValueB> p0mp3=p.t()-p.z();
@@ -253,10 +254,10 @@ public:
    *   Apply \f$p\!\!\!\!\!\not\f$
    */
   template<typename ValueB> 
-  LorentzSpinor<typename BinaryOpTraits<Value,ValueB>::MulT>
-  slash(const LorentzVector<ValueB> & p) const {
-    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
-    LorentzSpinor<ResultT> spin;
+  auto slash(const LorentzVector<ValueB> & p) const 
+  -> LorentzSpinor<decltype(p.t()*Value())>
+  {
+    LorentzSpinor<decltype(p.t()*Value())> spin;
     static const Complex ii(0.,1.);
     complex<ValueB> p0pp3=p.t()+p.z();
     complex<ValueB> p0mp3=p.t()-p.z();
@@ -273,10 +274,10 @@ public:
    *   Apply \f$p\!\!\!\!\!\not\f$
    */
   template<typename ValueB> 
-  LorentzSpinor<typename BinaryOpTraits<Value,ValueB>::MulT>
-  slash(const LorentzVector<complex<ValueB> > & p) const {
-    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
-    LorentzSpinor<ResultT> spin;
+  auto slash(const LorentzVector<complex<ValueB> > & p) const 
+  -> LorentzSpinor<decltype(ValueB()*Value())>
+  {
+    LorentzSpinor<decltype(ValueB()*Value())> spin;
     static const Complex ii(0.,1.);
     complex<ValueB> p0pp3=p.t()+p.z();
     complex<ValueB> p0mp3=p.t()-p.z();
@@ -294,9 +295,10 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  LorentzVector<complex<typename BinaryOpTraits<Value,ValueB>::MulT> >
-  leftCurrent(const LorentzSpinorBar<ValueB>& fb) const {
-    typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto leftCurrent(const LorentzSpinorBar<ValueB>& fb) const 
+  -> LorentzVector<decltype(fb.s3()*s2())>
+  {
+    typedef decltype(fb.s3()*s2()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT p1(fb.s3()*s2()),p2(fb.s4()*s1());
@@ -313,9 +315,10 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  LorentzVector<complex<typename BinaryOpTraits<Value,ValueB>::MulT> >
-  rightCurrent(const LorentzSpinorBar<ValueB>& fb) const {
-    typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto rightCurrent(const LorentzSpinorBar<ValueB>& fb) const 
+  -> LorentzVector<decltype(fb.s1()*s4())>
+  {
+    typedef decltype(fb.s1()*s4()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT p1(fb.s1()*s4()),p2(fb.s2()*s3());
@@ -332,9 +335,10 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  LorentzVector<complex<typename BinaryOpTraits<Value,ValueB>::MulT> >
-  vectorCurrent(const LorentzSpinorBar<ValueB>& fb) const {
-    typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto vectorCurrent(const LorentzSpinorBar<ValueB>& fb) const 
+  -> LorentzVector<decltype(fb.s1()*s4())>
+  {
+    typedef decltype(fb.s1()*s4()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT s1s4(fb.s1()*s4()),s2s3(fb.s2()*s3()),
@@ -356,10 +360,11 @@ public:
    * @param right The right coupling, \f$c_R\f$.
    */
   template<typename ValueB>
-  LorentzVector<complex<typename BinaryOpTraits<Value,ValueB>::MulT> >
-  generalCurrent(const LorentzSpinorBar<ValueB>& fb,
-		 Complex left, Complex right) const {
-    typedef complex<typename BinaryOpTraits<Value,ValueB>::MulT> ResultT;
+  auto generalCurrent(const LorentzSpinorBar<ValueB>& fb,
+		                  Complex left, Complex right) const 
+  -> LorentzVector<decltype(fb.s3()*s2())>
+  {
+    typedef decltype(fb.s3()*s2()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT p1(fb.s3()*s2()),p2(fb.s4()*s1());
@@ -385,8 +390,9 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  leftScalar(const LorentzSpinorBar<ValueB>& fb) const  {
+  auto leftScalar(const LorentzSpinorBar<ValueB>& fb) const  
+  -> decltype(fb.s1()*s1())
+  {
     return fb.s1()*s1()+fb.s2()*s2();
   }
 
@@ -395,8 +401,9 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  rightScalar(const LorentzSpinorBar<ValueB>& fb) const {
+  auto rightScalar(const LorentzSpinorBar<ValueB>& fb) const 
+  -> decltype(fb.s3()*s3())
+  {
     return fb.s3()*s3()+fb.s4()*s4();
   }
   
@@ -405,9 +412,11 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  scalar(const LorentzSpinorBar<ValueB>& fb) const {
-    return fb.s1()*s1()+fb.s2()*s2()+fb.s3()*s3()+fb.s4()*s4();
+  auto scalar(const LorentzSpinorBar<ValueB>& fb) const 
+  -> decltype(fb.s1()*s1())
+  {
+    return fb.s1()*s1()+fb.s2()*s2()
+          +fb.s3()*s3()+fb.s4()*s4();
   }
 
   /**
@@ -415,9 +424,11 @@ public:
    * @param fb The barred spinor.
    */
   template<typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  pseudoScalar(const LorentzSpinorBar<ValueB>& fb) const {
-    return -fb.s1()*s1()-fb.s2()*s2()+fb.s3()*s3()+fb.s4()*s4();
+  auto pseudoScalar(const LorentzSpinorBar<ValueB>& fb) const 
+  -> decltype(fb.s1()*s1())
+  {
+    return -fb.s1()*s1()-fb.s2()*s2()
+           +fb.s3()*s3()+fb.s4()*s4();
   }
 
   /**
@@ -428,10 +439,11 @@ public:
    * @param right The right coupling, \f$c_R\f$.
    */
   template<typename ValueB>
-  complex<typename BinaryOpTraits<Value,ValueB>::MulT>
-  generalScalar(const LorentzSpinorBar<ValueB>& fb,
-		Complex left, Complex right) const {
-    return left*(fb.s1()*s1()+fb.s2()*s2())
+  auto generalScalar(const LorentzSpinorBar<ValueB>& fb,
+		                 Complex left, Complex right) const 
+  -> decltype(left*fb.s1()*s1())
+  {
+    return  left*(fb.s1()*s1()+fb.s2()*s2())
          + right*(fb.s3()*s3()+fb.s4()*s4());
   }
   //@}
@@ -441,16 +453,17 @@ public:
    *  \f$\bar{f}\sigma^{\mu\nu}f\f$
    */
   template<typename ValueB>
-  LorentzTensor<typename BinaryOpTraits<Value,ValueB>::MulT>
-  sigma(const LorentzSpinorBar<ValueB>& fb) const {
-    typedef typename BinaryOpTraits<Value,ValueB>::MulT ResultT;
+  auto sigma(const LorentzSpinorBar<ValueB>& fb) const 
+  -> LorentzTensor<decltype(fb.s1()*s1())>
+  {
+    typedef decltype(fb.s1()*s1()) ResultT;
     LorentzTensor<ResultT> output;
-    complex<ResultT> s11(fb.s1()*s1()),s22(fb.s2()*s2()),
+    ResultT s11(fb.s1()*s1()),s22(fb.s2()*s2()),
       s33(fb.s3()*s3()),s44(fb.s4()*s4()),
       s12(fb.s1()*s2()),s21(fb.s2()*s1()),
       s34(fb.s3()*s4()),s43(fb.s4()*s3());
     Complex ii(0.,1.);
-    complex<ResultT> zero;
+    ResultT zero;
     zero = ZERO;
     output.setTT(         zero         );
     output.setTX(-ii*( s12+s21-s34-s43));

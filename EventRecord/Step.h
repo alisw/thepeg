@@ -458,7 +458,7 @@ private:
   /**
    * Assignement is not allowed.
    */
-  Step & operator=(const Step &);
+  Step & operator=(const Step &) = delete;
 
   /**
    * Setup pointer to the Collision.

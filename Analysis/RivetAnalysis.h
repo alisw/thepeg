@@ -126,7 +126,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  RivetAnalysis & operator=(const RivetAnalysis &);
+  RivetAnalysis & operator=(const RivetAnalysis &) = delete;
 
 private:
 

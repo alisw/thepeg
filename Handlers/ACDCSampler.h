@@ -222,7 +222,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ACDCSampler & operator=(const ACDCSampler &);
+  ACDCSampler & operator=(const ACDCSampler &) = delete;
 
 };
 

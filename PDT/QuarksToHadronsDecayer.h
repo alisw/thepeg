@@ -224,7 +224,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  QuarksToHadronsDecayer & operator=(const QuarksToHadronsDecayer &);
+  QuarksToHadronsDecayer & operator=(const QuarksToHadronsDecayer &) = delete;
 
 };
 

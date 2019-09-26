@@ -110,7 +110,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-  WeakToHadronsDecayer & operator=(const WeakToHadronsDecayer &);
+  WeakToHadronsDecayer & operator=(const WeakToHadronsDecayer &) = delete;
 
 };
 

@@ -12,15 +12,16 @@
 //
 
 #include "VVVVVertex.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace ThePEG;
 using namespace Helicity;
     
-AbstractNoPIOClassDescription<VVVVVertex> VVVVVertex::initVVVVVertex;
-// Definition of the static class description member.
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeAbstractNoPIOClass<VVVVVertex,AbstractVVVVVertex>
+describeThePEGVVVVVertex("ThePEG::VVVVVertex", "libThePEG.so");
     
 void VVVVVertex::Init() {
       
@@ -70,7 +71,7 @@ Complex VVVVVertex::evaluate(Energy2 q2 , int iopt,
 	dotv4p24*vec2.wave() - dotv2p24*vec4.wave() +
 	dotv2v4*(vec4.momentum()-vec2.momentum());
       InvEnergy2 numerator = 1./(vec1.momentum()+vec3.momentum()).m2();
-      vertex += numerator*veca.dot(vecb);
+      vertex += Complex(numerator*veca.dot(vecb));
     }
   }
   // EW type vertex
@@ -139,18 +140,18 @@ Complex VVVVVertex::evaluate(Energy2 q2 , int iopt,
 	  if(_inter[ix]) {
 	    mass2 = sqr(_inter[ix]->mass());
 	    if(mass2!=Energy2()) {
-	      vertex += UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,q2,_inter[ix])*
-		(dotjajb-dotjaq*dotjbq/mass2);
-	      vertex += UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,k2,_inter[ix])*
-		(dotjcjd-dotjck*dotjdk/mass2);
+	      vertex += Complex(UnitRemoval::InvE2 *
+				_coup[ix]*propagator(iopt,q2,_inter[ix])*
+				(dotjajb-dotjaq*dotjbq/mass2));
+	      vertex += Complex(UnitRemoval::InvE2 *
+				_coup[ix]*propagator(iopt,k2,_inter[ix])*
+				(dotjcjd-dotjck*dotjdk/mass2));
 	    }
 	    else {
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,q2,_inter[ix])*dotjajb;
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,k2,_inter[ix])*dotjcjd;
+	      vertex+= Complex(UnitRemoval::InvE2 *_coup[ix]*
+			       propagator(iopt,q2,_inter[ix])*dotjajb);
+	      vertex+= Complex(UnitRemoval::InvE2 *_coup[ix]*
+			       propagator(iopt,k2,_inter[ix])*dotjcjd);
 	    }
 	  }
 	}
@@ -212,18 +213,18 @@ Complex VVVVVertex::evaluate(Energy2 q2 , int iopt,
 	  if(_inter[ix]) {
 	    mass2 = (_inter[ix]->mass())*(_inter[ix]->mass());
 	    if(mass2!=Energy2()) {
-	      vertex+=UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,q2,_inter[ix])*
-		(dotjajb-dotjaq*dotjbq/mass2);
-	      vertex+=UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,k2,_inter[ix])*
-		(dotjcjd-dotjck*dotjdk/mass2);
+	      vertex+=Complex(UnitRemoval::InvE2 *
+			      _coup[ix]*propagator(iopt,q2,_inter[ix])*
+			      (dotjajb-dotjaq*dotjbq/mass2));
+	      vertex+=Complex(UnitRemoval::InvE2 *
+			      _coup[ix]*propagator(iopt,k2,_inter[ix])*
+			      (dotjcjd-dotjck*dotjdk/mass2));
 	    }
 	    else {
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,q2,_inter[ix])*dotjajb;
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,k2,_inter[ix])*dotjcjd;
+	      vertex+=Complex(UnitRemoval::InvE2 *_coup[ix]*
+			      propagator(iopt,q2,_inter[ix])*dotjajb);
+	      vertex+=Complex(UnitRemoval::InvE2 *_coup[ix]*
+			      propagator(iopt,k2,_inter[ix])*dotjcjd);
 	    }
 	  }
 	}
@@ -285,18 +286,18 @@ Complex VVVVVertex::evaluate(Energy2 q2 , int iopt,
 	  if(_inter[ix]) {
 	    mass2 = sqr(_inter[ix]->mass());
 	    if(mass2!=Energy2()) {
-	      vertex+=UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,q2,_inter[ix])*
-		(dotjajb-dotjaq*dotjbq/mass2);
-	      vertex+=UnitRemoval::InvE2 *
-		_coup[ix]*propagator(iopt,k2,_inter[ix])*
-		(dotjcjd-dotjck*dotjdk/mass2);
+	      vertex+=Complex(UnitRemoval::InvE2 *
+			      _coup[ix]*propagator(iopt,q2,_inter[ix])*
+			      (dotjajb-dotjaq*dotjbq/mass2));
+	      vertex+=Complex(UnitRemoval::InvE2 *
+			      _coup[ix]*propagator(iopt,k2,_inter[ix])*
+			      (dotjcjd-dotjck*dotjdk/mass2));
 	    }
 	    else {
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,q2,_inter[ix])*dotjajb;
-	      vertex+=UnitRemoval::InvE2 *_coup[ix]*
-		propagator(iopt,k2,_inter[ix])*dotjcjd;
+	      vertex+=Complex(UnitRemoval::InvE2 *_coup[ix]*
+			      propagator(iopt,q2,_inter[ix])*dotjajb);
+	      vertex+=Complex(UnitRemoval::InvE2 *_coup[ix]*
+			      propagator(iopt,k2,_inter[ix])*dotjcjd);
 	    }
 	  }
 	}

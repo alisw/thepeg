@@ -153,7 +153,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  DecayHandler & operator=(const DecayHandler &);
+  DecayHandler & operator=(const DecayHandler &) = delete;
 
 };
 

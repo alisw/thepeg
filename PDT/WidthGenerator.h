@@ -92,7 +92,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  WidthGenerator & operator=(const WidthGenerator &);
+  WidthGenerator & operator=(const WidthGenerator &) = delete;
 
 };
 

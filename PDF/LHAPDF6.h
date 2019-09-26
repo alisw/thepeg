@@ -290,7 +290,7 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHAPDF & operator=(const LHAPDF &);
+  LHAPDF & operator=(const LHAPDF &) = delete;
 
 };
 

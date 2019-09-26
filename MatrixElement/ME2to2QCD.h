@@ -154,7 +154,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  ME2to2QCD & operator=(const ME2to2QCD &);
+  ME2to2QCD & operator=(const ME2to2QCD &) = delete;
 
 };
 

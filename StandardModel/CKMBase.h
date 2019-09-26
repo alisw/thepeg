@@ -52,7 +52,7 @@ private:
   /**
    *  Private and non-existent assignment operator.
    */
-  CKMBase & operator=(const CKMBase &);
+  CKMBase & operator=(const CKMBase &) = delete;
 
 };
 

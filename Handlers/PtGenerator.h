@@ -56,7 +56,7 @@ private:
   /**
    * Private and non-existent assignment operator.
    */
-   PtGenerator & operator=(const PtGenerator &);
+   PtGenerator & operator=(const PtGenerator &) = delete;
 
 };
 
