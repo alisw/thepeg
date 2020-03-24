@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PDT.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -202,6 +202,42 @@ IStream & operator>>(IStream & is, PDT::Spin & s) {
   s = PDT::Spin(si);
   return is;
 }
+
+/// Type traits for built-in types
+template <> 
+struct TypeTraits<PDT::Spin>
+{
+  /** Enum for dimensions*/
+  enum { hasDimension = false };
+  /// Type switch set to standard type.
+  typedef EnumT DimType;
+  /// Base unit
+  static constexpr PDT::Spin baseunit() { return PDT::Spin(1); }
+};
+
+/// Type traits for built-in types
+template <> 
+struct TypeTraits<PDT::Charge>
+{
+  /** Enum for dimensions*/
+  enum { hasDimension = false };
+  /// Type switch set to standard type.
+  typedef EnumT DimType;
+  /// Base unit
+  static constexpr PDT::Charge baseunit() { return PDT::Charge(1); }
+};
+
+/// Type traits for built-in types
+template <> 
+struct TypeTraits<PDT::Colour>
+{
+  /** Enum for dimensions*/
+  enum { hasDimension = false };
+  /// Type switch set to standard type.
+  typedef EnumT DimType;
+  /// Base unit
+  static constexpr PDT::Colour baseunit() { return PDT::Colour(3); }
+};
 
 }
 

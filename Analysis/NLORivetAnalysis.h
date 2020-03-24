@@ -48,13 +48,6 @@ public:
    */
   virtual void analyze(ThePEG::tEventPtr event, long ieve, int loop, int state);
 
-   /**
-   * Produca a HepMC event for the given subprocess
-   */
-  HepMC::GenEvent * makeEvent(tEventPtr event, tSubProPtr sub, long no,
-			      Energy eUnit, Length lUnit,
-			      CrossSection xsec, CrossSection xsecErr) const;
-
   //@}
   
 public:
@@ -143,19 +136,9 @@ private:
   long _remnantId;
 
   /**
-   *  The HepMC format
-   */
-  int _format;
-
-  /**
    * Selector for the choice of units
    */
   int _unitchoice;
-
-  /**
-   * Choice of output precision in GenEvent format
-   */
-  unsigned int _geneventPrecision;
 
   /**
    *  The Analyses to use

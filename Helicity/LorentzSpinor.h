@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LorentzSpinor.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -87,6 +87,10 @@ public:
 		SpinorType s = SpinorType::unknown) : _type(s), _spin{{a,b,c,d}} {}
   //@}
 
+  template <typename U>
+  LorentzSpinor(const LorentzSpinor<U> & other)
+    : _type(other._type), _spin(other._spin) {}
+
   /** @name Access the components. */
   //@{
   /**
@@ -162,6 +166,31 @@ public:
   void setS4(complex<Value> in) {_spin[3]=in;}
   //@}
 
+  /// @name Mathematical assignment operators.
+  //@{
+  template <typename ValueB>
+  LorentzSpinor<Value> & operator+=(const LorentzSpinor<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] += a._spin[ix];
+    return *this;
+  }
+  
+  template <typename ValueB>
+  LorentzSpinor<Value> & operator-=(const LorentzSpinor<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] -= a._spin[ix];
+    return *this;
+  }
+  
+  LorentzSpinor<Value> & operator*=(double a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] *=a;
+    return *this;
+  }
+
+  LorentzSpinor<Value> & operator/=(double a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] /=a;
+    return *this;
+  }
+  //@}
+  
   /** @name Transformations. */
   //@{
   /**
@@ -296,7 +325,7 @@ public:
    */
   template<typename ValueB>
   auto leftCurrent(const LorentzSpinorBar<ValueB>& fb) const 
-  -> LorentzVector<decltype(fb.s3()*s2())>
+  -> LorentzVector<decltype(fb.s3()*this->s2())>
   {
     typedef decltype(fb.s3()*s2()) ResultT;
     LorentzVector<ResultT> vec;
@@ -316,7 +345,7 @@ public:
    */
   template<typename ValueB>
   auto rightCurrent(const LorentzSpinorBar<ValueB>& fb) const 
-  -> LorentzVector<decltype(fb.s1()*s4())>
+  -> LorentzVector<decltype(fb.s1()*this->s4())>
   {
     typedef decltype(fb.s1()*s4()) ResultT;
     LorentzVector<ResultT> vec;
@@ -336,9 +365,9 @@ public:
    */
   template<typename ValueB>
   auto vectorCurrent(const LorentzSpinorBar<ValueB>& fb) const 
-  -> LorentzVector<decltype(fb.s1()*s4())>
+  -> LorentzVector<decltype(fb.s1()*this->s4())>
   {
-    typedef decltype(fb.s1()*s4()) ResultT;
+    typedef decltype(fb.s1()*this->s4()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT s1s4(fb.s1()*s4()),s2s3(fb.s2()*s3()),
@@ -362,9 +391,9 @@ public:
   template<typename ValueB>
   auto generalCurrent(const LorentzSpinorBar<ValueB>& fb,
 		                  Complex left, Complex right) const 
-  -> LorentzVector<decltype(fb.s3()*s2())>
+  -> LorentzVector<decltype(fb.s3()*this->s2())>
   {
-    typedef decltype(fb.s3()*s2()) ResultT;
+    typedef decltype(fb.s3()*this->s2()) ResultT;
     LorentzVector<ResultT> vec;
     Complex ii(0.,1.);
     ResultT p1(fb.s3()*s2()),p2(fb.s4()*s1());
@@ -391,7 +420,7 @@ public:
    */
   template<typename ValueB>
   auto leftScalar(const LorentzSpinorBar<ValueB>& fb) const  
-  -> decltype(fb.s1()*s1())
+  -> decltype(fb.s1()*this->s1())
   {
     return fb.s1()*s1()+fb.s2()*s2();
   }
@@ -402,7 +431,7 @@ public:
    */
   template<typename ValueB>
   auto rightScalar(const LorentzSpinorBar<ValueB>& fb) const 
-  -> decltype(fb.s3()*s3())
+  -> decltype(fb.s3()*this->s3())
   {
     return fb.s3()*s3()+fb.s4()*s4();
   }
@@ -413,7 +442,7 @@ public:
    */
   template<typename ValueB>
   auto scalar(const LorentzSpinorBar<ValueB>& fb) const 
-  -> decltype(fb.s1()*s1())
+  -> decltype(fb.s1()*this->s1())
   {
     return fb.s1()*s1()+fb.s2()*s2()
           +fb.s3()*s3()+fb.s4()*s4();
@@ -425,7 +454,7 @@ public:
    */
   template<typename ValueB>
   auto pseudoScalar(const LorentzSpinorBar<ValueB>& fb) const 
-  -> decltype(fb.s1()*s1())
+  -> decltype(fb.s1()*this->s1())
   {
     return -fb.s1()*s1()-fb.s2()*s2()
            +fb.s3()*s3()+fb.s4()*s4();
@@ -441,7 +470,7 @@ public:
   template<typename ValueB>
   auto generalScalar(const LorentzSpinorBar<ValueB>& fb,
 		                 Complex left, Complex right) const 
-  -> decltype(left*fb.s1()*s1())
+  -> decltype(left*fb.s1()*this->s1())
   {
     return  left*(fb.s1()*s1()+fb.s2()*s2())
          + right*(fb.s3()*s3()+fb.s4()*s4());
@@ -454,9 +483,9 @@ public:
    */
   template<typename ValueB>
   auto sigma(const LorentzSpinorBar<ValueB>& fb) const 
-  -> LorentzTensor<decltype(fb.s1()*s1())>
+  -> LorentzTensor<decltype(fb.s1()*this->s1())>
   {
-    typedef decltype(fb.s1()*s1()) ResultT;
+    typedef decltype(fb.s1()*this->s1()) ResultT;
     LorentzTensor<ResultT> output;
     ResultT s11(fb.s1()*s1()),s22(fb.s2()*s2()),
       s33(fb.s3()*s3()),s44(fb.s4()*s4()),
@@ -495,6 +524,96 @@ private:
    */
   std::array<complex<Value>,4> _spin;
 };
+
+/// @name Basic mathematical operations
+//@{
+template <typename Value>
+inline LorentzSpinor<double>
+operator/(const LorentzSpinor<Value> & v, Value a) {
+  return LorentzSpinor<double>(v.s1()/a, v.s2()/a, v.s3()/a, v.s4()/a,v.Type());
+}
+
+inline LorentzSpinor<double>
+operator/(const LorentzSpinor<double> & v, Complex a) {
+  return LorentzSpinor<double>(v.s1()/a, v.s2()/a, v.s3()/a, v.s4()/a,v.Type());
+}
+
+template <typename Value>
+inline LorentzSpinor<Value> operator-(const LorentzSpinor<Value> & v) {
+  return LorentzSpinor<Value>(-v.s1(),-v.s2(),-v.s3(),-v.s4(),v.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzSpinor<ValueA>
+operator+(LorentzSpinor<ValueA> a, const LorentzSpinor<ValueB> & b) {
+  return a += b;
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzSpinor<ValueA>
+operator-(LorentzSpinor<ValueA> a, const LorentzSpinor<ValueB> & b) {
+  return a -= b;
+}
+
+template <typename Value>
+inline LorentzSpinor<Value>
+operator*(const LorentzSpinor<Value> & a, double b) {
+  return LorentzSpinor<Value>(a.s1()*b, a.s2()*b, a.s3()*b, a.s4()*b,a.Type());
+}
+
+template <typename Value>
+inline LorentzSpinor<Value>
+operator*(double b, LorentzSpinor<Value> a) {
+  return a *= b;
+}
+  
+template <typename Value>
+inline LorentzSpinor<Value>
+operator*(const LorentzSpinor<Value> & a, Complex b) {
+  return LorentzSpinor<Value>(a.s1()*b, a.s2()*b, a.s3()*b, a.s4()*b,a.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(complex<ValueB> a, const LorentzSpinor<ValueA> & v) 
+  -> LorentzSpinor<decltype(a.real()*v.s1().real())>
+{
+  return {a*v.s1(), a*v.s2(), a*v.s3(), a*v.s4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzSpinor<ValueA> & v, complex<ValueB> b) 
+  -> LorentzSpinor<decltype(b.real()*v.s1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzSpinor<ValueA> & v, complex<ValueB> b) 
+  -> LorentzSpinor<decltype(v.s1().real()/b.real())>
+{
+  return {v.s1()/b, v.s2()/b, v.s3()/b, v.s4()/b,v.Type()};
+}
+  
+template <typename ValueA, typename ValueB>
+inline auto operator*(ValueB a, const LorentzSpinor<ValueA> & v) 
+  -> LorentzSpinor<decltype(a*v.s1().real())>
+{
+  return {a*v.s1(), a*v.s2(), a*v.s3(), a*v.s4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzSpinor<ValueA> & v, ValueB b) 
+  -> LorentzSpinor<decltype(b*v.s1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzSpinor<ValueA> & v, ValueB b) 
+  -> LorentzSpinor<decltype(v.s1().real()/b)>
+{
+  return {v.s1()/b, v.s2()/b, v.s3()/b, v.s4()/b,v.Type()};
+}
 
 }
 }

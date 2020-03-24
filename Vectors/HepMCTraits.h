@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HepMCTraits.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -9,18 +9,34 @@
 #ifndef ThePEG_HepMCTraits_H
 #define ThePEG_HepMCTraits_H
 
+#ifdef HAVE_HEPMC3
+#include "HepMC3/GenEvent.h"
+namespace HepMC3 {
+class GenEvent;
+class GenParticle;
+class GenVertex;
+class GenPdfInfo;
+}
+namespace HepMC3 {
+using PdfInfo=GenPdfInfo;
+using Polarization=std::pair<double,double>;
+}
+namespace HepMC=HepMC3;
+#else
 #include "HepMC/GenEvent.h"
-
 namespace HepMC {
 
 class GenEvent;
 class GenParticle;
 class GenVertex;
 class Polarization;
+#ifndef HEPMC_GENPDFINFO_H
 class PdfInfo;
-
+#endif
 }
+#endif
 
+ 
 namespace ThePEG {
 
 /**
@@ -39,9 +55,10 @@ namespace ThePEG {
  * namespace.  The boolean template argument determines whether the
  * HepMC implementation is specifying units or not.
  */
-template <typename HepMCEventT, typename HepMCParticleT,
-	  typename HepMCVertexT, typename HepMCPolarizationT,
-	  typename HepMCPdfInfoT>
+template <typename HepMCEventT,
+  typename HepMCParticleT, typename HepMCParticlePtrT,
+  typename HepMCVertexT, typename HepMCVertexPtrT,
+          typename HepMCPolarizationT, typename HepMCPdfInfoT>
 
 struct HepMCTraitsBase {
 
@@ -60,24 +77,43 @@ struct HepMCTraitsBase {
   /** Typedef of the PdfInfo class. */
   typedef HepMCPdfInfoT PdfInfoT;
 
+  /** Typedef of a particle pointer */
+  typedef HepMCParticlePtrT ParticlePtrT;
+
+  /** Typedef of a vertex pointer */
+  typedef HepMCVertexPtrT VertexPtrT;
+
   /** Create an event object with number \a evno and \a weight. */
   static EventT * newEvent(long evno, double weight,
 			   const map<string,double>& optionalWeights) {
     EventT * e = new EventT();
     e->set_event_number(evno);
-#ifdef HEPMC_HAS_NAMED_WEIGHTS
-      e->weights()["Default"] = weight;
-#else
-      e->weights().push_back(weight);
-#endif
+    std::vector<std::string> wnames;
+    std::vector<double> wvalues;
+    
+    wnames.push_back("Default");
+    wvalues.push_back(weight);
     for ( map<string,double>::const_iterator w = optionalWeights.begin();
 	  w != optionalWeights.end(); ++w ) {
-#ifdef HEPMC_HAS_NAMED_WEIGHTS
-      e->weights()[w->first] = w->second;
-#else
-      e->weights().push_back(w->second);
-#endif
+    wnames.push_back(w->first);
+    wvalues.push_back(w->second);
     }
+
+
+#ifdef HAVE_HEPMC3
+  e->run_info()->set_weight_names(wnames);
+  e->weights()=wvalues;
+
+#else 
+#ifdef HEPMC_HAS_NAMED_WEIGHTS
+      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i]; 
+#else
+      e->weights()=wvalues;
+#endif
+#endif
+
+    
+    
     return e;
   }
 
@@ -86,19 +122,29 @@ struct HepMCTraitsBase {
 			 const map<string,double>& optionalWeights) {
     e->set_event_number(evno);
     e->weights().clear();
-#ifdef HEPMC_HAS_NAMED_WEIGHTS
-      e->weights()["Default"] = weight;
-#else
-      e->weights().push_back(weight);
-#endif
+    std::vector<std::string> wnames;
+    std::vector<double> wvalues;
+    
+    wnames.push_back("Default");
+    wvalues.push_back(weight);
     for ( map<string,double>::const_iterator w = optionalWeights.begin();
 	  w != optionalWeights.end(); ++w ) {
-#ifdef HEPMC_HAS_NAMED_WEIGHTS
-      e->weights()[w->first] = w->second;
-#else
-      e->weights().push_back(w->second);
-#endif
+    wnames.push_back(w->first);
+    wvalues.push_back(w->second);
     }
+
+
+#ifdef HAVE_HEPMC3
+  e->run_info()->set_weight_names(wnames);
+  e->weights()=wvalues;
+
+#else 
+#ifdef HEPMC_HAS_NAMED_WEIGHTS
+      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i]; 
+#else
+      e->weights()=wvalues;
+#endif
+#endif
   }
 
   /**
@@ -184,12 +230,12 @@ struct HepMCTraitsBase {
   }
 
   /** Set the primary vertex, \a v, for the event \a e. */
-  static void setSignalProcessVertex(EventT & e, VertexT * v) {
+  static void setSignalProcessVertex(EventT & e, VertexPtrT v) {
     e.set_signal_process_vertex(v);
   }
 
   /** Set a vertex, \a v, for the event \a e. */
-  static void addVertex(EventT & e, VertexT * v) {
+  static void addVertex(EventT & e, VertexPtrT v) {
     e.add_vertex(v);
   }
 
@@ -197,12 +243,13 @@ struct HepMCTraitsBase {
       id and status code \a status. The momentum will be scaled with
       \a unit which according to the HepMC documentation should be
       GeV. */
-  static ParticleT * newParticle(const Lorentz5Momentum & p,
+  static ParticlePtrT newParticle(const Lorentz5Momentum & p,
 				 long id, int status, Energy unit) {
     // Note that according to the documentation the momentum is stored in a
     // HepLorentzVector in GeV (event though the CLHEP standard is MeV).
     LorentzVector<double> p_scalar = p/unit;
-    ParticleT * genp = new ParticleT(p_scalar, id, status);
+    ParticlePtrT genp =
+      new ParticleT(p_scalar, id, status);
     genp->setGeneratedMass(p.mass()/unit);
     return genp;
   }
@@ -220,17 +267,17 @@ struct HepMCTraitsBase {
   }
 
   /** Create a new vertex. */
-  static VertexT * newVertex() {
+  static VertexPtrT newVertex() {
     return new VertexT();
   }
 
   /** Add an incoming particle, \a p, to the vertex, \a v. */
-  static void addIncoming(VertexT & v, ParticleT * p) {
+  static void addIncoming(VertexT & v, ParticlePtrT p) {
     v.add_particle_in(p);
   }
 
   /** Add an outgoing particle, \a p, to the vertex, \a v. */
-  static void addOutgoing(VertexT & v, ParticleT * p) {
+  static void addOutgoing(VertexT & v, ParticlePtrT p) {
     v.add_particle_out(p);
   }
 
@@ -242,7 +289,7 @@ struct HepMCTraitsBase {
   }
 
   /** Set the beam particles for the event.*/
-  static void setBeamParticles(EventT & e, ParticleT * p1, ParticleT * p2) {
+  static void setBeamParticles(EventT & e, ParticlePtrT p1, ParticlePtrT p2) {
     e.set_beam_particles(p1,p2);
     p1->set_status(4);
     p2->set_status(4);
@@ -252,7 +299,14 @@ struct HepMCTraitsBase {
 #ifdef HEPMC_HAS_PDF_INFO
   static void setPdfInfo(EventT & e, int id1, int id2, double x1, double x2,
 			 double scale, double xf1, double xf2) {
+#ifdef HAVE_HEPMC3
+    
+    HepMC::GenPdfInfoPtr pdfinfo = std::make_shared<HepMC::GenPdfInfo>();
+    pdfinfo->set(id1, id2, x1, x2, scale, xf1, xf2);
+    e.set_pdf_info(pdfinfo);
+#else
     e.set_pdf_info(PdfInfoT(id1, id2, x1, x2, scale, xf1, xf2));
+#endif
   }
 #else
   static void setPdfInfo(EventT &, int, int, double, double,
@@ -262,9 +316,16 @@ struct HepMCTraitsBase {
   /** Set the cross section info for the event. */
 #ifdef HEPMC_HAS_CROSS_SECTION
   static void setCrossSection(EventT & ev, double xs, double xserr) {
+#ifdef HAVE_HEPMC3
+     std::shared_ptr<HepMC::GenCrossSection> x =std::make_shared<HepMC::GenCrossSection>();
+    x->set_cross_section(xs,xserr);
+    ev.set_cross_section(x);
+#else
     HepMC::GenCrossSection x;
     x.set_cross_section(xs, xserr);
     ev.set_cross_section(x);
+
+#endif
   }
 #else
   static void setCrossSection(EventT &, double, double) {}

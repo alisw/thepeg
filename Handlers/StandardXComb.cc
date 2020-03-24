@@ -1,8 +1,8 @@
 // -*- C++ -*-
 //
 // StandardXComb.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
-// Copyright (C) 2009-2017 Simon Platzer
+// Copyright (C) 1999-2019 Leif Lonnblad
+// Copyright (C) 2009-2019 Simon Platzer
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -597,6 +597,11 @@ dSigDR(const pair<double,double> ll, int nr, const double * r) {
 
 }
 
+map<string,double> StandardXComb::generateOptionalWeights() {
+  matrixElement()->setXComb(this);
+  return matrixElement()->generateOptionalWeights();
+}
+
 void StandardXComb::newSubProcess(bool group) {
   if ( subProcess() ) return;
   if ( head() && matrixElement()->wantCMS() ) {
@@ -644,6 +649,8 @@ void StandardXComb::newSubProcess(bool group) {
     lastProjector()->newSubProcess();
     subProcess(lastProjector()->subProcess());
     lastPartons(lastProjector()->lastPartons());
+    lastPartons().first ->scale(partonBinInstances().first ->scale());
+    lastPartons().second->scale(partonBinInstances().second->scale());
     lastSHat((lastPartons().first->momentum() +
 	      lastPartons().second->momentum()).m2());
     lastX1X2(make_pair(lastPartons().first->momentum().plus()/

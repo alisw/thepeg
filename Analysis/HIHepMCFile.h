@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HIHepMCFile.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -13,10 +13,11 @@
 //
 #include <iostream>
 #include <fstream>
+#include <config.h>
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "HepMC/IO_BaseClass.h"
+#include "ThePEG/Config/HepMCHelper.h"
 
 namespace ThePEG {
 
@@ -158,10 +159,26 @@ private:
    */
   string _filename;
 
+#ifdef HAVE_HEPMC_ROOTIO
+  /**
+   *  The name of TTRee in ROOT file
+   */
+  string _ttreename;
+
+  /**
+   *  The name of branch in ROOT file
+   */
+  string _tbranchname;
+
+#endif
   /**
    *  The HepMC I/O handler
    */
+#ifdef HAVE_HEPMC3
+  HepMC::Writer *_hepmcio;
+#else
   HepMC::IO_BaseClass *_hepmcio;
+#endif
 
   /**
    *  The HepMC dump file

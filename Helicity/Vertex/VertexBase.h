@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VertexBase.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -35,6 +35,38 @@ namespace VertexType {
   const T UNDEFINED = 0;
 }
 
+/**
+ * Namespace for naming types of colour structures to allow models to define new type
+ */
+namespace ColourStructure {
+  typedef unsigned T;
+  const T UNDEFINED  = 0;
+  const T SINGLET    = 1;
+  const T SU3TFUND   = 2;
+  const T SU3F       = 3;
+  const T SU3T6      = 4;
+  const T SU3K6      = 5;
+  const T EPS        = 6;
+  const T DELTA      = 7;
+  const T SU3FF      = 8;
+  const T SU3TTFUNDS = 9;
+  const T SU3TTFUNDD = 10;
+  const T SU3TT6     = 11;
+  const T SU3I12I34  = 12;
+  const T SU3I14I23  = 13;
+  const T SU3T21T43  = 14;
+  const T SU3T23T41  = 15;
+}
+
+/**
+ * Namespace for naming types of couplings to allow models to define new type
+ */
+namespace CouplingType {
+  typedef unsigned T;
+  const T UNDEFINED = 0;
+  const T QED = 1;
+  const T QCD = 2;
+}
 /** \ingroup Helicity
  * 
  *  The VertexBase class is the base class for all helicity amplitude
@@ -168,12 +200,37 @@ public:
   /**
    * Get the order in \f$g_EM\f$
    */
-  unsigned int orderInGem() const { return _ordergEM; }
+  int orderInGem() const { return couplingOrders_.at(CouplingType::QED); }
 
   /**
    * Get the order in \f$g_s\f$
    */
-  unsigned int orderInGs() const { return _ordergS; }
+  int orderInGs() const { return couplingOrders_.at(CouplingType::QCD); }
+
+  /**
+   *  Get the order in a specific coupling
+   */
+  int orderInCoupling(CouplingType::T cType) const {
+    if(couplingOrders_.find(cType) !=couplingOrders_.end())
+      return couplingOrders_.at(cType);
+    else
+      return 0;
+  }
+
+  /**
+   *  Get the total order of the vertex
+   */
+  int orderInAllCouplings() const {
+    int output(0);
+    for(auto & p : couplingOrders_)
+      output += p.second;
+    return output;
+  }
+
+  /**
+   *  Get the colour structure
+   */
+  ColourStructure::T colourStructure() const {return colourStructure_;}
   //@}
 
 public:
@@ -427,13 +484,27 @@ protected:
    * Set the order in \f$g_EM\f$
    * @param order The order of the vertex in \f$g_EM\f$
    */
-  void orderInGem(unsigned int order) { _ordergEM = order; }
+  void orderInGem(int order) { couplingOrders_[CouplingType::QED] = order; }
 
   /**
    * Set the order in \f$g_s\f$
    * @param order The order of the vertex in \f$g_s\f$
    */
-  void orderInGs(unsigned int order) { _ordergS = order; }
+  void orderInGs (int order) { couplingOrders_[CouplingType::QCD] = order; }
+
+  /**
+   *  Set the order in a specifc type of coupling
+   */
+  void orderInCoupling(CouplingType::T cType, int order) {
+    couplingOrders_[cType] = order;
+  }
+
+  /**
+   *  Set the colour structure
+   */
+  void colourStructure(ColourStructure::T structure) {
+    colourStructure_ = structure;
+  }
   
 private:
   
@@ -490,14 +561,14 @@ private:
   VertexType::T _theName;
 
   /**
-   * Order of vertex in \f$g_EM\f$
+   * Colour structure of the vertex
    */
-  unsigned int _ordergEM;
+  ColourStructure::T colourStructure_;
 
   /**
-   * Order of vertex in \f$g_s\f$
+   *  The order of the vertex in specific couplings
    */
-  unsigned int _ordergS;
+  map<CouplingType::T,int> couplingOrders_;
 
   /**
    *  option for the coupling

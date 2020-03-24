@@ -3,6 +3,8 @@ AUTOMAKE_OPTIONS = -Wno-portability
 bin_PROGRAMS = setupThePEG runThePEG
 EXTRA_PROGRAMS = runEventLoop
 
+bin_SCRIPTS = thepeg-config
+
 EXTRA_DIST = testpdfs .check-local.sh
 
 myLDADD = $(top_builddir)/lib/libThePEG.la 

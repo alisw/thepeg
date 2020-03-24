@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HepMCConverter.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -24,7 +24,6 @@
 #include "ThePEG/PDF/PDF.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Utilities/Throw.h"
-
 namespace ThePEG {
 
 
@@ -115,22 +114,7 @@ void HepMCConverter<HepMCEventT,Traits>::init(const Event & ev, bool nocopies) {
     tcPPtr p = all[i];
     if ( nocopies && p->next() ) continue;
     if ( pmap.find(p) != pmap.end() ) continue;
-    GenParticle * gp = pmap[p] = createParticle(p);
-    if ( p->hasColourInfo() ) {
-      // Check if the particle is connected to colour lines, in which
-      // case the lines are mapped to an integer and set in the
-      // GenParticle's Flow info.
-      tcColinePtr l;
-      if ( (l = p->colourLine()) ) {
-	if ( !member(flowmap, l) ) flowmap[l] = flowmap.size() + 500;
-	Traits::setColourLine(*gp, 1, flowmap[l]);
-      }
-      if ( (l = p->antiColourLine()) ) {
-	if ( !member(flowmap, l) ) flowmap[l] = flowmap.size() + 500;
-	Traits::setColourLine(*gp, 2, flowmap[l]);
-      }
-    }
-
+    pmap[p] = createParticle(p);
     if ( !p->children().empty() || p->next() ) {
       // If the particle has children it should have a decay vertex:
       vertices.push_back(Vertex());
@@ -204,11 +188,33 @@ void HepMCConverter<HepMCEventT,Traits>::init(const Event & ev, bool nocopies) {
   Traits::setCrossSection(*geneve,
 			  eh->integratedXSec()/picobarn,
 			  eh->integratedXSecErr()/picobarn);
-
+  for ( int i = 0, N = all.size(); i < N; ++i ) {
+    tcPPtr p = all[i];
+    if ( pmap.find(p) == pmap.end() ) continue;
+    GenParticlePtrT gp = pmap[p];
+    if ( p->hasColourInfo() ) {
+      // Check if the particle is connected to colour lines, in which
+      // case the lines are mapped to an integer and set in the
+      // GenParticle's Flow info.
+      tcColinePtr l;
+      if ( (l = p->colourLine()) ) {
+	if ( !member(flowmap, l) ) flowmap[l] = flowmap.size() + 500;
+	Traits::setColourLine(*gp, 1, flowmap[l]);
+      }
+      if ( (l = p->antiColourLine()) ) {
+	if ( !member(flowmap, l) ) flowmap[l] = flowmap.size() + 500;
+	Traits::setColourLine(*gp, 2, flowmap[l]);
+      }
+   }
+   if ( p->spinInfo() && p->spinInfo()->hasPolarization() ) {
+    DPair pol = p->spinInfo()->polarization();
+    Traits::setPolarization(*gp, pol.first, pol.second);
+   }
+   }
 }
 
 template <typename HepMCEventT, typename Traits>
-typename HepMCConverter<HepMCEventT,Traits>::GenParticle *
+typename HepMCConverter<HepMCEventT,Traits>::GenParticlePtrT
 HepMCConverter<HepMCEventT,Traits>::createParticle(tcPPtr p) const {
   int status = 1;
   size_t nChildren = p->children().size();
@@ -237,8 +243,8 @@ HepMCConverter<HepMCEventT,Traits>::createParticle(tcPPtr p) const {
       }
     }
   }
-  GenParticle * gp =
-    Traits::newParticle(p->momentum(), p->id(), status, energyUnit);
+  GenParticlePtrT gp =
+    Traits::newParticle(p->momentum(), p->id(), p->status() ? p->status() : status, energyUnit);
 
   if ( p->spinInfo() && p->spinInfo()->hasPolarization() ) {
     DPair pol = p->spinInfo()->polarization();
@@ -270,12 +276,12 @@ void HepMCConverter<HepMCEventT,Traits>::join(tcPPtr parent, tcPPtr child) {
 }
 
 template <typename HepMCEventT, typename Traits>
-typename HepMCConverter<HepMCEventT,Traits>::GenVertex *
+typename HepMCConverter<HepMCEventT,Traits>::GenVertexPtrT
 HepMCConverter<HepMCEventT,Traits>::createVertex(Vertex * v) {
   if ( !v ) Throw<HepMCConverterException>()
     << "Found internal null Vertex." << Exception::abortnow;
 
-  GenVertex * gv = new GenVertex();
+  GenVertexPtrT gv = Traits::newVertex();
 
   // We assume that the vertex position is the average of the decay
   // vertices of all incoming and the creation vertices of all

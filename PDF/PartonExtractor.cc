@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PartonExtractor.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -265,7 +265,7 @@ generate(PartonBinInstance & pb, const double * r,
 		 shat/pb.xi(), first) )
     return false;
   pb.remnantWeight(1.0);
-  pb.parton()->setMomentum
+  pb.parton()->set5Momentum
     (pb.remnantHandler()->generate(pb, r + pb.bin()->pdfDim(), pb.scale(), shat,
 				   pb.particle()->momentum(),haveMEPartons));
   if ( pb.remnantWeight() <= 0.0 ) return false;
@@ -648,6 +648,7 @@ RemColException::RemColException(const PartonExtractor & pe) {
 }
   
 void PartonExtractor::dofinish() {
-  partonBinInstances().clear();
+  // Only clear partonBinInstances if we have a lastXCombPtr 
+  if(lastXCombPtr()) partonBinInstances().clear();
   HandlerBase::dofinish();
 }

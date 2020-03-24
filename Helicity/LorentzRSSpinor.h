@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LorentzRSSpinor.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -99,6 +99,10 @@ public:
                         {{a3,b3,c3,d3}},
                         {{a4,b4,c4,d4}}
                       }} {}
+  
+  template <typename U>
+  LorentzRSSpinor(const LorentzRSSpinor<U> & other)
+    : _type(other._type), _spin(other._spin) {}
   //@}
 
   /** @name Access the components. */
@@ -280,6 +284,39 @@ public:
   void setTS4(complex<Value> in) {_spin[3][3]=in;}
   //@}
 
+  /// @name Mathematical assignment operators.
+  //@{
+  template <typename ValueB>
+  LorentzRSSpinor<Value> & operator+=(const LorentzRSSpinor<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix)
+      for(unsigned int iy=0;iy<4;++iy)
+	_spin[ix][iy] += a._spin[ix][iy];
+    return *this;
+  }
+  
+  template <typename ValueB>
+  LorentzRSSpinor<Value> & operator-=(const LorentzRSSpinor<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix)
+      for(unsigned int iy=0;iy<4;++iy)
+	_spin[ix][iy] -= a._spin[ix][iy];
+    return *this;
+  }
+  
+  LorentzRSSpinor<Value> & operator*=(double a) {
+    for(unsigned int ix=0;ix<4;++ix)
+      for(unsigned int iy=0;iy<4;++iy)
+	_spin[ix][iy] *=a;
+    return *this;
+  }
+  
+  LorentzRSSpinor<Value> & operator/=(double a) {
+    for(unsigned int ix=0;ix<4;++ix)
+      for(unsigned int iy=0;iy<4;++iy)
+	_spin[ix][iy] /=a;
+    return *this;
+  }
+  //@}
+  
   /** @name Arithmetic operators. */
   //@{
   /**
@@ -357,7 +394,7 @@ public:
   template <typename ValueB>
   auto generalScalar(LorentzRSSpinorBar<ValueB>& fbar, 
                      Complex left, Complex right) 
-  -> decltype(left*fbar(3,0)*ts1())
+  -> decltype(left*fbar(3,0)*this->ts1())
   {
     decltype(left*fbar(3,0)*ts1()) output; 
     unsigned int iz;
@@ -381,7 +418,7 @@ public:
   template <typename ValueB>
   auto generalCurrent(LorentzSpinorBar<ValueB>& fbar, 
                       Complex left, Complex right) 
-  -> LorentzVector<decltype(left*fbar.s1()*ts1())>
+  -> LorentzVector<decltype(left*fbar.s1()*this->ts1())>
   {
     typedef decltype(left*fbar.s1()*ts1()) ResultT;
     ResultT output[4];
@@ -403,6 +440,127 @@ private:
    */
   std::array<std::array<complex<Value>,4>,4> _spin;
 };
+
+/// @name Basic mathematical operations
+//@{
+template <typename Value>
+inline LorentzRSSpinor<double>
+operator/(const LorentzRSSpinor<Value> & v, Value a) {
+  return LorentzRSSpinor<double>(v.xs1()/a, v.xs2()/a, v.xs3()/a, v.xs4()/a,
+			       v.ys1()/a, v.ys2()/a, v.ys3()/a, v.ys4()/a,
+			       v.zs1()/a, v.zs2()/a, v.zs3()/a, v.zs4()/a,
+			       v.ts1()/a, v.ts2()/a, v.ts3()/a, v.ts4()/a,
+			       v.Type());
+}
+
+inline LorentzRSSpinor<double>
+operator/(const LorentzRSSpinor<double> & v, Complex a) {
+  return LorentzRSSpinor<double>(v.xs1()/a, v.xs2()/a, v.xs3()/a, v.xs4()/a,
+				 v.ys1()/a, v.ys2()/a, v.ys3()/a, v.ys4()/a,
+				 v.zs1()/a, v.zs2()/a, v.zs3()/a, v.zs4()/a,
+				 v.ts1()/a, v.ts2()/a, v.ts3()/a, v.ts4()/a,
+				 v.Type());
+}
+
+template <typename Value>
+inline LorentzRSSpinor<Value> operator-(const LorentzRSSpinor<Value> & v) {
+  return LorentzRSSpinor<Value>(-v.xs1(),-v.xs2(),-v.xs3(),-v.xs4(),
+				-v.ys1(),-v.ys2(),-v.ys3(),-v.ys4(),
+				-v.zs1(),-v.zs2(),-v.zs3(),-v.zs4(),
+				-v.ts1(),-v.ts2(),-v.ts3(),-v.ts4(),
+				v.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzRSSpinor<ValueA>
+operator+(LorentzRSSpinor<ValueA> a, const LorentzRSSpinor<ValueB> & b) {
+  return a += b;
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzRSSpinor<ValueA>
+operator-(LorentzRSSpinor<ValueA> a, const LorentzRSSpinor<ValueB> & b) {
+  return a -= b;
+}
+
+template <typename Value>
+inline LorentzRSSpinor<Value>
+operator*(const LorentzRSSpinor<Value> & a, double b) {
+  return LorentzRSSpinor<Value>(a.xs1()*b, a.xs2()*b, a.xs3()*b, a.xs4()*b,
+				a.ys1()*b, a.ys2()*b, a.ys3()*b, a.ys4()*b,
+				a.zs1()*b, a.zs2()*b, a.zs3()*b, a.zs4()*b,
+				a.ts1()*b, a.ts2()*b, a.ts3()*b, a.ts4()*b,a.Type());
+}
+
+template <typename Value>
+inline LorentzRSSpinor<Value>
+operator*(double b, LorentzRSSpinor<Value> a) {
+  return a *= b;
+}
+  
+template <typename Value>
+inline LorentzRSSpinor<Value>
+operator*(const LorentzRSSpinor<Value> & a, Complex b) {
+  return LorentzRSSpinor<Value>(a.xs1()*b, a.xs2()*b, a.xs3()*b, a.xs4()*b,
+				a.ys1()*b, a.ys2()*b, a.ys3()*b, a.ys4()*b,
+				a.zs1()*b, a.zs2()*b, a.zs3()*b, a.zs4()*b,
+				a.ts1()*b, a.ts2()*b, a.ts3()*b, a.ts4()*b,a.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(complex<ValueB> a, const LorentzRSSpinor<ValueA> & v) 
+  -> LorentzRSSpinor<decltype(a.real()*v.xs1().real())>
+{
+  return {a*v.xs1(), a*v.xs2(), a*v.xs3(), a*v.xs4(),
+          a*v.ys1(), a*v.ys2(), a*v.ys3(), a*v.ys4(),
+          a*v.zs1(), a*v.zs2(), a*v.zs3(), a*v.zs4(),
+          a*v.ts1(), a*v.ts2(), a*v.ts3(), a*v.ts4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzRSSpinor<ValueA> & v, complex<ValueB> b) 
+  -> LorentzRSSpinor<decltype(b.real()*v.xs1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzRSSpinor<ValueA> & v, complex<ValueB> b) 
+  -> LorentzRSSpinor<decltype(v.xs1().real()/b.real())>
+{
+  return {v.xs1()/b, v.xs2()/b, v.xs3()/b, v.xs4()/b,
+          v.ys1()/b, v.ys2()/b, v.ys3()/b, v.ys4()/b,
+          v.zs1()/b, v.zs2()/b, v.zs3()/b, v.zs4()/b,
+          v.ts1()/b, v.ts2()/b, v.ts3()/b, v.ts4()/b,v.Type()};
+}
+  
+template <typename ValueA, typename ValueB>
+inline auto operator*(ValueB a, const LorentzRSSpinor<ValueA> & v) 
+  -> LorentzRSSpinor<decltype(a*v.xs1().real())>
+{
+  return {a*v.xs1(), a*v.xs2(), a*v.xs3(), a*v.xs4(),
+          a*v.ys1(), a*v.ys2(), a*v.ys3(), a*v.ys4(),
+          a*v.zs1(), a*v.zs2(), a*v.zs3(), a*v.zs4(),
+          a*v.ts1(), a*v.ts2(), a*v.ts3(), a*v.ts4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzRSSpinor<ValueA> & v, ValueB b) 
+  -> LorentzRSSpinor<decltype(b*v.xs1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzRSSpinor<ValueA> & v, ValueB b) 
+  -> LorentzRSSpinor<decltype(v.xs1().real()/b)>
+{
+  return {v.xs1()/b, v.xs2()/b, v.xs3()/b, v.xs4()/b,
+          v.ys1()/b, v.ys2()/b, v.ys3()/b, v.ys4()/b,
+          v.zs1()/b, v.zs2()/b, v.zs3()/b, v.zs4()/b,
+          v.ts1()/b, v.ts2()/b, v.ts3()/b, v.ts4()/b,v.Type()};
+}
+//@}
 
 }
 }

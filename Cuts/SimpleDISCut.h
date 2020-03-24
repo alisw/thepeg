@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimpleDISCut.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,7 +32,7 @@ public:
    * The default constructor.
    */
   SimpleDISCut()
-    : theMinQ2(1.0*GeV2), theMaxQ2(100.0*GeV2),
+    : theMinQ2(1.0*GeV2), theMaxQ2(100.0*GeV2),theMiny(0.0), theMaxy(1.0),
       theMinW2(100.0*GeV2), theMaxW2(1000000.0*GeV2), chargedCurrent(false) {}
 
 public:
@@ -152,6 +152,16 @@ private:
   /**
    * Helper function used by the interface.
    */
+  double maxMiny() const;
+
+  /**
+   * Helper function used by the interface.
+   */
+  double minMaxy() const;
+
+  /**
+   * Helper function used by the interface.
+   */
   Energy2 maxMinQ2() const;
 
   /**
@@ -180,6 +190,18 @@ private:
    * The maximum \f$Q^2\f$. This is only applied as a post-cut.
    */
   Energy2 theMaxQ2;
+
+  /**
+   * The minimum \f$y\f$.
+   */
+  double theMiny;
+
+  /**
+   * The maximum \f$y\f$. This is only applied as a post-cut.
+   */
+  double theMaxy;
+
+
 
   /**
    * The minimum \f$W^2\f$. This is only applied as a post-cut.

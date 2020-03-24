@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MultiEventGenerator.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -199,7 +199,7 @@ void MultiEventGenerator::doGo(long next, long maxevent, bool tics) {
     out() << head;
 
     reset();
-    for_each(objects(), mem_fun(&InterfacedBase::reset));
+    for_each(objects(), mem_fn(&InterfacedBase::reset));
     
     init();
     initrun();

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Cuts.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -53,9 +53,9 @@ void Cuts::doinitrun() {
   Interfaced::doinitrun();
   if ( Debug::level ) {
     describe();
-    for_each(theOneCuts,   mem_fun(&OneCutBase::describe));
-    for_each(theTwoCuts,   mem_fun(&TwoCutBase::describe));
-    for_each(theMultiCuts, mem_fun(&MultiCutBase::describe));
+    for_each(theOneCuts,   mem_fn(&OneCutBase::describe));
+    for_each(theTwoCuts,   mem_fn(&TwoCutBase::describe));
+    for_each(theMultiCuts, mem_fn(&MultiCutBase::describe));
   }
 }
 

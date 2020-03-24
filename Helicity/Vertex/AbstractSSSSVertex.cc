@@ -24,3 +24,11 @@ void AbstractSSSSVertex::Init() {
 
 }
 
+ScalarWaveFunction AbstractSSSSVertex::evaluate(Energy2,int, tcPDPtr, 
+						const ScalarWaveFunction & ,
+						const ScalarWaveFunction & ,
+						const ScalarWaveFunction & ,
+						complex<Energy> ,
+						complex<Energy>) {
+  assert(false);
+}

@@ -181,8 +181,4 @@ private:
 }
 }
 
-
-namespace ThePEG {
-
-}
 #endif /* HELICITY_AbstractRFSVertex_H */

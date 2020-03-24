@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VectorWaveFunction.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,16 +19,6 @@
 
 namespace ThePEG {
 namespace Helicity {
-
-/** \ingroup Helicity
- * Definition of the enumerated values of the phase to include in the 
- * calculation of the polarization vector.
- */
-enum VectorPhase {
-  vector_phase, /**< Include the phase factor.*/
-  vector_nophase, /**< No phase-factor. */
-  default_vector_phase=vector_nophase /**< Default option.*/
-};
 
 /** \ingroup Helicity
  *
@@ -210,6 +200,14 @@ public:
    */
   static void calculateWaveFunctions(vector<VectorWaveFunction> & waves,
 				     tPPtr particle,Direction,bool massless,
+				     VectorPhase phase=default_vector_phase);
+
+  /**
+   *  Calculate the wavefunctions
+   */
+  static void calculateWaveFunctions(vector<VectorWaveFunction> & waves,
+				     const Lorentz5Momentum & momentum,
+				     tcPDPtr parton, Direction,bool massless,
 				     VectorPhase phase=default_vector_phase);
 
   /**

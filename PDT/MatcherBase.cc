@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MatcherBase.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -155,7 +155,7 @@ void MatcherBase::addPIfMatch(tPDPtr pd) {
 }
 
 struct ParticleOrdering {
-  bool operator()(tcPDPtr p1, tcPDPtr p2) {
+  bool operator()(tcPDPtr p1, tcPDPtr p2) const {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
       ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
@@ -163,7 +163,7 @@ struct ParticleOrdering {
 };
 
 struct MatcherOrdering {
-  bool operator()(tcPMPtr m1, tcPMPtr m2) {
+  bool operator()(tcPMPtr m1, tcPMPtr m2) const {
     return m1->name() < m2->name() ||
       ( m1->name() == m2->name() && m1->fullName() < m2->fullName() );
   }

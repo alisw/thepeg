@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSSpinorWaveFunction.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -165,6 +165,15 @@ public:
   RSSpinorWaveFunction() 
     : WaveFunctionBase(), _wf()
   {}
+
+  /**
+   *  Special for spin correlations
+   */
+  RSSpinorWaveFunction(vector<RSSpinorWaveFunction> & wave,
+		       tPPtr part,Direction dir,bool time,bool=true) {
+    calculateWaveFunctions(wave,part,dir);
+    constructSpinInfo(wave,part,dir,time);
+  }
   //@}
 
   /**
@@ -184,6 +193,15 @@ public:
    * return wavefunction as LorentzRSSpinor
    */
   const LorentzRSSpinor<double> & wave() const {return _wf;}
+
+  /// Return wavefunction as LorentzRSSpinor<SqrtEnergy>
+  LorentzRSSpinor<SqrtEnergy> dimensionedWf() const {
+    LorentzRSSpinor<SqrtEnergy> temp(_wf.Type());
+    for (unsigned int i=0; i<4; ++i)
+      for (unsigned int j=0; j<4; ++j)
+	temp(i,j) = _wf(i,j)*UnitRemoval::SqrtE;
+    return temp;
+  }
 
   /**
    * Get first spinor component for the x vector
@@ -306,6 +324,13 @@ public:
   /**
    *  Calculate the wavefunctions
    */
+  static void calculateWaveFunctions(vector<RSSpinorWaveFunction> & waves,
+				     const Lorentz5Momentum & momentum,
+				     tcPDPtr parton,Direction);
+
+  /**
+   *  Calculate the wavefunctions
+   */
   static void calculateWaveFunctions(vector<LorentzRSSpinor<SqrtEnergy> > & waves,
 				     RhoDMatrix & rho,
 				     tPPtr particle,Direction);
@@ -343,15 +368,6 @@ private:
    * storage of the Lorentz RSSpinor
    */
   LorentzRSSpinor<double> _wf;
-
-  /// Return wavefunction as LorentzRSSpinor<SqrtEnergy>
-  LorentzRSSpinor<SqrtEnergy> dimensionedWf() const {
-    LorentzRSSpinor<SqrtEnergy> temp(_wf.Type());
-    for (unsigned int i=0; i<4; ++i)
-      for (unsigned int j=0; j<4; ++j)
-	temp(i,j) = _wf(i,j)*UnitRemoval::SqrtE;
-    return temp;
-  }
 };
 
 }

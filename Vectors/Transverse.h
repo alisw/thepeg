@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Transverse.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,9 +32,10 @@ class Transverse: public pair<Value,Value> {
 public:
 
   /** Template argument typedef. */
-  typedef typename BinaryOpTraits<Value,Value>::MulT Value2;
+  using Value2 = decltype(sqr(std::declval<Value>()));
+
   /** Template argument typedef. */
-  typedef pair<Value,Value> BasePair;
+  using BasePair = pair<Value,Value>;
 
 public:
 
@@ -225,36 +226,33 @@ operator*(double b, Transverse<Value> a) {
 
 /** Multiply a (unitful) number with a Transverse. */
 template <typename ValueA, typename ValueB>
-inline
-Transverse<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(ValueB a, const Transverse<ValueA> & v) {
-  typedef typename BinaryOpTraits<ValueB,ValueA>::MulT ResultT;
-  return Transverse<ResultT>(a*v.x(), a*v.y());
+inline auto operator*(ValueB a, const Transverse<ValueA> & v) 
+-> Transverse<decltype(a*v.x())>
+{
+  return {a*v.x(), a*v.y()};
 }
 
 /** Multiply a Transverse with a (unitful) number. */
 template <typename ValueA, typename ValueB>
-inline
-Transverse<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(const Transverse<ValueA> & v, ValueB a) {
-  typedef typename BinaryOpTraits<ValueB,ValueA>::MulT ResultT;
-  return Transverse<ResultT>(a*v.x(), a*v.y());
+inline auto operator*(const Transverse<ValueA> & v, ValueB a) 
+-> Transverse<decltype(a*v.x())>
+{
+  return {a*v.x(), a*v.y()};
 }
 
 /** Divide a Transverse by a number. */
 template <typename Value>
 inline Transverse<double>
 operator/(const Transverse<Value> & v, Value a) {
-  return Transverse<double>(v.x()/a, v.y()/a);
+  return {v.x()/a, v.y()/a};
 }
 
 /** Divide a Transverse by a (unitful) number. */
 template <typename ValueA, typename ValueB>
-inline
-Transverse<typename BinaryOpTraits<ValueA,ValueB>::DivT> 
-operator/(const Transverse<ValueA> & v, ValueB b) {
-  typedef typename BinaryOpTraits<ValueA,ValueB>::DivT ResultT;
-  return Transverse<ResultT>(v.x()/b, v.y()/b);
+inline auto operator/(const Transverse<ValueA> & v, ValueB b) 
+-> Transverse<decltype(v.x()/b)>
+{
+  return {v.x()/b, v.y()/b};
 }
 
 }

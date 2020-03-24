@@ -15,53 +15,60 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/EventRecord/SubProcessGroup.h"
-#include "HepMC/IO_AsciiParticles.h"
-#include "HepMC/IO_GenEvent.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
+#include "ThePEG/Vectors/HepMCConverter.h"
 using namespace ThePEG;
 
 NLOHepMCFile::NLOHepMCFile() 
-  : _remnantId(82), _format(1), _filename(), _unitchoice(),
-    _geneventPrecision(16), _eventNumber(1) {}
+  : _remnantId(82), _format(1), _filename(), 
+#ifdef HAVE_HEPMC_ROOTIO 
+    _ttreename(),_tbranchname(),
+#endif  
+    _unitchoice(),_geneventPrecision(16), _eventNumber(1) {}
 
 // Cannot copy streams. 
 // Let doinitrun() take care of their initialization.
 NLOHepMCFile::NLOHepMCFile(const NLOHepMCFile & x) 
   : AnalysisHandler(x), 
     _remnantId(x._remnantId), _format(x._format), 
-    _filename(x._filename), _hepmcio(), _hepmcdump(), 
-    _unitchoice(x._unitchoice), 
+    _filename(x._filename),
+#ifdef HAVE_HEPMC_ROOTIO 
+    _ttreename(x._ttreename),_tbranchname(x._tbranchname),
+#endif
+    _hepmcio(), _hepmcdump(), _unitchoice(x._unitchoice), 
     _geneventPrecision(x._geneventPrecision),
+    
     _eventNumber(x._eventNumber) {}
 
 HepMC::GenEvent * NLOHepMCFile::makeEvent(tEventPtr event, tSubProPtr sub, long no,
 					  Energy eUnit, Length lUnit, 
 					  CrossSection xsec, CrossSection xsecErr) const {
+
+  typedef typename HepMCTraits<HepMC::GenEvent>::ParticlePtrT ParticlePtrT;
+  typedef typename HepMCTraits<HepMC::GenEvent>::VertexPtrT VertexPtrT;
   
   // generate beam particles
   const PPair& beam = event->incoming();
-  HepMC::GenParticle * b1 =
+  ParticlePtrT b1 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.first->momentum(),beam.first->id(),
 					      1,eUnit);
-  HepMC::GenParticle * b2 =
+  ParticlePtrT b2 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.second->momentum(),beam.second->id(),
 					      1,eUnit);
 
   // generate remnants
-  HepMC::GenParticle * r1 =
+  ParticlePtrT r1 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.first->momentum() - 
 					      sub->incoming().first->momentum(),
 					      _remnantId,1,eUnit);
-  HepMC::GenParticle * r2 =
+  ParticlePtrT r2 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.second->momentum() - 
 					      sub->incoming().second->momentum(),
 					      _remnantId,1,eUnit);
 
   // generate outgoing particles
-  vector<HepMC::GenParticle*> outgoing;
+  vector<ParticlePtrT> outgoing;
   for ( ParticleVector::const_iterator p = sub->outgoing().begin();
 	p != sub->outgoing().end(); ++p ) {
     outgoing.push_back(HepMCTraits<HepMC::GenEvent>::newParticle((**p).momentum(),(**p).id(),
@@ -69,7 +76,7 @@ HepMC::GenEvent * NLOHepMCFile::makeEvent(tEventPtr event, tSubProPtr sub, long 
   }
 
   // generate one blob vertex
-  HepMC::GenVertex * vertex = HepMCTraits<HepMC::GenEvent>::newVertex();
+  VertexPtrT vertex = HepMCTraits<HepMC::GenEvent>::newVertex();
 
   HepMCTraits<HepMC::GenEvent>::addIncoming(*vertex,b1);
   HepMCTraits<HepMC::GenEvent>::addIncoming(*vertex,b2);
@@ -77,7 +84,7 @@ HepMC::GenEvent * NLOHepMCFile::makeEvent(tEventPtr event, tSubProPtr sub, long 
   HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,r1);
   HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,r2);
 
-  for ( vector<HepMC::GenParticle*>::const_iterator p = outgoing.begin();
+  for ( vector<ParticlePtrT>::const_iterator p = outgoing.begin();
 	p != outgoing.end(); ++p )
     HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,*p);
 
@@ -116,13 +123,29 @@ void NLOHepMCFile::analyze(tEventPtr event, long, int, int) {
   tSubProPtr sub = event->primarySubProcess();
   Ptr<SubProcessGroup>::tptr grp = 
     dynamic_ptr_cast<Ptr<SubProcessGroup>::tptr>(sub);
-
+#ifdef HAVE_HEPMC3
+    if (!_hepmcio->run_info()) 
+    {
+       _hepmcio->set_run_info(std::make_shared<HepMC::GenRunInfo>());
+    std::vector<std::string>  w_names;
+    w_names.push_back("Default");
+    for ( map<string,double>::const_iterator w = event->optionalWeights().begin();
+     w != event->optionalWeights().end(); ++w ) {
+     w_names.push_back(w->first);
+    }
+    _hepmcio->run_info()->set_weight_names(w_names);  
+    }
+#endif
   HepMC::GenEvent * hepmc = 
     makeEvent(event,sub,_eventNumber,eUnit,lUnit,xsec,xsecErr);
+#ifdef HAVE_HEPMC3
+    _hepmcio->write_event(*hepmc);
+#else
   if (_hepmcio)
     _hepmcio->write_event(hepmc);
   else
     hepmc->print(_hepmcdump);
+#endif
   delete hepmc;
 
   if ( grp ) {
@@ -131,10 +154,15 @@ void NLOHepMCFile::analyze(tEventPtr event, long, int, int) {
 	  s != grp->dependent().end(); ++s ) {
 
       hepmc = makeEvent(event,*s,_eventNumber,eUnit,lUnit,xsec,xsecErr);
+#ifdef HAVE_HEPMC3
+      if (_hepmcio)
+	_hepmcio->write_event(*hepmc);
+#else
       if (_hepmcio)
 	_hepmcio->write_event(hepmc);
       else
 	hepmc->print(_hepmcdump);
+#endif
       delete hepmc;
 
     }
@@ -155,19 +183,60 @@ IBPtr NLOHepMCFile::fullclone() const {
 
 void NLOHepMCFile::doinitrun() {
   AnalysisHandler::doinitrun();
-
-  // set default filename unless user-specified name exists
-  if ( _filename.empty() )
-    _filename = generator()->filename() + ".hepmc";
-
   switch ( _format ) {
+#ifdef HAVE_HEPMC3
+  default: {
+    if ( _filename.empty() )
+      _filename = generator()->filename() + ".hepmc";
+    HepMC::WriterAsciiHepMC2 * tmpio 
+      = new HepMC::WriterAsciiHepMC2(_filename.c_str());
+    tmpio->set_precision(_geneventPrecision);
+    _hepmcio = tmpio;
+  }
+    break;
+  case 6: {
+    if ( _filename.empty() )
+      _filename = generator()->filename() + ".hepmc";
+    HepMC::WriterAscii * tmpio 
+      = new HepMC::WriterAscii(_filename.c_str());
+    tmpio->set_precision(_geneventPrecision);
+    _hepmcio = tmpio;
+  }
+    break;
+  case 7: {
+    if ( _filename.empty() )
+      _filename = generator()->filename() + ".hepevt";
+    HepMC::WriterHEPEVT * tmpio 
+      = new  HepMC::WriterHEPEVT(_filename.c_str()); 
+    _hepmcio = tmpio;
+  }
+    break;
+#ifdef HAVE_HEPMC_ROOTIO
+  case 8:   {
+    if ( _filename.empty() )
+      _filename = generator()->filename() + ".root";
+    HepMC::WriterRoot * tmpio 
+      = new HepMC::WriterRoot(_filename.c_str());
+    _hepmcio = tmpio;  
+  }
+    break;
+  case 9:   {
+    if ( _filename.empty() )
+      _filename = generator()->filename() + ".root";
+    HepMC::WriterRootTree * tmpio 
+      = new HepMC::WriterRootTree(_filename.c_str(),_ttreename.c_str(),_tbranchname.c_str());
+    _hepmcio = tmpio;  
+  }
+    break;
+#endif
+#else
   default: {
     HepMC::IO_GenEvent * tmpio 
       = new HepMC::IO_GenEvent(_filename.c_str(), ios::out);
     tmpio->precision(_geneventPrecision);
     _hepmcio = tmpio;
-    break;
   }
+    break;
   case 2: 
     _hepmcio = new HepMC::IO_AsciiParticles(_filename.c_str(), ios::out); 
     break;
@@ -175,18 +244,24 @@ void NLOHepMCFile::doinitrun() {
     _hepmcio = 0; 
     _hepmcdump.open(_filename.c_str()); 
     break;
+#endif
   }
 }
 
 void NLOHepMCFile::dofinish() {
-  if (_hepmcio) {
-    delete _hepmcio;
-    _hepmcio = 0;
-  }
-  else
-    _hepmcdump.close();
-  AnalysisHandler::dofinish();
-  cout << "\nNLOHepMCFile: generated HepMC output.\n";
+#ifdef HAVE_HEPMC3
+   _hepmcio->close();
+   delete _hepmcio;
+#else
+   if (_hepmcio) {
+     delete _hepmcio;
+     _hepmcio = 0;
+   }
+   else
+     _hepmcdump.close();
+#endif
+   AnalysisHandler::dofinish();
+   cout << "\nNLOHepMCFile: generated HepMC output.\n";
 }
 
 
@@ -227,7 +302,15 @@ void NLOHepMCFile::Init() {
 
   static Switch<NLOHepMCFile,int> interfaceFormat
     ("Format",
-     "Output format (1 = GenEvent, 2 = AsciiParticles, 5 = HepMC dump)",
+#ifdef HAVE_HEPMC3
+#ifdef HAVE_HEPMC_ROOTIO    
+     "Output format (1 = GenEvent,  6 = GenEventHepMC3, 7 = HEPEVT, 8 = GenEvent in ROOT, 9 = GenEvent in ROOT TTree  )",
+#else
+     "Output format (1 = GenEvent,  6 = GenEventHepMC3, 7 = HEPEVT",
+#endif
+#else
+     "Output format (1 = GenEvent, 2 = AsciiParticles, 5 = HepMC dump",
+#endif
      &NLOHepMCFile::_format, 1, false, false);
   static SwitchOption interfaceFormatGenEvent
     (interfaceFormat,
@@ -248,7 +331,14 @@ void NLOHepMCFile::Init() {
   static Parameter<NLOHepMCFile,string> interfaceFilename
     ("Filename", "Name of the output file",
      &NLOHepMCFile::_filename, "");
-
+#ifdef HAVE_HEPMC_ROOTIO 
+  static Parameter<NLOHepMCFile,string> interfaceTTreename
+    ("TTreename", "Name of the TTree in output file",
+     &NLOHepMCFile::_ttreename, "hepmc3_tree");  
+  static Parameter<NLOHepMCFile,string> interfaceTBranchname
+    ("TBranchname", "Name of the branch in output file",
+     &NLOHepMCFile::_tbranchname, "hepmc3_tree");
+#endif
   static Parameter<NLOHepMCFile,unsigned int> interfacePrecision
     ("Precision",
      "Choice of output precision for the GenEvent format "

@@ -3,7 +3,7 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the RivetAnalysis class.
 //
-
+#include <config.h>
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -15,12 +15,10 @@
 #include "ThePEG/Config/HepMCHelper.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "HepMC/GenEvent.h"
 #include "RivetAnalysis.h"
 #include "Rivet/AnalysisHandler.hh"
 #include "Rivet/Tools/RivetPaths.hh"
 #include "Rivet/Tools/Logging.hh"
-#include <config.h>
 
 using namespace ThePEG;
 
@@ -34,7 +32,7 @@ void RivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int st
   // convert to hepmc
   HepMC::GenEvent * hepmc = ThePEG::HepMCConverter<HepMC::GenEvent>::convert(*event);
   // analyse the event
-  CurrentGenerator::Redirect stdout(cout);
+  if(_nevent>1) CurrentGenerator::Redirect stdout(cout);
   if ( _rivet ){
 #if ThePEG_RIVET_VERSION == 1
     _rivet->analyze(*hepmc);
@@ -48,6 +46,15 @@ void RivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int st
 #else
 #error "Unknown ThePEG_RIVET_VERSION"
 #endif
+  }
+  if(_nevent<=1) {
+    // check that analysis list is still available
+    if ( _rivet->analysisNames().size() != _analyses.size() ) {
+      throw ThePEG::Exception() 
+	<< "Rivet could not find all requested analyses.\n"
+	<< "Use 'rivet --list-analyses' to check availability.\n"
+	<< ThePEG::Exception::runerror;
+    }
   }
   // delete hepmc event
   delete hepmc;
@@ -131,8 +138,8 @@ void RivetAnalysis::dofinish() {
   if( _nevent > 0 && _rivet ) {
     CurrentGenerator::Redirect stdout(cout);
 #if ThePEG_RIVET_VERSION > 2
-    _rivet->setCrossSection(generator()->integratedXSec()/picobarn,
-                            generator()->integratedXSecErr()/picobarn);
+    _rivet->setCrossSection(make_pair(generator()->integratedXSec()/picobarn,
+                                      generator()->integratedXSecErr()/picobarn));
 #else
     _rivet->setCrossSection(generator()->integratedXSec()/picobarn);
 #endif

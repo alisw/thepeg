@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // MEBase.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -210,6 +210,15 @@ public:
    * given by the last call to generateKinematics().
    */
   virtual CrossSection dSigHatDR() const = 0;
+
+  /**
+   * If variations are available for the subprocess handled, generate
+   * and return a map of optional weights to be included for the
+   * event.
+   */
+  virtual map<string,double> generateOptionalWeights() {
+    return map<string,double>();
+  }
 
   /**
    * Return true, if this matrix element will generate momenta for the

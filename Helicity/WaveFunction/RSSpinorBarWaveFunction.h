@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RSSpinorBarWaveFunction.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -108,8 +108,9 @@ public:
    * @param wave The wavefunction.
    */
   RSSpinorBarWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
-			  LorentzRSSpinorBar<double> & wave) 
-    : WaveFunctionBase(p,part), _wf(wave)
+			  const LorentzRSSpinorBar<double> & wave,
+			  Direction dir=intermediate) 
+    : WaveFunctionBase(p,part,dir), _wf(wave)
   {
     assert(iSpin()==4);
   }
@@ -165,6 +166,15 @@ public:
   RSSpinorBarWaveFunction() 
     : WaveFunctionBase(), _wf()
   {}
+
+  /**
+   *  Special for spin correlations
+   */
+  RSSpinorBarWaveFunction(vector<RSSpinorBarWaveFunction> & wave,
+			  tPPtr part,Direction dir,bool time,bool=true) {
+    calculateWaveFunctions(wave,part,dir);
+    constructSpinInfo(wave,part,dir,time);
+  }
   //@}
 
   /**
@@ -184,6 +194,15 @@ public:
    * return wavefunction as LorentzRSSpinorBar
    */
   const LorentzRSSpinorBar<double> & wave() const {return _wf;}
+
+  /// Return wavefunction as LorentzRSSpinorBar<SqrtEnergy>
+  LorentzRSSpinorBar<SqrtEnergy> dimensionedWf() const {
+    LorentzRSSpinorBar<SqrtEnergy> temp(_wf.Type());
+    for (unsigned int i=0; i<4; ++i)
+      for (unsigned int j=0; j<4; ++j)
+	temp(i,j) = _wf(i,j)*UnitRemoval::SqrtE;
+    return temp;
+  }
   
   /**
    * Get first spinor component for the x vector
@@ -302,6 +321,13 @@ public:
    */
   static void calculateWaveFunctions(vector<RSSpinorBarWaveFunction> & waves,
 				     tPPtr particle,Direction);
+  
+  /**
+   *  Calculate the wavefunctions
+   */
+  static void calculateWaveFunctions(vector<RSSpinorBarWaveFunction> & waves,
+				     const Lorentz5Momentum & momentum,
+				     tcPDPtr parton,Direction);
 
   /**
    *  Calculate the wavefunctions
@@ -343,15 +369,6 @@ private:
    * storage of the Lorentz RSSpinorBar
    */
   LorentzRSSpinorBar<double> _wf;
-
-  /// Return wavefunction as LorentzRSSpinorBar<SqrtEnergy>
-  LorentzRSSpinorBar<SqrtEnergy> dimensionedWf() const {
-    LorentzRSSpinorBar<SqrtEnergy> temp(_wf.Type());
-    for (unsigned int i=0; i<4; ++i)
-      for (unsigned int j=0; j<4; ++j)
-	temp(i,j) = _wf(i,j)*UnitRemoval::SqrtE;
-    return temp;
-  }
 };
 
 }

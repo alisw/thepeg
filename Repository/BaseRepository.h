@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BaseRepository.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -391,7 +391,7 @@ public:
   template<typename Cont>
   static void clearAll(const Cont & c) 
   {  
-    for_each(c, mem_fun(&InterfacedBase::clear));
+    for_each(c, mem_fn(&InterfacedBase::clear));
   }
 
   /**
@@ -401,7 +401,7 @@ public:
   template<typename Cont>
   static void resetAll(const Cont & c) 
   {  
-    for_each(c, mem_fun(&InterfacedBase::reset));
+    for_each(c, mem_fn(&InterfacedBase::reset));
   }
 
   /**

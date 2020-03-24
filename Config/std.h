@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // std.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -96,6 +96,7 @@ using std::setw;
 using std::swap;
 using std::min;
 using std::max;
+using std::mem_fn;
 using std::mem_fun;
 using std::sqrt;
 //using std::pow;

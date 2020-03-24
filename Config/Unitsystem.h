@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Unitsystem.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad, David Grellscheid
+// Copyright (C) 1999-2019 Leif Lonnblad, David Grellscheid
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -33,6 +33,10 @@ namespace ThePEG {
  * iunit(e, GeV)</code>
 */
 namespace Units {
+
+/// adapter for the old style of naming quantities
+template<long int L, long int E, long int Q, long int DL=1, long int DE=1, long int DQ=1>
+using Qty = ThePEG::Qty<std::ratio<L,DL>, std::ratio<E,DE>, std::ratio<Q,DQ>>;
 
 /** Energy. */
 typedef Qty<0,1,0> Energy;
@@ -186,10 +190,17 @@ constexpr Energy operator "" _GeV( unsigned long long x ) {
   return Energy{1000_MeV, static_cast<double>(x)};
 }
 
+constexpr Energy operator "" _TeV( long double x ) {
+  return Energy{1000_GeV, static_cast<double>(x)};
+}
+constexpr Energy operator "" _TeV( unsigned long long x ) {
+  return Energy{1000_GeV, static_cast<double>(x)};
+}
+
 constexpr Energy keV = 1.0e-3_MeV;
 constexpr Energy MeV = 1_MeV;
 constexpr Energy GeV = 1_GeV;
-constexpr Energy TeV = 1.0e+6_MeV;
+constexpr Energy TeV = 1_TeV;
 
 
 

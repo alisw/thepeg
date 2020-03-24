@@ -513,9 +513,10 @@ libThePEGHist_la_SOURCES = \
   FactoryBase.cc FactoryBase.fh FactoryBase.h AIDA_helper.h
 
 libThePEGHist_la_CPPFLAGS = $(AM_CPPFLAGS) $(LWHINCLUDE)
-@HAVE_HEPMC_TRUE@HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
+@HAVE_HEPMCROOTIO_FALSE@@HAVE_HEPMC_TRUE@HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO) 
+@HAVE_HEPMCROOTIO_TRUE@@HAVE_HEPMC_TRUE@HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO) -Wl,--no-as-needed -lHepMC3rootIO 
 @HAVE_HEPMC_TRUE@HepMCAnalysis_la_SOURCES = HepMCFile.h    HepMCFile.cc    NLOHepMCFile.h    NLOHepMCFile.cc	HIHepMCFile.h HIHepMCFile.cc
-@HAVE_HEPMC_TRUE@HepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
+@HAVE_HEPMC_TRUE@HepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE) 
 @HAVE_HEPMC_TRUE@HepMCAnalysis_la_LIBADD = $(HEPMCLIBS)
 GraphvizPlot_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 GraphvizPlot_la_SOURCES = GraphvizPlot.h GraphvizPlot.cc

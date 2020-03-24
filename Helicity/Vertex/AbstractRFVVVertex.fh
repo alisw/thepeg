@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the AbstractRFVVVertex class.
+//
+#ifndef HELICITY_AbstractRFVVVertex_FH
+#define HELICITY_AbstractRFVVVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class AbstractRFVVVertex;
+
+namespace VertexType {
+  typedef unsigned T;
+  /**
+   *  Enum for this Lorentz structure
+   */
+  const T RFVV = 4233;
+}
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Helicity::AbstractRFVVVertex,AbstractRFVVVertexPtr);
+
+}
+
+#endif

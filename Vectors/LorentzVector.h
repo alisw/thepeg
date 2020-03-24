@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LorentzVector.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2019 David Grellscheid, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -44,7 +44,7 @@ template <typename Value> class LorentzVector
 {
 private:
   /// Value squared
-  typedef typename BinaryOpTraits<Value,Value>::MulT Value2;
+  using Value2 = decltype(sqr(std::declval<Value>()));
 
 public:
   /** @name Constructors. */
@@ -331,8 +331,7 @@ public:
 
   /// Dot product with metric \f$(+,-,-,-)\f$
   template <typename U>
-  typename BinaryOpTraits<Value,U>::MulT
-  dot(const LorentzVector<U> & a) const 
+  auto dot(const LorentzVector<U> & a) const -> decltype(this->t() * a.t())
   {
     return t() * a.t() - ( x() * a.x() + y() * a.y() + z() * a.z() );
   }
@@ -485,7 +484,7 @@ public:
 public:
   /// @name Mathematical assignment operators.
   //@{
-  LorentzVector<Complex> & operator+=(const LorentzVector<complex<Qty<0,0,0> > > & a) {
+  LorentzVector<Complex> & operator+=(const LorentzVector<complex<QtyDouble> > & a) {
     theX += a.x();
     theY += a.y();
     theZ += a.z();
@@ -502,7 +501,7 @@ public:
     return *this;
   }
   
-  LorentzVector<Complex> & operator-=(const LorentzVector<complex<Qty<0,0,0> > > & a) {
+  LorentzVector<Complex> & operator-=(const LorentzVector<complex<QtyDouble> > & a) {
     theX -= Complex(a.x());
     theY -= Complex(a.y());
     theZ -= Complex(a.z());
@@ -589,42 +588,37 @@ operator*(double b, LorentzVector<Value> a) {
 }
 
 template <typename ValueA, typename ValueB>
-inline
-LorentzVector<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(ValueB a, const LorentzVector<ValueA> & v) {
-  typedef typename BinaryOpTraits<ValueB,ValueA>::MulT ResultT;
-  return LorentzVector<ResultT>(a*v.x(), a*v.y(), a*v.z(), a*v.t());
+inline auto operator*(ValueB a, const LorentzVector<ValueA> & v) 
+-> LorentzVector<decltype(a*v.x())>
+{
+  return {a*v.x(), a*v.y(), a*v.z(), a*v.t()};
 }
 
 template <typename ValueA, typename ValueB>
-inline
-LorentzVector<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(const LorentzVector<ValueA> & v, ValueB b) {
+inline auto operator*(const LorentzVector<ValueA> & v, ValueB b) 
+-> LorentzVector<decltype(b*v.x())>
+{
   return b*v;
 }
 
 template <typename ValueA, typename ValueB>
-inline
-LorentzVector<typename BinaryOpTraits<ValueA,ValueB>::DivT> 
-operator/(const LorentzVector<ValueA> & v, ValueB b) {
-  typedef typename BinaryOpTraits<ValueA,ValueB>::DivT ResultT;
-  return LorentzVector<ResultT>(v.x()/b, v.y()/b, v.z()/b, v.t()/b);
+inline auto operator/(const LorentzVector<ValueA> & v, ValueB b) 
+-> LorentzVector<decltype(v.x()/b)>
+{
+  return {v.x()/b, v.y()/b, v.z()/b, v.t()/b};
 }
 //@}
 
 /// @name Scalar product with metric \f$(+,-,-,-)\f$
 //@{
 template <typename ValueA, typename ValueB>
-inline typename BinaryOpTraits<ValueA,ValueB>::MulT 
-operator*(const LorentzVector<ValueA> & a, const LorentzVector<ValueB> & b) {
+inline auto
+operator*(const LorentzVector<ValueA> & a, const LorentzVector<ValueB> & b) 
+-> decltype(a.dot(b))
+{
   return a.dot(b);
 }
 
-template <typename Value>
-inline typename BinaryOpTraits<Value,Value>::MulT 
-operator*(const LorentzVector<Value> & a, const LorentzVector<Value> & b) {
-  return a.dot(b);
-}
 //@}
 
 /// Equality
@@ -764,34 +758,6 @@ void iunitstream(IStream & is, LorentzVector<Value> & p, UnitT & u) {
   p = LorentzVector<Value>(x, y, z, e);
 }
 
-
-/// @name Traits for binary operations
-//@{
-template <typename T, typename U>
-struct BinaryOpTraits;
-/**
- * Template for multiplication by scalar
- */
-template <typename T, typename U>
-struct BinaryOpTraits<LorentzVector<T>, U> {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef LorentzVector<typename BinaryOpTraits<T,U>::MulT> MulT;
-  /** The type resulting from division of one template type with
-      another. */
-  typedef LorentzVector<typename BinaryOpTraits<T,U>::DivT> DivT;
-};
-
-/**
- * Template for multiplication by scalar
- */
-template <typename T, typename U>
-struct BinaryOpTraits<T, LorentzVector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef LorentzVector<typename BinaryOpTraits<T,U>::MulT> MulT;
-};
-//@}
 
 }
 

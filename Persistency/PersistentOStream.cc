@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PersistentOStream.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -111,11 +111,12 @@ PersistentOStream::outputPointer(tcBPtr obj) {
 
 const ClassDescriptionBase *
 PersistentOStream::writeClassId(tcBPtr obj) {
-  const ClassDescriptionBase * db = DescriptionList::find(typeid(*obj));
+  const auto & tmp=*obj;
+  const ClassDescriptionBase * db = DescriptionList::find(typeid(tmp));
   if ( !db ) {
     throw MissingClass()
       << "PersistentOStream could not find the ClassDescription object "
-      << "corresponding to the class " << typeid(*obj).name()
+      << "corresponding to the class " << typeid(tmp).name()
       << ". Please check that the class has a properly instantiated "
       << "ClassDescription object." << Exception::runerror;
   }

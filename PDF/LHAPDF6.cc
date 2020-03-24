@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LHAPDF6.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2014 Leif Lonnblad, David Grellscheid
+// // Copyright (C) 2014-2019 Leif Lonnblad, David Grellscheid
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.

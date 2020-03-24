@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimplePhaseSpace.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -17,9 +17,14 @@ template <typename PType>
 void SimplePhaseSpace::CMS(PType & p1, PType & p2, Energy2 s)
 {
   typedef ParticleTraits<PType> Traits;
-  Energy z = getMagnitude(s, Traits::mass(p1), Traits::mass(p2));
-  Traits::set3Momentum(p1, Momentum3(ZERO, ZERO, z));
-  Traits::set3Momentum(p2, Momentum3(ZERO, ZERO, -z));
+  Energy m1 = Traits::mass(p1); Energy m2 = Traits::mass(p2);
+  Energy z = getMagnitude(s, m1, m2);
+  Energy2 m12 = m1 >= ZERO ? sqr(m1) : -sqr(m1);
+  Energy2 m22 = m2 >= ZERO ? sqr(m2) : -sqr(m2);
+  Energy2 c1 = (s+m12-m22);
+  Energy2 c2 = (s-m12+m22);
+  Traits::set5Momentum(p1, Lorentz5Momentum(ZERO, ZERO, z, (c1 > ZERO ? 1. : -1.) * 0.5*sqrt(sqr(c1)/s), m1));
+  Traits::set5Momentum(p2, Lorentz5Momentum(ZERO, ZERO, -z, (c2 > ZERO ? 1. : -1.) * 0.5*sqrt(sqr(c2)/s), m2));
 }
 
 template <typename PType>

@@ -56,7 +56,11 @@ void BlobMEBase::getDiagrams() const {
 }
 
 Selector<MEBase::DiagramIndex>
+#ifndef NDEBUG
 BlobMEBase::diagrams(const DiagramVector & diags) const {
+#else
+BlobMEBase::diagrams(const DiagramVector & ) const {
+#endif
   assert(diags.size()==1);
   Selector<DiagramIndex> sel;
   sel.insert(1.0, 0);
@@ -71,7 +75,7 @@ BlobMEBase::colourGeometries(tcDiagPtr diag) const {
   for ( auto it = connections.begin(); it != connections.end(); ++it ) {
     bool sink = (it->members.size()==3 && 
 		 (-it->members[0] > diag->nIncoming() ||
-		  it->members[0] < diag->nIncoming() ) );
+		  it->members[0] <= diag->nIncoming() ) );
     clines << it->write(sourceCount,sink);
     auto nit = it; ++nit;
     if ( nit != connections.end() )

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RandomGenerator.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -128,6 +128,16 @@ int RandomGenerator::rnd4(double p0, double p1, double p2, double p3) {
   else if ( r < p0 + p1 ) return 1;
   else if ( r < p0 + p1 + p2 ) return 2;
   else return 3;
+}
+
+int RandomGenerator::rnd5(double p0, double p1, double p2, double p3, double p4) {
+  double sum = p0 + p1 + p2 + p3 + p4;
+  double r = rnd()*sum;
+  if ( r < p0 )  return 0;
+  else if ( r < p0 + p1 ) return 1;
+  else if ( r < p0 + p1 + p2 ) return 2;
+  else if ( r < p0 + p1 + p2 + p3 ) return 3;
+  else return 4;
 }
 
 long RandomGenerator::rndPoisson(double mean) {

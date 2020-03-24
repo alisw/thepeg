@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ThreeVector.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2019 David Grellscheid, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -32,12 +32,10 @@ namespace ThePEG {
  */
 template <typename Value>
 class ThreeVector 
-{
+{  
 private:
   /// Value squared
-  typedef typename BinaryOpTraits<Value,Value>::MulT Value2;
-  /// Value to the 4th power
-  typedef typename BinaryOpTraits<Value2,Value2>::MulT Value4;
+  using Value2 = decltype(sqr(std::declval<Value>()));
 
 public:
   /** @name Constructors. */
@@ -83,22 +81,21 @@ public:
 
   /// Dot product.
   template <typename U>
-  typename BinaryOpTraits<Value,U>::MulT
-  dot(const ThreeVector<U> & a) const {
+  auto dot(const ThreeVector<U> & a) const 
+  -> decltype(this->x()*a.x())
+  {
     return x()*a.x() + y()*a.y() + z()*a.z();
   }
 
   /// Squared transverse component with respect to the given axis.
   template <typename U>
   Value2 perp2(const ThreeVector<U> & p) const {
-    typedef typename BinaryOpTraits<U,U>::MulT pSqType;
-    const pSqType pMag2 = p.mag2();
-    assert( pMag2 > pSqType() );
-    typename BinaryOpTraits<Value,U>::MulT
-      ss = this->dot(p);
+    const auto pMag2 = p.mag2();
+    assert( pMag2 > ZERO );
+    auto ss = this->dot(p);
     Value2 ret = mag2() - sqr(ss)/pMag2;
-    if ( ret <= Value2() )
-      ret = Value2();
+    if ( ret <= ZERO )
+      ret = ZERO;
     return ret;
   }
 
@@ -112,7 +109,7 @@ public:
   //@{
   /// Polar angle.
   double theta() const {
-    assert(!(x() == Value() && y() == Value() && z() == Value()));
+    assert(!(x() == ZERO && y() == ZERO && z() == ZERO));
     return atan2(perp(),z());
   }
 
@@ -141,9 +138,9 @@ public:
   /// Parallel vector with unit length.
   ThreeVector<double> unit() const {
     Value2 mg2 = mag2();
-    assert(mg2 > Value2());
+    assert(mg2 > ZERO);
     Value mg = sqrt(mg2);
-    return ThreeVector<double>(x()/mg, y()/mg, z()/mg);
+    return {x()/mg, y()/mg, z()/mg};
   }
   
   /// Orthogonal vector.
@@ -151,12 +148,11 @@ public:
     Value xx = abs(x());
     Value yy = abs(y());
     Value zz = abs(z());
+    using TVec = ThreeVector<Value>;
     if (xx < yy) {
-      return xx < zz ? ThreeVector<Value>(Value(),z(),-y()) 
-	: ThreeVector<Value>(y(),-x(),Value());
+      return xx < zz ? TVec{ZERO,z(),-y()} : TVec{y(),-x(),ZERO};
     } else {
-      return yy < zz ? ThreeVector<Value>(-z(),Value(),x()) 
-	: ThreeVector<Value>(y(),-x(),Value());
+      return yy < zz ? TVec{-z(),ZERO,x()} : TVec{y(),-x(),ZERO};
     }
   }
 
@@ -182,24 +178,24 @@ public:
     if (angle == 0.0) 
       return *this;
     const U ll = axis.mag();
-    assert( ll > U() );
+    assert( ll > ZERO );
 
     const double sa = sin(angle), ca = cos(angle);
     const double dx = axis.x()/ll, dy = axis.y()/ll, dz = axis.z()/ll;
     const Value  xx  = x(), yy = y(), zz = z(); 
 
     setX((ca+(1-ca)*dx*dx)     * xx
-	 +((1-ca)*dx*dy-sa*dz) * yy
-	 +((1-ca)*dx*dz+sa*dy) * zz
-	 );
+         +((1-ca)*dx*dy-sa*dz) * yy
+         +((1-ca)*dx*dz+sa*dy) * zz
+         );
     setY(((1-ca)*dy*dx+sa*dz)  * xx
-	 +(ca+(1-ca)*dy*dy)    * yy
-	 +((1-ca)*dy*dz-sa*dx) * zz
-	 );
+         +(ca+(1-ca)*dy*dy)    * yy
+         +((1-ca)*dy*dz-sa*dx) * zz
+         );
     setZ(((1-ca)*dz*dx-sa*dy)  * xx
-	 +((1-ca)*dz*dy+sa*dx) * yy
-	 +(ca+(1-ca)*dz*dz)    * zz
-	 );
+         +((1-ca)*dz*dy+sa*dx) * yy
+         +(ca+(1-ca)*dz*dz)    * zz
+         );
     return *this;
   }
 
@@ -252,12 +248,12 @@ public:
 
   /// Vector cross-product
   template <typename U>
-  ThreeVector<typename BinaryOpTraits<Value,U>::MulT>
-  cross(const ThreeVector<U> & a) const {
-    typedef ThreeVector<typename BinaryOpTraits<Value,U>::MulT> ResultT;
-    return ResultT( y()*a.z()-z()*a.y(),
-		   -x()*a.z()+z()*a.x(),
-		    x()*a.y()-y()*a.x());
+  auto cross(const ThreeVector<U> & a) const 
+  -> ThreeVector<decltype(this->y()*a.z())>
+  {
+    return { y()*a.z()-z()*a.y(),
+            -x()*a.z()+z()*a.x(),
+             x()*a.y()-y()*a.x() };
   }
   
   public:  
@@ -312,10 +308,8 @@ public:
   /// Cosine of the azimuthal angle between two vectors.
   template <typename U>
   double cosTheta(const ThreeVector<U> & q) const {
-    typedef typename BinaryOpTraits<Value,U>::MulT
-      ProdType;
-    ProdType ptot = mag()*q.mag();
-    assert( ptot > ProdType() );
+    auto ptot = mag()*q.mag();
+    assert( ptot > ZERO );
     double arg = dot(q)/ptot;
     if     (arg >  1.0) arg =  1.0;
     else if(arg < -1.0) arg = -1.0;
@@ -349,7 +343,7 @@ operator<< (ostream & os, const ThreeVector<double> & v)
 template <typename Value>
 inline ThreeVector<Value>
 operator+(ThreeVector<Value> a, 
-	  const ThreeVector<Value> & b)
+          const ThreeVector<Value> & b)
 {
   return a += b;
 }
@@ -357,14 +351,14 @@ operator+(ThreeVector<Value> a,
 template <typename Value>
 inline ThreeVector<Value>
 operator-(ThreeVector<Value> a, 
-	  const ThreeVector<Value> & b)
+          const ThreeVector<Value> & b)
 {
   return a -= b;
 }
 
 template <typename Value>
 inline ThreeVector<Value> operator-(const ThreeVector<Value> & v) {
-  return ThreeVector<Value>(-v.x(),-v.y(),-v.z());
+  return {-v.x(),-v.y(),-v.z()};
 }
 
 template <typename Value>
@@ -378,24 +372,25 @@ inline ThreeVector<Value> operator*(double a, ThreeVector<Value> v) {
 }
 
 template <typename ValueA, typename ValueB>
-inline ThreeVector<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(ValueB a, ThreeVector<ValueA> v) {
-  typedef typename BinaryOpTraits<ValueA,ValueB>::MulT ResultT;
-  return ThreeVector<ResultT>(a*v.x(), a*v.y(), a*v.z());
+inline auto operator*(ValueB a, ThreeVector<ValueA> v) 
+-> ThreeVector<decltype(a*v.x())>
+{
+  return {a*v.x(), a*v.y(), a*v.z()};
 }
 
 template <typename ValueA, typename ValueB>
-inline ThreeVector<typename BinaryOpTraits<ValueA,ValueB>::MulT> 
-operator*(ThreeVector<ValueA> v, ValueB a) {
-  return a*v;
+inline auto operator*(ThreeVector<ValueA> v, ValueB a) 
+-> ThreeVector<decltype(v.x()*a)>
+{
+  return {v.x()*a, v.y()*a, v.z()*a};
 }
 //@}
 
 /// Vector dot product.
 template <typename ValueA, typename ValueB>
-inline typename BinaryOpTraits<ValueA,ValueB>::MulT 
-operator*(const ThreeVector<ValueA> & a, 
-	  const ThreeVector<ValueB> & b)
+inline auto operator*(const ThreeVector<ValueA> & a, 
+                      const ThreeVector<ValueB> & b)
+-> decltype(a.x()*b.x())
 {
   return a.dot(b);
 }

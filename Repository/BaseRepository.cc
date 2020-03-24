@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // BaseRepository.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -223,7 +223,8 @@ IVector BaseRepository::SearchDirectory(string name, string className) {
   string::size_type size = name.size();
   for ( ObjectMap::const_iterator i = objects().begin();
 	i != objects().end(); ++i ) {
-    if ( cdb && !DescriptionList::find(typeid(*(i->second)))->isA(*cdb) )
+    const auto & tmp=(*(i->second));
+    if ( cdb && !DescriptionList::find(typeid(tmp))->isA(*cdb) )
       continue;
     if ( i->first.substr(0, size) == name ) ret.push_back(i->second);
   }
@@ -243,7 +244,8 @@ IVector BaseRepository::GetObjectsReferringTo(IBPtr obj) {
 
 IVector BaseRepository::DirectReferences(IBPtr obj) {
   IVector ov = obj->getReferences();
-  InterfaceMap interfaceMap = getInterfaces(typeid(*obj));
+  const auto & tmp=*obj;
+  InterfaceMap interfaceMap = getInterfaces(typeid(tmp));
   for ( InterfaceMap::iterator iit = interfaceMap.begin();
 	iit != interfaceMap.end(); ++iit ) {
     IVector ovi = iit->second->getReferences(*obj);
@@ -259,7 +261,8 @@ addReferences(tIBPtr obj, ObjectSet & refs) {
   IVector ov = obj->getReferences();
   for ( IVector::const_iterator it = ov.begin(); it != ov.end(); ++it )
     if ( !member(refs, *it) ) addReferences(*it, refs);
-  InterfaceMap interfaceMap = getInterfaces(typeid(*obj));
+  const auto & tmp=*obj;
+  InterfaceMap interfaceMap = getInterfaces(typeid(tmp));
   for ( InterfaceMap::iterator iit = interfaceMap.begin();
 	iit != interfaceMap.end(); ++iit ) {
     IVector ov = iit->second->getReferences(*obj);
@@ -303,7 +306,7 @@ rebind(InterfacedBase & i, const TranslationMap & trans,
 }
 
 void BaseRepository::update() {
-  for_each(allObjects(), mem_fun(&InterfacedBase::update));
+  for_each(allObjects(), std::mem_fn(&InterfacedBase::update));
   clearAll(allObjects());
 }
 
@@ -371,14 +374,16 @@ void BaseRepository::rename(tIBPtr ip, string newName) {
 }
 
 const InterfaceBase * BaseRepository::FindInterface(IBPtr ip, string name) {
-  InterfaceMap imap = getInterfaces(typeid(*ip), false);
+  const auto & tmp=*ip;
+  InterfaceMap imap = getInterfaces(typeid(tmp), false);
   InterfaceMap::iterator it = imap.find(name);
   return it == imap.end()? 0: it->second;
 }
 
 const ClassDocumentationBase * BaseRepository::getDocumentation(tcIBPtr ip) {
+  const auto & tmp=*ip;
   TypeDocumentationMap::const_iterator cdoc =
-    documentations().find(DescriptionList::find(typeid(*ip)));
+    documentations().find(DescriptionList::find(typeid(tmp)));
   return cdoc != documentations().end()? cdoc->second: 0;
 }
 
@@ -573,8 +578,9 @@ string BaseRepository::exec(string command, ostream &) {
 	    it != objects().end(); ++it ) {
 	if ( className.size() ) {
 	  const ClassDescriptionBase * cdb = DescriptionList::find(className);
+    const auto & tmp=*(it->second);
 	  if ( cdb &&
-	       !DescriptionList::find(typeid(*(it->second)))->isA(*cdb) )
+	       !DescriptionList::find(typeid(tmp))->isA(*cdb) )
 	    continue;
 	}
 	if ( thisdir + it->second->name() == it->first )
@@ -832,34 +838,37 @@ string BaseRepository::exec(string command, ostream &) {
       if ( !ifb && verb != "describe" && verb != "fulldescribe" ) {
 	string ret = "Error: The interface '" + noun + "' was not found.\n";
 	ret += "Valid interfaces:\n";
-	InterfaceMap imap = getInterfaces(typeid(*ip));
+  const auto & tmp=*ip;
+	InterfaceMap imap = getInterfaces(typeid(tmp));
 	for ( InterfaceMap::iterator it = imap.begin(); it != imap.end(); ++it )
 	  ret += "* " + it->second->name() + "\n";
 	return ret;
       }
       if ( verb == "describe" ) {
 	if ( ifb ) return ifb->description();
-	const ClassDescriptionBase * cd = DescriptionList::find(typeid(*ip));
+  const auto & tmp=*ip;
+	const ClassDescriptionBase * cd = DescriptionList::find(typeid(tmp));
 	string ret = "Object '" + ip->name() + "' of class '" +
 	  cd->name() + "':\n";
 	TypeDocumentationMap::const_iterator cdoc = documentations().find(cd);
 	if ( cdoc != documentations().end() )
 	  ret += cdoc->second->documentation() + "\n";
 	ret +="Interfaces:\n";
-	InterfaceMap imap = getInterfaces(typeid(*ip));
+	InterfaceMap imap = getInterfaces(typeid(tmp));
 	for ( InterfaceMap::iterator it = imap.begin(); it != imap.end(); ++it )
 	  ret += "* " + it->second->name() + "\n";
 	return ret;
       } else if ( verb == "fulldescribe" ) {
 	if ( ifb ) return ifb->fullDescription(*ip);
 	ostringstream ret;
-	const ClassDescriptionBase * cd = DescriptionList::find(typeid(*ip));
+  const auto & tmp=*ip;
+	const ClassDescriptionBase * cd = DescriptionList::find(typeid(tmp));
 	TypeDocumentationMap::const_iterator cdoc = documentations().find(cd);
 	ret << ip->fullName() << endl << cd->name() << endl;
 	if ( cdoc != documentations().end() )
 	  ret << cdoc->second->documentation() << endl;
 	ret << "Interfaces:" << endl;
-	InterfaceMap imap = getInterfaces(typeid(*ip));
+	InterfaceMap imap = getInterfaces(typeid(tmp));
 	typedef set<const InterfaceBase *, InterfaceOrder> InterfaceSet;
 	InterfaceSet iset;
 	for ( InterfaceMap::iterator it = imap.begin(); it != imap.end(); ++it )
