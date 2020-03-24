@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Histogram1D.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -512,9 +512,6 @@ private:
 
   /** The weighted x-square-values. */
   std::vector<double> sumx2w;
-
-  /** dummy pointer to non-existen annotation. */
-  IAnnotation * anno;
 
 };
 

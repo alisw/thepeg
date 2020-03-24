@@ -15,20 +15,23 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* We have HepMC3 */
+#undef HAVE_HEPMC3
+
+/* Define to 1 if you have the <HepMC3/WriterRootTree.h> header file. */
+#undef HAVE_HEPMC3_WRITERROOTTREE_H
+
+/* Define to 1 if you have the <HepMC3/WriterRoot.h> header file. */
+#undef HAVE_HEPMC3_WRITERROOT_H
+
+/* Define to 1 if you have the <HepMC3/Writer.h> header file. */
+#undef HAVE_HEPMC3_WRITER_H
+
 /* Define to 1 if you have the <HepMC/HepMCDefs.h> header file. */
 #undef HAVE_HEPMC_HEPMCDEFS_H
 
-/* Define to 1 if you have the <HepMC/IO_GenEvent.h> header file. */
-#undef HAVE_HEPMC_IO_GENEVENT_H
-
-/* Define to 1 if you have the <HepMC/IO/IO_GenEvent.h> header file. */
-#undef HAVE_HEPMC_IO_IO_GENEVENT_H
-
 /* Define to 1 if you have the <HepMC/PdfInfo.h> header file. */
 #undef HAVE_HEPMC_PDFINFO_H
-
-/* Define to 1 if you have the <HepMC/Version.h> header file. */
-#undef HAVE_HEPMC_VERSION_H
 
 /* Define to 1 if you have the <history.h> header file. */
 #undef HAVE_HISTORY_H
@@ -41,9 +44,6 @@
 
 /* Define to 1 if you have the `gslcblas' library (-lgslcblas). */
 #undef HAVE_LIBGSLCBLAS
-
-/* Define to 1 if you have the `HepMC' library (-lHepMC). */
-#undef HAVE_LIBHEPMC
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
@@ -92,6 +92,15 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Has GenCrossection */
+#undef HEPMC_HAS_CROSS_SECTION
+
+/* Has named weights */
+#undef HEPMC_HAS_NAMED_WEIGHTS
+
+/* Has GenPdfInfo */
+#undef HEPMC_HAS_PDF_INFO
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FFVTVertex.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -55,48 +55,4 @@ Complex FFVTVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
   Complex tenav = preDot.dot(vec.wave())+postDot.dot(vec.wave());
   // return the vertex
   return ii*0.25*norm()*(tenav-2.*trace*dotav);
-}
-
-TensorWaveFunction FFVTVertex::evaluate(Energy2,int , tcPDPtr ,
-					const SpinorWaveFunction & ,
-					const SpinorBarWaveFunction & ,
-					const VectorWaveFunction & ,
-					complex<Energy>, complex<Energy>) {
-  throw Exception() << "FFVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
-}
-
-VectorWaveFunction FFVTVertex::evaluate(Energy2 ,int , tcPDPtr ,
-					const SpinorWaveFunction & ,
-					const SpinorBarWaveFunction & , 
-					const TensorWaveFunction &  ,
-					complex<Energy>, complex<Energy>) {
-  throw Exception() << "FFVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
-}
-
-SpinorWaveFunction FFVTVertex::evaluate(Energy2 ,int , tcPDPtr ,
-					const SpinorWaveFunction & ,
-					const VectorWaveFunction & ,
-					const TensorWaveFunction &  ,
-					complex<Energy>, complex<Energy>) {
-  throw Exception() << "FFVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
-}
-
-SpinorBarWaveFunction FFVTVertex::evaluate(Energy2 ,int , tcPDPtr ,
-					   const SpinorBarWaveFunction & ,
-					   const VectorWaveFunction & ,
-					   const TensorWaveFunction &  ,
-					   complex<Energy>, complex<Energy>) {
-  throw Exception() << "FFVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
 }

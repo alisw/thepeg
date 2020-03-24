@@ -43,44 +43,6 @@ public:
 			   const VectorWaveFunction & vec2,
 			   const VectorWaveFunction & vec3, 
 			   const TensorWaveFunction & ten4) = 0;
-  
-  /**
-   * Evaluate the off-shell tensor coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell tensor.
-   * @param out The ParticleData pointer for the off-shell tensor.
-   * @param vec1  The wavefunction for the first  vector.
-   * @param vec2  The wavefunction for the second vector.
-   * @param vec3  The wavefunction for the third  vector.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  virtual TensorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-				      const VectorWaveFunction & vec1,
-				      const VectorWaveFunction & vec2,
-				      const VectorWaveFunction & vec3,
-				      complex<Energy> mass=-GeV, complex<Energy> width=-GeV) = 0;
-
-  /**
-   * Evaluate the off-shell vector coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell vector.
-   * @param out The ParticleData pointer for the off-shell vector.
-   * @param vec1  The wavefunction for the first  vector.
-   * @param vec2  The wavefunction for the second vector.
-   * @param ten4  The wavefunction for the tensor.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  virtual VectorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-				      const VectorWaveFunction & vec1,
-				      const VectorWaveFunction & vec2,
-				      const TensorWaveFunction & ten4,
-				      complex<Energy> mass=-GeV, complex<Energy> width=-GeV) = 0;
   //@}
 
 public:

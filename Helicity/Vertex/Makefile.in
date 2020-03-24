@@ -115,9 +115,14 @@ am_libThePEGVertex_la_OBJECTS = VertexBase.lo AbstractFFSVertex.lo \
 	AbstractSSSSVertex.lo AbstractVSSVertex.lo \
 	AbstractFFTVertex.lo AbstractVVTVertex.lo AbstractVVSVertex.lo \
 	AbstractSSTVertex.lo AbstractVVSSVertex.lo \
-	AbstractVVVSVertex.lo AbstractFFVTVertex.lo \
-	AbstractVVVTVertex.lo AbstractVVVVVertex.lo \
-	AbstractRFSVertex.lo AbstractRFVVertex.lo
+	AbstractVVVSVertex.lo AbstractFFSTVertex.lo \
+	AbstractFFVTVertex.lo AbstractSSSTVertex.lo \
+	AbstractVVSTVertex.lo AbstractVVVTVertex.lo \
+	AbstractVVVVVertex.lo AbstractRFSVertex.lo \
+	AbstractRFVVertex.lo AbstractFFVVVertex.lo \
+	AbstractFFVSVertex.lo AbstractFFSSVertex.lo \
+	AbstractFFFFVertex.lo AbstractRFSSVertex.lo \
+	AbstractRFVSVertex.lo AbstractRFVVVertex.lo
 libThePEGVertex_la_OBJECTS = $(am_libThePEGVertex_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -418,7 +423,7 @@ AbstractFFSVertex.h  AbstractFFSVertex.fh  AbstractFFSVertex.cc  \
 AbstractFFVVertex.h  AbstractFFVVertex.fh  AbstractFFVVertex.cc  \
 AbstractVVVVertex.h  AbstractVVVVertex.fh  AbstractVVVVertex.cc  \
 AbstractSSSVertex.h  AbstractSSSVertex.fh  AbstractSSSVertex.cc  \
-AbstractSSSSVertex.h AbstractSSSSVertex.fh AbstractSSSSVertex.cc  \
+AbstractSSSSVertex.h AbstractSSSSVertex.fh AbstractSSSSVertex.cc \
 AbstractVSSVertex.h  AbstractVSSVertex.fh  AbstractVSSVertex.cc  \
 AbstractFFTVertex.h  AbstractFFTVertex.fh  AbstractFFTVertex.cc  \
 AbstractVVTVertex.h  AbstractVVTVertex.fh  AbstractVVTVertex.cc  \
@@ -426,11 +431,21 @@ AbstractVVSVertex.h  AbstractVVSVertex.fh  AbstractVVSVertex.cc  \
 AbstractSSTVertex.h  AbstractSSTVertex.fh  AbstractSSTVertex.cc  \
 AbstractVVSSVertex.h AbstractVVSSVertex.fh AbstractVVSSVertex.cc \
 AbstractVVVSVertex.h AbstractVVVSVertex.fh AbstractVVVSVertex.cc \
+AbstractFFSTVertex.h AbstractFFSTVertex.fh AbstractFFSTVertex.cc \
 AbstractFFVTVertex.h AbstractFFVTVertex.fh AbstractFFVTVertex.cc \
+AbstractSSSTVertex.h AbstractSSSTVertex.fh AbstractSSSTVertex.cc \
+AbstractVVSTVertex.h AbstractVVSTVertex.fh AbstractVVSTVertex.cc \
 AbstractVVVTVertex.h AbstractVVVTVertex.fh AbstractVVVTVertex.cc \
 AbstractVVVVVertex.h AbstractVVVVVertex.fh AbstractVVVVVertex.cc \
-AbstractRFSVertex.h  AbstractRFSVertex.fh  AbstractRFSVertex.cc \
-AbstractRFVVertex.h  AbstractRFVVertex.fh  AbstractRFVVertex.cc 
+AbstractRFSVertex.h  AbstractRFSVertex.fh  AbstractRFSVertex.cc  \
+AbstractRFVVertex.h  AbstractRFVVertex.fh  AbstractRFVVertex.cc  \
+AbstractFFVVVertex.h AbstractFFVVVertex.fh AbstractFFVVVertex.cc \
+AbstractFFVSVertex.h AbstractFFVSVertex.fh AbstractFFVSVertex.cc \
+AbstractFFSSVertex.h AbstractFFSSVertex.fh AbstractFFSSVertex.cc \
+AbstractFFFFVertex.h AbstractFFFFVertex.fh AbstractFFFFVertex.cc \
+AbstractRFSSVertex.h AbstractRFSSVertex.fh AbstractRFSSVertex.cc \
+AbstractRFVSVertex.h AbstractRFVSVertex.fh AbstractRFVSVertex.cc \
+AbstractRFVVVertex.h AbstractRFVVVertex.fh AbstractRFVVVertex.cc
 
 libThePEGVertex_la_LIBADD = Scalar/libThePEGSVertex.la \
 	                    Vector/libThePEGVVertex.la \
@@ -490,17 +505,27 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFFFVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFSSVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFSTVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFTVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFVSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFVTVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFVVVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractFFVVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractRFSSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractRFSVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractRFVSVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractRFVVVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractRFVVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractSSSSVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractSSSTVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractSSSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractSSTVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVSSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVVSSVertex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVVSTVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVVSVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVVTVertex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AbstractVVVSVertex.Plo@am__quote@

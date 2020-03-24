@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EventGenerator.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -710,6 +710,11 @@ public:
    */
   string preinitInterface(IPtr obj, string ifcname, int index,
 			  string cmd, string value);
+
+  /**
+   *  Remove the object
+   */
+  bool preinitRemove(IPtr obj);
 
   /**
    * Find a decaymode given a decay \a tag.

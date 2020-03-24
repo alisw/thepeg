@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // ParticleData.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -571,7 +571,7 @@ int ParticleData::defSpin() const {
 ClassDescription<ParticleData> ParticleData::initParticleData;
 
 struct ParticleOrdering {
-  bool operator()(tcPDPtr p1, tcPDPtr p2) {
+  bool operator()(tcPDPtr p1, tcPDPtr p2) const {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
       ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
@@ -579,7 +579,7 @@ struct ParticleOrdering {
 };
 
 struct ModeOrdering {
-  bool operator()(const tcDMPtr & d1, const tcDMPtr & d2) {
+  bool operator()(const tcDMPtr & d1, const tcDMPtr & d2) const  {
     ParticleOrdering ord;
     return ord(d1->parent(), d2->parent()) ||
       ( !ord(d2->parent(), d1->parent()) &&

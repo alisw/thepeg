@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VertexBase.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -28,13 +28,15 @@ using namespace ThePEG::Helicity;
 
 VertexBase::VertexBase(VertexType::T name, bool kine) 
   : _npoint(1), _norm(0), _calckinematics(kine), 
-    _kine(), _theName(name), 
-    _ordergEM(0), _ordergS(0),
+    _kine(), _theName(name),
     _coupopt(0), _gs(sqrt(4.*Constants::pi*0.3)), 
     _ee(sqrt(4.*Constants::pi/137.04)),
     _sw(sqrt(0.232)) 
 {
-  assert ( name != VertexType::UNDEFINED ); 
+  couplingOrders_[CouplingType::QED]=0;
+  couplingOrders_[CouplingType::QCD]=0;
+  // may break overloaded use cases
+  assert ( name != VertexType::UNDEFINED );
   // Count number of lines from length of 'name'
   while ( name /= 10 ) ++_npoint;
 }
@@ -71,6 +73,7 @@ void VertexBase::addToList(const vector<long> & ids) {
 
 void VertexBase::doinit() {
   Interfaced::doinit();
+  //assert(colourStructure_ != ColourStructure::UNDEFINED);
   // set up the incoming and outgoing particles
   if ( !_outpart.empty() || !_inpart.empty() )
     return;
@@ -83,13 +86,19 @@ void VertexBase::doinit() {
     }
   }
   // check the couplings
-  if(Debug::level>1&&_npoint!=2+_ordergEM+_ordergS)
+  if(Debug::level>1&&int(_npoint)!=2+ orderInAllCouplings())
     generator()->log() << fullName() << " has inconsistent number of "
-		       << "external particles and coupling order\nQED = " 
-		       << _ordergEM << " QCD = " << _ordergS << " for"
-		       << " a perturbative interaction. Either it's an"
+		       << "external particles and coupling order = "
+		       << orderInAllCouplings()
+		       << " for a perturbative interaction. Either it's an"
 		       << " effective vertex or something is wrong.\n";
-  assert(_npoint<=2+_ordergEM+_ordergS);
+  if(int(_npoint)>2+orderInAllCouplings()) {
+    generator()->log() << fullName() << " has inconsistent number of "
+		       << "external particles and coupling order "
+		       << orderInAllCouplings()
+		       << " for a perturbative interaction. Either it's a BSM "
+		       << " effective vertex or something is wrong.\n";
+  }
 }
 
     
@@ -97,14 +106,14 @@ void VertexBase::persistentOutput(PersistentOStream & os) const {
   os << _npoint << _inpart << _outpart 
      << _particles << _calckinematics
      << _coupopt << _gs << _ee << _sw
-     << _ordergEM << _ordergS;
+     << couplingOrders_ << colourStructure_;
 }
 
 void VertexBase::persistentInput(PersistentIStream & is, int) {
   is >> _npoint >> _inpart >> _outpart 
      >> _particles >> _calckinematics
      >> _coupopt >> _gs >> _ee >> _sw
-     >> _ordergEM >> _ordergS;
+     >> couplingOrders_ >> colourStructure_;
 }
 
 // Static variable needed for the type description system in ThePEG.

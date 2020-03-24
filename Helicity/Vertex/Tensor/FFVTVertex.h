@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // FFVTVertex.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -72,82 +72,6 @@ public:
   Complex evaluate(Energy2 q2,const SpinorWaveFunction & sp1,
 		   const SpinorBarWaveFunction & sbar2,
 		   const VectorWaveFunction & vec3, const TensorWaveFunction & ten4);
-
-  /**
-   * Evaluate the off-shell tensor coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell tensor.
-   * @param out The ParticleData pointer for the off-shell tensor.
-   * @param sp1   The wavefunction for the ferimon.
-   * @param sbar2 The wavefunction for the antifermion.
-   * @param vec3  The wavefunction for the vector.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  TensorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-			      const SpinorWaveFunction & sp1,
-			      const SpinorBarWaveFunction & sbar2,
-			      const VectorWaveFunction & vec3,
-			      complex<Energy> mass=-GeV, complex<Energy> width=-GeV);
-
-  /**
-   * Evaluate the off-shell vector coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell vector.
-   * @param out The ParticleData pointer for the off-shell vector.
-   * @param sp1   The wavefunction for the ferimon.
-   * @param sbar2 The wavefunction for the antifermion.
-   * @param ten4  The wavefunction for the tensor.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  VectorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-			      const SpinorWaveFunction & sp1,
-			      const SpinorBarWaveFunction & sbar2, 
-			      const TensorWaveFunction & ten4,
-			      complex<Energy> mass=-GeV, complex<Energy> width=-GeV);
-
-  /**
-   * Evaluate the off-shell spinor coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell spinor.
-   * @param out The ParticleData pointer for the off-shell spinor.
-   * @param sp1   The wavefunction for the ferimon.
-   * @param vec3  The wavefunction for the vector.
-   * @param ten4  The wavefunction for the tensor.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  SpinorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-			      const SpinorWaveFunction & sp1,
-			      const VectorWaveFunction & vec3,
-			      const TensorWaveFunction & ten4,
-			      complex<Energy> mass=-GeV, complex<Energy> width=-GeV);
-
-  /**
-   * Evaluate the off-shell barred spinor coming from the vertex.
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param iopt Option of the shape of the Breit-Wigner for the off-shell barred spinor.
-   * @param out The ParticleData pointer for the off-shell barred spinor.
-   * @param sbar2 The wavefunction for the antifermion.
-   * @param vec3  The wavefunction for the vector.
-   * @param ten4  The wavefunction for the tensor.
-   * @param mass The mass of the off-shell particle if not taken from the ParticleData
-   * object
-   * @param width The width of the off-shell particle if not taken from the ParticleData
-   * object
-   */
-  SpinorBarWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
-				 const SpinorBarWaveFunction & sbar2,
-				 const VectorWaveFunction & vec3,
-				 const TensorWaveFunction & ten4,
-				 complex<Energy> mass=-GeV, complex<Energy> width=-GeV);
   //@}
 
   /**

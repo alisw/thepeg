@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the AbstractSSSTVertex class.
+//
+#ifndef HELICITY_AbstractSSSTVertex_FH
+#define HELICITY_AbstractSSSTVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class AbstractSSSTVertex;
+
+namespace VertexType {
+  typedef unsigned T;
+  /**
+   *  Enum for this Lorentz structure
+   */
+  const T SSST = 1115;
+}
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Helicity::AbstractSSSTVertex,AbstractSSSTVertexPtr);
+
+}
+
+#endif

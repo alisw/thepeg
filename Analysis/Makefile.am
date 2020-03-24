@@ -45,9 +45,13 @@ libThePEGHist_la_CPPFLAGS = $(AM_CPPFLAGS) $(LWHINCLUDE)
 
 if HAVE_HEPMC
   pkglib_LTLIBRARIES += HepMCAnalysis.la
-  HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
+if HAVE_HEPMCROOTIO
+  HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO) -Wl,--no-as-needed -lHepMC3rootIO 
+else
+  HepMCAnalysis_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO) 
+endif
   HepMCAnalysis_la_SOURCES = HepMCFile.h    HepMCFile.cc    NLOHepMCFile.h    NLOHepMCFile.cc	HIHepMCFile.h HIHepMCFile.cc
-  HepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
+  HepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE) 
   HepMCAnalysis_la_LIBADD = $(HEPMCLIBS)
 endif
 

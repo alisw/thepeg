@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SpinorBarWaveFunction.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,103 +15,14 @@
 
 #include "SpinorBarWaveFunction.h"
 #include "SpinorWaveFunction.h"
+#include "ThePEG/Helicity/HelicityFunctions.h"
 
 using namespace ThePEG;
   using namespace Helicity;
 
 // calculate the Wavefunction
 void SpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel) {
-  Direction dir=direction();
-  if(dir==intermediate) ThePEG::Helicity::HelicityConsistencyError() 
-    << "In SpinorBarWaveFunction::calcluateWaveFunction "
-    << "particle must be incoming or outgoing not intermediate" 
-    << Exception::abortnow;
-  // check ihelicity is O.K.
-  if(ihel>1)  ThePEG::Helicity::HelicityConsistencyError() 
-    << "Invalid Helicity = " << ihel << " requested for SpinorBar" 
-    << Exception::abortnow;
-  // extract the momentum components
-  double fact = dir==incoming ? 1. : -1.;
-  Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
-  // define and calculate some kinematic quantities
-  Energy2 ptran2  = ppx*ppx+ppy*ppy;
-  Energy pabs   = sqrt(ptran2+ppz*ppz);
-  Energy ptran  = sqrt(ptran2);
-  // first need to evalulate the 2-component helicity spinors 
-  // this is the same regardless of which definition of the spinors
-  // we are using
-  Complex hel_wf[2];
-  // compute the + spinor for + helicty particles and - helicity antiparticles
-  if((dir==outgoing && ihel== 1) || (dir==incoming && ihel==0)) {
-    // no transverse momentum 
-    if(ptran==ZERO) {
-      if(ppz>=ZERO) {
-	hel_wf[0] = 1;
-	hel_wf[1] = 0;
-      }
-      else {
-	hel_wf[0] = 0;
-	hel_wf[1] = 1;
-      }
-    }
-    else {
-      InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
-      SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz); 
-      hel_wf[0] = denominator*rtppluspz;
-      hel_wf[1] = Complex(denominator/rtppluspz*complex<Energy>(ppx,-ppy));
-    }
-  }
-  // compute the - spinor for - helicty particles and + helicity antiparticles
-  else {
-    // no transverse momentum
-    if(ptran==ZERO) {
-      if(ppz>=ZERO) {
-	hel_wf[0] = 0;
-	hel_wf[1] = 1;
-      }
-      // transverse momentum 
-      else {
-	hel_wf[0] = -1;
-	hel_wf[1] =  0;
-      }
-    }
-    else {
-      InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
-      SqrtEnergy rtppluspz = (ppz>=ZERO) ? sqrt(pabs+ppz) : ptran/sqrt(pabs-ppz);
-      hel_wf[0] = Complex(denominator/rtppluspz*complex<Energy>(-ppx,-ppy));
-      hel_wf[1] = denominator*rtppluspz;
-    }
-  }
-  SqrtEnergy upper, lower;
-  SqrtEnergy eplusp  = sqrt(max(pee+pabs,ZERO));
-  SqrtEnergy eminusp = ( pmm!=ZERO ) ? pmm/eplusp : ZERO;
-  // set up the coefficients for the different cases
-  if(dir==outgoing) {
-    if(ihel==1) {
-      upper = eplusp;
-      lower = eminusp;
-    }
-    else {
-      upper = eminusp;
-      lower = eplusp;
-    }
-  }
-  else {
-    if(ihel==1) {
-	upper = eminusp;
-	lower = -eplusp;
-    }
-    else {
-      upper =-eplusp;
-      lower = eminusp;
-    }
-  }
-  // now finally we can construct the spinors
-  _wf = LorentzSpinorBar<double>((dir==incoming) ? SpinorType::v : SpinorType::u);
-  _wf[0] = Complex(upper*hel_wf[0]*UnitRemoval::InvSqrtE);
-  _wf[1] = Complex(upper*hel_wf[1]*UnitRemoval::InvSqrtE);
-  _wf[2] = Complex(lower*hel_wf[0]*UnitRemoval::InvSqrtE);
-  _wf[3] = Complex(lower*hel_wf[1]*UnitRemoval::InvSqrtE);
+  _wf = HelicityFunctions::spinorBar(momentum(),ihel,direction());
 }
 
 void SpinorBarWaveFunction::conjugate() {
@@ -195,14 +106,20 @@ calculateWaveFunctions(vector<SpinorBarWaveFunction> & waves,
   // do the calculation
   else {
     assert(!particle->spinInfo());
-    SpinorBarWaveFunction wave(particle->momentum(),particle->dataPtr(),dir);
-    for(unsigned int ix=0;ix<2;++ix) {
-      wave.reset(ix);
-      waves[ix] = wave;
-    }
+    calculateWaveFunctions(waves,particle->momentum(),particle->dataPtr(),dir);
   }
 }
 
+void SpinorBarWaveFunction::calculateWaveFunctions(vector<SpinorBarWaveFunction> & waves,
+						   const Lorentz5Momentum & momentum,
+						   tcPDPtr parton,Direction dir) {
+  waves.resize(2);
+  SpinorBarWaveFunction wave(momentum,parton,dir);
+  for(unsigned int ix=0;ix<2;++ix) {
+    wave.reset(ix);
+    waves[ix] = wave;
+  }
+}
 void SpinorBarWaveFunction::
 calculateWaveFunctions(vector<LorentzSpinorBar<SqrtEnergy> > & waves,
 		       RhoDMatrix & rho,

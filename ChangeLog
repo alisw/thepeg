@@ -1,3 +1,13 @@
+2019-02-05  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
+
+	* Analysis/HepMCFile.cc: (and related files) ThePEG now runs with
+	either HepMC2 or HepMC3 (thanks to Andrii Verbytskyi).  The
+	selection is done with the --with-hepmcversion flag in configure.
+	The HepMC3File class (and friends) are no longer needed. Also
+	HIHepMCFile is no longer needed as output of heavy ion info is
+	controlled by a switch in HepMCFile. The obsolete classes are
+	still there but should be removed soon.
+
 2014-12-01  Leif Lönnblad  <Leif.Lonnblad@thep.lu.se>
 
 	* Handlers/ClusterCollapser.cc: Fixed errors when handling small

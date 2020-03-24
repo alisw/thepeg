@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LorentzSpinorBar.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -50,6 +50,11 @@ public:
 		   complex<Value> c, complex<Value> d,
 		   SpinorType t = SpinorType::unknown)
     : _type(t), _spin{{a,b,c,d}} {}
+
+  template <typename U>
+  LorentzSpinorBar(const LorentzSpinorBar<U> & other)
+    : _type(other._type), _spin(other._spin) {}
+
   //@}
 
   /** @name Access the components. */
@@ -125,6 +130,31 @@ public:
    * Set fourth component.
    */
   void setS4(complex<Value> in) {_spin[3]=in;}
+  //@}
+
+  /// @name Mathematical assignment operators.
+  //@{
+  template <typename ValueB>
+  LorentzSpinorBar<Value> & operator+=(const LorentzSpinorBar<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] += a._spin[ix];
+    return *this;
+  }
+  
+  template <typename ValueB>
+  LorentzSpinorBar<Value> & operator-=(const LorentzSpinorBar<ValueB> & a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] -= a._spin[ix];
+    return *this;
+  }
+  
+  LorentzSpinorBar<Value> & operator*=(double a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] *=a;
+    return *this;
+  }
+
+  LorentzSpinorBar<Value> & operator/=(double a) {
+    for(unsigned int ix=0;ix<4;++ix) _spin[ix] /=a;
+    return *this;
+  }
   //@}
 
   /** @name Transformations. */
@@ -224,6 +254,96 @@ private:
    */
   std::array<complex<Value>,4> _spin;
 };
+
+/// @name Basic mathematical operations
+//@{
+template <typename Value>
+inline LorentzSpinorBar<double>
+operator/(const LorentzSpinorBar<Value> & v, Value a) {
+  return LorentzSpinorBar<double>(v.s1()/a, v.s2()/a, v.s3()/a, v.s4()/a,v.Type());
+}
+
+inline LorentzSpinorBar<double>
+operator/(const LorentzSpinorBar<double> & v, Complex a) {
+  return LorentzSpinorBar<double>(v.s1()/a, v.s2()/a, v.s3()/a, v.s4()/a,v.Type());
+}
+
+template <typename Value>
+inline LorentzSpinorBar<Value> operator-(const LorentzSpinorBar<Value> & v) {
+  return LorentzSpinorBar<Value>(-v.s1(),-v.s2(),-v.s3(),-v.s4(),v.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzSpinorBar<ValueA>
+operator+(LorentzSpinorBar<ValueA> a, const LorentzSpinorBar<ValueB> & b) {
+  return a += b;
+}
+
+template <typename ValueA, typename ValueB>
+inline LorentzSpinorBar<ValueA>
+operator-(LorentzSpinorBar<ValueA> a, const LorentzSpinorBar<ValueB> & b) {
+  return a -= b;
+}
+
+template <typename Value>
+inline LorentzSpinorBar<Value>
+operator*(const LorentzSpinorBar<Value> & a, double b) {
+  return LorentzSpinorBar<Value>(a.s1()*b, a.s2()*b, a.s3()*b, a.s4()*b,a.Type());
+}
+
+template <typename Value>
+inline LorentzSpinorBar<Value>
+operator*(double b, LorentzSpinorBar<Value> a) {
+  return a *= b;
+}
+  
+template <typename Value>
+inline LorentzSpinorBar<Value>
+operator*(const LorentzSpinorBar<Value> & a, Complex b) {
+  return LorentzSpinorBar<Value>(a.s1()*b, a.s2()*b, a.s3()*b, a.s4()*b,a.Type());
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(complex<ValueB> a, const LorentzSpinorBar<ValueA> & v) 
+  -> LorentzSpinorBar<decltype(a.real()*v.s1().real())>
+{
+  return {a*v.s1(), a*v.s2(), a*v.s3(), a*v.s4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzSpinorBar<ValueA> & v, complex<ValueB> b) 
+  -> LorentzSpinorBar<decltype(b.real()*v.s1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzSpinorBar<ValueA> & v, complex<ValueB> b) 
+  -> LorentzSpinorBar<decltype(v.s1().real()/b.real())>
+{
+  return {v.s1()/b, v.s2()/b, v.s3()/b, v.s4()/b,v.Type()};
+}
+  
+template <typename ValueA, typename ValueB>
+inline auto operator*(ValueB a, const LorentzSpinorBar<ValueA> & v) 
+  -> LorentzSpinorBar<decltype(a*v.s1().real())>
+{
+  return {a*v.s1(), a*v.s2(), a*v.s3(), a*v.s4(),v.Type()};
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator*(const LorentzSpinorBar<ValueA> & v, ValueB b) 
+  -> LorentzSpinorBar<decltype(b*v.s1().real())>
+{
+  return b*v;
+}
+
+template <typename ValueA, typename ValueB>
+inline auto operator/(const LorentzSpinorBar<ValueA> & v, ValueB b) 
+  -> LorentzSpinorBar<decltype(v.s1().real()/b)>
+{
+  return {v.s1()/b, v.s2()/b, v.s3()/b, v.s4()/b,v.Type()};
+}
 
 }
 }

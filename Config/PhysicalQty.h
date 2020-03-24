@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // PhysicalQty.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2006-2017 David Grellscheid, Leif Lonnblad
+// Copyright (C) 2006-2019 David Grellscheid, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -10,6 +10,8 @@
 #define Physical_Qty_H
 #include "TemplateTools.h"
 #include <sstream>
+#include <ratio>
+#include <type_traits>
 
 /** @file 
  *
@@ -32,39 +34,6 @@ struct ZeroUnit {
 /// ZERO can be used as zero for any unitful quantity.
 constexpr ZeroUnit ZERO = ZeroUnit();
 
-/// Helper classes to extend or shorten fractions
-//@{
-/**
- * Template to help with fractional powers of dimensions 
- */
-template <int M, int II>
-struct QtyHelper 
-{
-  /// The numerator, indicating failure.
-  static constexpr int I = -999999;
-};
-
-/**
- * Template to help with fractional powers of dimensions
- */
-template <int II>
-struct QtyHelper<0,II> 
-{
-  /// The new numerator.
-  static constexpr int I = II;
-};
-
-/**
- * Template to help with fractional powers of dimensions 
- */
-template <int II, int DI, int DI2>
-struct QtyInt 
-{
-  /// The new numerator.
-  static constexpr int I = QtyHelper<(DI2*II)%DI,(DI2*II)/DI>::I;
-};
-//@}
-
 /**
  * This template class allows the compiler to check calculations with
  * physical quantities for dimensional correctness. A quantity can be
@@ -77,8 +46,34 @@ struct QtyInt
  * Do not use this class directly in ThePEG, use the pre-defined quantities
  * from Units.h or the wrapper in Phys_Qty.h instead.
  */
-template<int L, int E, int Q, int DL = 1, int DE = 1, int DQ = 1>
-class Qty
+
+// only specialization is with std::ratio below
+template <typename L, typename E, typename T>
+class Qty;
+
+template <typename T, typename U>
+struct qty_equal {
+  static constexpr bool value = false;
+};
+
+template<typename L1, typename L2, typename E1, typename E2, typename Q1, typename Q2>
+struct qty_equal<Qty<L1,E1,Q1>, Qty<L2,E2,Q2>> {
+  static constexpr bool value
+    =  std::ratio_equal<L1,L2>::value 
+    && std::ratio_equal<E1,E2>::value
+    && std::ratio_equal<Q1,Q2>::value;
+};
+
+template <typename T>
+struct is_qty {
+  static constexpr bool value = qty_equal<T,T>::value;
+};
+
+template <typename ResultT, typename T, typename U = T>
+using enable_if_same_qty = typename std::enable_if<qty_equal<T,U>::value, ResultT>::type;
+
+template<long int L, long int E, long int Q, long int DL, long int DE, long int DQ>
+class Qty<std::ratio<L,DL>, std::ratio<E,DE>, std::ratio<Q,DQ>>
 {
 private:
   /// Constructor from raw values. Breaks consistency.
@@ -100,14 +95,24 @@ public:
     return os.str();
   }
 
-
+  /// General power type
+  template <long int Num, long int Den>
+  using Power = Qty<typename std::ratio<Num*L,Den*DL>::type, 
+                    typename std::ratio<Num*E,Den*DE>::type, 
+                    typename std::ratio<Num*Q,Den*DQ>::type>;
+  /// Our type
+  using Type    = Power<1,1>;
   /// The squared type.
-  typedef Qty<2*L,2*E,2*Q,DL,DE,DQ> Squared;
+  using Squared = Power<2,1>;
+  /// The inverse type.
+  using Inverse = Power<-1,1>;
+  /// The sqrt type.
+  using Sqrt    = Power<1,2>;
 
   /// Basic unit of this quantity.
-  static constexpr Qty<L,E,Q,DL,DE,DQ> baseunit() 
+  static constexpr Type baseunit() 
   {
-    return Qty<L,E,Q,DL,DE,DQ>(1.0);
+    return Type(1.0);
   }
 
   /// Default constructor to 0.
@@ -117,43 +122,29 @@ public:
   constexpr Qty(ZeroUnit) : rawValue_(0.0) {}
 
   /// Constructor from a compatible quantity
-  template <int DL2, int DE2, int DQ2>
-  constexpr 
-  Qty(const Qty<QtyInt<L,DL,DL2>::I,
-                QtyInt<E,DE,DE2>::I,
-                QtyInt<Q,DQ,DQ2>::I,
-                DL2,DE2,DQ2> & q,
-                double factor = 1.0)
+  template <typename U>
+  constexpr Qty(const U & q, double factor = 1.0, 
+                enable_if_same_qty<void,Type,U> * = nullptr)
     : rawValue_(q.rawValue() * factor) {}
 
   /// Access to the raw value. Breaks consistency.
   constexpr double rawValue() const { return rawValue_; }
 
   /// Assignment multiplication by dimensionless number.
-  Qty<L,E,Q,DL,DE,DQ> & operator*=(double x) { rawValue_ *= x; return *this; }
+  Type & operator*=(double x) { rawValue_ *= x; return *this; }
 
   /// Assignment division by dimensionless number.
-  Qty<L,E,Q,DL,DE,DQ> & operator/=(double x) { rawValue_ /= x; return *this; }
+  Type & operator/=(double x) { rawValue_ /= x; return *this; }
 
   /// Assignment addition with compatible quantity.
-  template <int DL2, int DE2, int DQ2>
-  Qty<L,E,Q,DL,DE,DQ> & 
-  operator+=(const Qty<QtyInt<L,DL,DL2>::I,
-	               QtyInt<E,DE,DE2>::I,
-	               QtyInt<Q,DQ,DQ2>::I,
-	               DL2,DE2,DQ2> x) 
+  Type & operator+=(const Type & x) 
   { 
     rawValue_ += x.rawValue(); 
     return *this; 
   }
 
   /// Assignment subtraction with compatible quantity.
-  template <int DL2, int DE2, int DQ2>
-  Qty<L,E,Q,DL,DE,DQ> & 
-  operator-=(const Qty<QtyInt<L,DL,DL2>::I,
-	               QtyInt<E,DE,DE2>::I,
-	               QtyInt<Q,DQ,DQ2>::I,
-  	               DL2,DE2,DQ2> x) 
+  Type & operator-=(const Type & x) 
   { 
     rawValue_ -= x.rawValue(); 
     return *this; 
@@ -165,15 +156,25 @@ private:
 };
 
 /// Specialization of Qty for <0,0,0> with conversions to double.
-template<int DL, int DE, int DQ>
-class Qty<0,0,0,DL,DE,DQ>
+template<>
+class Qty<std::ratio<0>,std::ratio<0>,std::ratio<0>>
 {
 public:
+  /// Our type
+  using Type    = Qty<std::ratio<0>,std::ratio<0>,std::ratio<0>>;
+  /// General power type
+  template <long int Num, long int Den>
+  using Power   = Type;
   /// The squared type.
-  typedef double Squared;
+  using Squared = Type;
+  /// The inverse type.
+  using Inverse = Type;
+  /// The sqrt type.
+  using Sqrt    = Type;
+
 
   /// Basic unit of this quantity.
-  static constexpr double baseunit() {
+  static constexpr Type baseunit() {
     return 1.0;
   }
 
@@ -185,9 +186,9 @@ public:
   	: rawValue_(x * factor) {}
 
   /// Constructor from a compatible quantity
-  template <int DL2, int DE2, int DQ2>
-  constexpr
-  Qty(const Qty<0,0,0,DL2,DE2,DQ2> & q, double factor=1.0)
+  template <typename U>
+  constexpr Qty(const U & q, double factor=1.0, 
+                enable_if_same_qty<void,Type,U> * = nullptr)
    : rawValue_(q.rawValue() * factor) {}
 
   /// Access to the raw value.
@@ -197,33 +198,31 @@ public:
   constexpr operator double() const { return rawValue_; }
 
   /// Assignment multiplication by dimensionless number.
-  Qty<0,0,0,DL,DE,DQ> & operator*=(double x) { rawValue_ *= x; return *this; }
+  Type & operator*=(double x) { rawValue_ *= x; return *this; }
 
   /// Assignment division by dimensionless number.
-  Qty<0,0,0,DL,DE,DQ> & operator/=(double x) { rawValue_ /= x; return *this; }
+  Type & operator/=(double x) { rawValue_ /= x; return *this; }
 
   /// Assignment addition with compatible quantity.
-  template <int DL2, int DE2, int DQ2>
-  Qty<0,0,0,DL,DE,DQ> & operator+=(const Qty<0,0,0,DL2,DE2,DQ2> x) { 
+  Type & operator+=(const Type & x) { 
     rawValue_ += x.rawValue(); 
     return *this; 
   }
 
   /// Assignment subtraction with compatible quantity.
-  template <int DL2, int DE2, int DQ2>
-  Qty<0,0,0,DL,DE,DQ> & operator-=(const Qty<0,0,0,DL2,DE2,DQ2> x) { 
+  Type & operator-=(const Type & x) { 
     rawValue_ -= x.rawValue(); 
     return *this; 
   }
 
   /// Assignment addition with double.
-  Qty<0,0,0,DL,DE,DQ> & operator+=(double x) { 
+  Type & operator+=(double x) { 
     rawValue_ += x; 
     return *this; 
   }
 
   /// Assignment subtraction with double.
-  Qty<0,0,0,DL,DE,DQ> & operator-=(double x) { 
+  Type & operator-=(double x) { 
     rawValue_ -= x; 
     return *this; 
   }
@@ -232,6 +231,8 @@ private:
   /// The raw value.
   double rawValue_;
 };
+
+using QtyDouble = Qty<std::ratio<0>,std::ratio<0>,std::ratio<0>>;
 
 /// @name Result types for binary operations.
 //@{
@@ -245,87 +246,70 @@ struct BinaryOpTraits;
 
 /** @cond TRAITSPECIALIZATIONS */
 
-template<int L1, int L2, int E1, int E2, int Q1, int Q2,
-	 int DL1, int DL2, int DE1, int DE2, int DQ1, int DQ2>
-struct BinaryOpTraits<Qty<L1,E1,Q1,DL1,DE1,DQ1>,
-		      Qty<L2,E2,Q2,DL2,DE2,DQ2> > {
+template<typename L1, typename L2, 
+         typename E1, typename E2, 
+         typename Q1, typename Q2>
+struct BinaryOpTraits<Qty<L1,E1,Q1>, Qty<L2,E2,Q2>> {
   /** The type resulting from multiplication of the template type with
       itself. */
-  typedef Qty<L1*DL2+L2*DL1,E1*DE2+E2*DE1,Q1*DQ2+Q2*DQ1,
-              DL1*DL2,DE1*DE2,DQ1*DQ2> MulT;
+  typedef Qty<std::ratio_add<L1,L2>,
+              std::ratio_add<E1,E2>,
+              std::ratio_add<Q1,Q2>> MulT;
   /** The type resulting from division of one template type with
       another. */
-  typedef Qty<L1*DL2-L2*DL1,E1*DE2-E2*DE1,Q1*DQ2-Q2*DQ1,
-              DL1*DL2,DE1*DE2,DQ1*DQ2> DivT;
-};
-
-
-template<int L1, int E1, int Q1, int DL1, int DE1, int DQ1>
-struct BinaryOpTraits<Qty<L1,E1,Q1,DL1,DE1,DQ1>,
-		      Qty<L1,E1,Q1,DL1,DE1,DQ1> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef Qty<2*L1,2*E1,2*Q1,
-              DL1,DE1,DQ1> MulT;
-  /** The type resulting from division of one template type with
-      another. */
-  typedef double DivT;
+  typedef Qty<std::ratio_subtract<L1,L2>,
+              std::ratio_subtract<E1,E2>,
+              std::ratio_subtract<Q1,Q2>> DivT;
 };
 
 /**
  *  Multiplication template
  */
-template<int L1, int E1, int Q1, int DL1, int DE1, int DQ1>
-struct BinaryOpTraits<double,
-		      Qty<L1,E1,Q1,DL1,DE1,DQ1> > {
+template<typename L, typename E, typename Q>
+struct BinaryOpTraits<double, Qty<L,E,Q>> {
   /** The type resulting from multiplication of the template type */
-  typedef Qty<L1,E1,Q1,
-              DL1,DE1,DQ1> MulT;
+  typedef Qty<L,E,Q> MulT;
   /** The type resulting from division of the template type */
-  typedef Qty<-L1,-E1,-Q1,
-              DL1,DE1,DQ1> DivT;
+  typedef typename BinaryOpTraits<QtyDouble, Qty<L,E,Q>>::DivT DivT;
 };
 
 /**
  *  Multiplication template
  */
-template<int L1, int E1, int Q1, int DL1, int DE1, int DQ1>
-struct BinaryOpTraits<Qty<L1,E1,Q1,DL1,DE1,DQ1>,
-		      double> {
+template<typename L, typename E, typename Q>
+struct BinaryOpTraits<Qty<L,E,Q>, double> {
   /** The type resulting from multiplication of the template type */
-  typedef Qty<L1,E1,Q1,
-              DL1,DE1,DQ1> MulT;
+  typedef Qty<L,E,Q> MulT;
   /** The type resulting from division of the template type */
-  typedef Qty<L1,E1,Q1,
-              DL1,DE1,DQ1> DivT;
+  typedef Qty<L,E,Q> DivT;
 };
 //@}
 
 /// @name Type traits for alternative code generation.
 //@{
 /** Type traits for alternative code generation*/
-template <int L, int E, int Q, int DL, int DE, int DQ> 
-struct TypeTraits<Qty<L,E,Q,DL,DE,DQ> >
+template <typename L, typename E, typename Q>
+struct TypeTraits<Qty<L,E,Q>>
 {
   /** Enum for dimensions*/
   enum { hasDimension = true };
   /// Type switch set to dimensioned type.
   typedef DimensionT DimType;
   /// Base unit
-  static constexpr Qty<L,E,Q,DL,DE,DQ> baseunit() 
-	{ return Qty<L,E,Q,DL,DE,DQ>::baseunit(); }
+  static constexpr Qty<L,E,Q> baseunit() 
+	{ return Qty<L,E,Q>::baseunit(); }
 };
 
 /** Type traits for alternative code generation*/
-template <int DL, int DE, int DQ> 
-struct TypeTraits<Qty<0,0,0,DL,DE,DQ> >
+template <> 
+struct TypeTraits<QtyDouble>
 {
   /** Enum for dimensions*/
   enum { hasDimension = false };
   /// Type switch set to standard type.
   typedef StandardT DimType;
   /// Base unit
-  static constexpr double baseunit() { return 1.0; }
+  static constexpr QtyDouble baseunit() { return 1.0; }
 };
 
 //@}

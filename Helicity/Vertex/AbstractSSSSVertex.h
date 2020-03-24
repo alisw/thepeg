@@ -55,7 +55,9 @@ public:
   virtual ScalarWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out, 
 				      const ScalarWaveFunction & sca1,
 				      const ScalarWaveFunction & sca2,
-				      const ScalarWaveFunction & sca3) = 0;
+				      const ScalarWaveFunction & sca3,
+				      complex<Energy> mass=-GeV,
+				      complex<Energy> width=-GeV);
   //@}
 
 public:

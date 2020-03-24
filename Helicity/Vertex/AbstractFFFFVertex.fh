@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the AbstractFFFFVertex class.
+//
+#ifndef HELICITY_AbstractFFFFVertex_FH
+#define HELICITY_AbstractFFFFVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace ThePEG {
+namespace Helicity {
+
+class AbstractFFFFVertex;
+
+namespace VertexType {
+  typedef unsigned T;
+  /**
+   *  Enum for this Lorentz structure
+   */
+  const T FFFF = 2222;
+}
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Helicity::AbstractFFFFVertex,AbstractFFFFVertexPtr);
+
+}
+
+#endif

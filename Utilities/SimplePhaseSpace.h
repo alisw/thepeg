@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimplePhaseSpace.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -174,6 +174,18 @@ namespace SimplePhaseSpace {
    * larger than the given invariant mass (\f$\sqrt{s}\f$).
    */
   Energy getMagnitude(Energy2 s, Energy m1, Energy m2);
+
+  /**
+   * Calculate the absolute magnitude of the momenta of two particles
+   * with masses m1 and m2 when put in their CMS of total invariant
+   * mass squared s.
+   * @param s the total invariant mass squared.
+   * @param m1 the mass of particle 1.
+   * @param m2 the mass of particle 2.
+   * @return a negative value if the sum of the masses was
+   * larger than the given invariant mass (\f$\sqrt{s}\f$).
+   */
+//  static Energy checkMagnitude(Energy2 s, Energy m1, Energy m2);
 
   /**
    * Return a three-vector given the absolute momentum, cos(theta) and

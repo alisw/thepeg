@@ -421,7 +421,7 @@ DOCFILES = LorentzPolarizationVector.h LorentzSpinor.h \
            LorentzSpinorBar.h LorentzTensor.h \
            FermionSpinInfo.h VectorSpinInfo.h ScalarSpinInfo.h TensorSpinInfo.h \
            LorentzRSSpinor.h LorentzRSSpinorBar.h RSFermionSpinInfo.h \
-	   epsilon.h
+	   epsilon.h HelicityFunctions.h
 
 INCLUDEFILES = $(DOCFILES) \
                LorentzSpinor.fh LorentzSpinor.tcc LorentzSpinorBar.tcc \

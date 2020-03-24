@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Lorentz5Vector.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -44,7 +44,7 @@ class Lorentz5Vector: public LorentzVector<Value> {
 public:
 
   /** Template argument typedef. */
-  typedef typename BinaryOpTraits<Value,Value>::MulT Value2;
+  using Value2 = decltype(sqr(std::declval<Value>()));
 
 public:
   /// Component access.
@@ -285,108 +285,38 @@ void iunitstream(IStream & is, Lorentz5Vector<T> & p, UT & u) {
   p = Lorentz5Vector<T>(x, y, z, e, mass);
 }
 
-template <typename T, typename U>
-struct BinaryOpTraits;
-
-/**
- *  Template for multiplication by scalar
- */
-template <typename T>
-struct BinaryOpTraits<Lorentz5Vector<T>, double> {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef Lorentz5Vector<T> MulT;
-  /** The type resulting from division of one template type with
-      another. */
-  typedef Lorentz5Vector<T> DivT;
-};
-
-/**
- *  Template for multiplication by scalar
- */
-template <typename U>
-struct BinaryOpTraits<double, Lorentz5Vector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef Lorentz5Vector<U> MulT;
-};
-
-/**
- * Template for multiplication for complex and Lorentz5Vector
- */
-template <typename T, typename U>
-struct BinaryOpTraits<Lorentz5Vector<T>, std::complex<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef Lorentz5Vector<std::complex<typename BinaryOpTraits<T,U>::MulT> > MulT;
-  /** The type resulting from division of one template type with
-      another. */
-  typedef Lorentz5Vector<std::complex<typename BinaryOpTraits<T,U>::DivT> > DivT;
-};
-
-/**
- *  Template for multiplication by scalar
- */
-template <typename T, typename U>
-struct BinaryOpTraits<std::complex<T>, Lorentz5Vector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef Lorentz5Vector<std::complex<typename BinaryOpTraits<T,U>::MulT> > MulT;
-};
-
-/**
- *  Template for multiplication of two Lorentz5Vectors
- */
-template <typename T, typename U>
-struct BinaryOpTraits<Lorentz5Vector<T>, Lorentz5Vector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef typename BinaryOpTraits<T,U>::MulT MulT;
-};
-
-/**
- * Template for multiplication for LorentzVector and Lorentz5Vector
- */
-template <typename T, typename U>
-struct BinaryOpTraits<LorentzVector<T>, Lorentz5Vector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef typename BinaryOpTraits<T,U>::MulT MulT;
-};
-
-/**
- * Template for multiplication for LorentzVector and Lorentz5Vector
- */
-template <typename T, typename U>
-struct BinaryOpTraits<Lorentz5Vector<T>, LorentzVector<U> > {
-  /** The type resulting from multiplication of the template type with
-      itself. */
-  typedef typename BinaryOpTraits<T,U>::MulT MulT;
-};
 
 /// @name Dot product overloads.
 //@{
 template <typename ValueA, typename ValueB>
-inline typename BinaryOpTraits<ValueA,ValueB>::MulT 
-operator*(const Lorentz5Vector<ValueA> & a, const Lorentz5Vector<ValueB> & b) {
+inline auto
+operator*(const Lorentz5Vector<ValueA> & a, const Lorentz5Vector<ValueB> & b)
+-> decltype(a.dot(b))
+{
   return a.dot(b);
 }
 
 template <typename ValueA, typename ValueB>
-inline typename BinaryOpTraits<ValueA,ValueB>::MulT 
-operator*(const LorentzVector<ValueA> & a, const Lorentz5Vector<ValueB> & b) {
+inline auto
+operator*(const LorentzVector<ValueA> & a, const Lorentz5Vector<ValueB> & b)
+-> decltype(a.dot(b))
+{
   return a.dot(b);
 }
 
 template <typename ValueA, typename ValueB>
-inline typename BinaryOpTraits<ValueA,ValueB>::MulT 
-operator*(const Lorentz5Vector<ValueA> & a, const LorentzVector<ValueB> & b) {
+inline auto
+operator*(const Lorentz5Vector<ValueA> & a, const LorentzVector<ValueB> & b)
+-> decltype(a.dot(b))
+{
   return a.dot(b);
 }
 
 template <typename Value>
-inline typename BinaryOpTraits<Value,Value>::MulT 
-operator*(const Lorentz5Vector<Value> & a, const Lorentz5Vector<Value> & b) {
+inline auto
+operator*(const Lorentz5Vector<Value> & a, const Lorentz5Vector<Value> & b)
+-> decltype(a.dot(b))
+{
   return a.dot(b);
 }
 //@}

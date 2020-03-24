@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Maths.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -22,15 +22,6 @@ namespace Math {
  * mathematical function types.
  */
 struct MathType {};
-
-/** The gamma function */
-double gamma(double);
-
-/** The log of the gamma function */
-double lngamma(double);
-
-/** Return \f${\rm atanh}(x)\f$ */
-double atanh(double);
 
 /** Return \f$1-e^x\f$, with highest possible precision for
  *  \f$x\rightarrow 0\f$. */

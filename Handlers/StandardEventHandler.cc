@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // StandardEventHandler.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -162,6 +162,11 @@ tCollPtr StandardEventHandler::performCollision() {
   currentCollision()->addStep(currentStep());
 
   currentStep()->addSubProcess(lastXC->construct());
+  if ( currentEvent() ) {
+    map<string,double> optionalWeights = lastXC->generateOptionalWeights();
+    for ( const auto& weight : optionalWeights )
+      currentEvent()->optionalWeights().insert(weight);
+  }
 
   lastExtractor()->construct(lastXC->partonBinInstances(), currentStep());
   if ( collisionCuts )

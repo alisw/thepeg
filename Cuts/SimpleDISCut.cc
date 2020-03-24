@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SimpleDISCut.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -27,6 +27,7 @@ void SimpleDISCut::describe() const {
   CurrentGenerator::log() 
     << fullName() << ":\n"
     << "Q2 = " << theMinQ2/GeV2 << " .. " << theMaxQ2/GeV2 << " GeV2\n"
+    << "y = " << theMiny << " .. " << theMaxy << " \n"
     << "W2 = " << theMinW2/GeV2 << " .. " << theMaxW2/GeV2 << " GeV2\n\n";
 }
 
@@ -64,7 +65,9 @@ bool SimpleDISCut::passCuts(tcCutsPtr cuts, tcPDPtr pitype, tcPDPtr pjtype,
     double x = min(1.0, sqrt(cuts->currentSHat()/cuts->SMax())*
 		   exp(-cuts->currentYHat()));
     Energy2 W2 = (1.0 - x)*Q2/x;
-    return Q2 > theMinQ2 && Q2 < theMaxQ2 && W2 > theMinW2 && W2 < theMaxW2;
+    double y =  Q2/cuts->SMax()/x;
+    return y > theMiny && y < theMaxy && Q2 > theMinQ2 && Q2 < theMaxQ2
+      && W2 > theMinW2 && W2 < theMaxW2;
   }
   else if ( incj ) {
     if ( !check(pjtype->id(), pitype->id()) ) return true;
@@ -73,7 +76,9 @@ bool SimpleDISCut::passCuts(tcCutsPtr cuts, tcPDPtr pitype, tcPDPtr pjtype,
       min(1.0, sqrt(cuts->currentSHat()/cuts->SMax())*
 	  exp(cuts->currentYHat()));
     Energy2 W2 = (1.0 - x)*Q2/x;
-    return Q2 > theMinQ2 && Q2 < theMaxQ2 && W2 > theMinW2 && W2 < theMaxW2;
+    double y =  Q2/cuts->SMax()/x;
+    return y > theMiny && y < theMaxy && Q2 > theMinQ2 && Q2 < theMaxQ2
+      && W2 > theMinW2 && W2 < theMaxW2;
   }
   return true;
 }
@@ -96,16 +101,26 @@ double SimpleDISCut::minDurham(tcPDPtr, tcPDPtr) const {
 
 void SimpleDISCut::persistentOutput(PersistentOStream & os) const {
   os << ounit(theMinQ2, GeV2) << ounit(theMaxQ2, GeV2)
+     << theMiny << theMaxy
      << ounit(theMinW2, GeV2) << ounit(theMaxW2, GeV2) << chargedCurrent;
 }
 
 void SimpleDISCut::persistentInput(PersistentIStream & is, int) {
   is >> iunit(theMinQ2, GeV2) >> iunit(theMaxQ2, GeV2)
+     >>  theMiny >> theMaxy
      >> iunit(theMinW2, GeV2) >> iunit(theMaxW2, GeV2) >> chargedCurrent;
 }
 
 ClassDescription<SimpleDISCut> SimpleDISCut::initSimpleDISCut;
 // Definition of the static class description member.
+
+double SimpleDISCut::maxMiny() const {
+  return theMaxy;
+}
+
+double SimpleDISCut::minMaxy() const {
+  return theMiny;
+}
 
 Energy2 SimpleDISCut::maxMinQ2() const {
   return theMaxQ2;
@@ -124,7 +139,8 @@ Energy2 SimpleDISCut::minMaxW2() const {
 }
 
 void SimpleDISCut::Init() {
-
+  typedef double (ThePEG::SimpleDISCut::*IGFN)() const;
+    typedef void (ThePEG::SimpleDISCut::*ISFN)(double);
   static ClassDocumentation<SimpleDISCut> documentation
     ("SimpleDISCut inherits from TwoCutBase and omplements a simple "
      "\\f$Q^2\\f$ cut on the a scattered lepton, either neutral or charged "
@@ -145,6 +161,21 @@ void SimpleDISCut::Init() {
      &SimpleDISCut::theMaxQ2, GeV2, 100.0*GeV2, ZERO, ZERO,
      true, false, Interface::lowerlim,
      0, 0, &SimpleDISCut::minMaxQ2, 0, 0);
+
+  static Parameter<SimpleDISCut,double> interfaceMiny
+    ("Miny",
+     "The minimum \\f$y\\f$.",
+     &SimpleDISCut::theMiny, 0.0, 0.0, 1.0,
+     true, false, Interface::limited,
+     (ISFN)0, (IGFN)0, (IGFN)0, &SimpleDISCut::maxMiny, (IGFN)0);
+
+  static Parameter<SimpleDISCut,double> interfaceMaxy
+    ("Maxy",
+     "The maximum \\f$y\\f$. Note that this is only applied as a post-cut "
+     "and will not affect the initial phase space cuts in the generation.",
+     &SimpleDISCut::theMaxy, 0.0, 0.0, 1.0,
+     true, false, Interface::lowerlim,
+     (ISFN)0, (IGFN)0, &SimpleDISCut::minMaxy, (IGFN)0, (IGFN)0);
 
   static Parameter<SimpleDISCut,Energy2> interfaceMinW2
     ("MinW2",
@@ -177,10 +208,13 @@ void SimpleDISCut::Init() {
      "Neutral",
      "The cut is only applied to neutral current events.",
      false);
-
+  interfaceMiny.rank(12);
+  interfaceMaxy.rank(11);
   interfaceMinQ2.rank(10);
   interfaceMaxQ2.rank(9);
   interfaceCurrent.rank(8);
+  interfaceMiny.setHasDefault(false);
+  interfaceMaxy.setHasDefault(false);
   interfaceMinQ2.setHasDefault(false);
   interfaceMaxQ2.setHasDefault(false);
   interfaceMinW2.setHasDefault(false);

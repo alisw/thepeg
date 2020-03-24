@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Particle.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -46,7 +46,8 @@ Particle::ParticleRep::ParticleRep(const ParticleRep & p)
 }
 
 Particle::Particle(const Particle & p)
-  : Base(p), theData(p.theData), theMomentum(p.theMomentum), theRep(p.theRep) {
+  : Base(p), theData(p.theData), theMomentum(p.theMomentum),
+    theRep(p.theRep), theStatus(p.theStatus) {
   if ( p.theRep ) {
     theRep = new ParticleRep(*p.theRep);
     theRep->theParents.clear();
@@ -494,7 +495,7 @@ void Particle::debugme() const {
 
 void Particle::persistentOutput(PersistentOStream & os) const {
   EventConfig::putParticleData(os, theData);
-  os << ounit(theMomentum, GeV) << bool( theRep != 0 );
+  os << ounit(theMomentum, GeV) << theStatus << bool( theRep != 0 );
   if ( !theRep ) return;
   os << rep().theParents << rep().theChildren
      << rep().thePrevious << rep().theNext << rep().theBirthStep
@@ -507,7 +508,7 @@ void Particle::persistentOutput(PersistentOStream & os) const {
 void Particle::persistentInput(PersistentIStream & is, int) {
   bool readRep;
   EventConfig::getParticleData(is, theData);
-  is >> iunit(theMomentum, GeV) >> readRep;
+  is >> iunit(theMomentum, GeV) >> theStatus >> readRep;
   if ( !readRep ) return;
   if ( !hasRep() ) theRep = new ParticleRep;
 

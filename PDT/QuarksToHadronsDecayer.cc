@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // QuarksToHadronsDecayer.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -40,8 +40,9 @@ bool QuarksToHadronsDecayer::accept(const DecayMode & dm) const {
   if ( !dm.productMatchers().empty() ) {
     for ( MatcherMSet::const_iterator it = dm.productMatchers().begin();
 	  it != dm.productMatchers().end(); ++it ) {
-      if ( typeid(**it) == typeid(MatchLightQuark) ) ++col;
-      else if ( typeid(**it) == typeid(MatchLightAntiQuark) ) ++acol;
+      const auto & tmp=**it;
+      if ( typeid(tmp) == typeid(MatchLightQuark) ) ++col;
+      else if ( typeid(tmp) == typeid(MatchLightAntiQuark) ) ++acol;
       else return false;
     }
     if ( col != 1 || col != acol ) return false;

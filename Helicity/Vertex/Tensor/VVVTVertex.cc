@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // VVVTVertex.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -128,26 +128,4 @@ Complex VVVTVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1,
      );
   // return the answer
   return vertex;
-}
-
-TensorWaveFunction VVVTVertex::evaluate(Energy2 ,int , tcPDPtr ,
-					const VectorWaveFunction & ,
-					const VectorWaveFunction & ,
-					const VectorWaveFunction &,
-					complex<Energy>, complex<Energy> ) {
-  throw Exception() << "VVVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
-}
-
-VectorWaveFunction VVVTVertex::evaluate(Energy2 ,int , tcPDPtr ,
-					const VectorWaveFunction & ,
-					const VectorWaveFunction & ,
-					const TensorWaveFunction &,
-					complex<Energy>, complex<Energy> ) {
-  throw Exception() << "VVVTVertex::evaluate() only implemented for the "
-		    << "member which returns the amplitude, "
-		    << "not the off-shell wavefunctions"
-		    << Exception::runerror;
 }

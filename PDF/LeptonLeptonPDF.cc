@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // LeptonLeptonPDF.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -19,6 +19,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include <cmath>
 
 using namespace ThePEG;
 
@@ -59,10 +60,10 @@ xfl(tcPDPtr particle, tcPDPtr  parton, Energy2 partonScale, double l,
   const double beta2 =
     SM().alphaEM()*(log(partonScale/sqr(particle->mass()))-1.0)/pi;
   double corr = 0.0;
-  double integral = exp(beta2*gf)*pow(cut,beta2)/Math::gamma(beta2+1.0)
+  double integral = exp(beta2*gf)*pow(cut,beta2)/std::tgamma(beta2+1.0)
                     - beta2*cut*(4.0 - 3.0*beta2 + 4.0*beta2*log(cut))/4.0;
   if ( l < cut + del ) corr = integral/del;
-  return x*(exp(l1x*(beta2 - 1.0) + log(beta2) + gf*beta2)/Math::gamma(beta2+1.0)
+  return x*(exp(l1x*(beta2 - 1.0) + log(beta2) + gf*beta2)/std::tgamma(beta2+1.0)
 	    - 0.5*beta2*(1.0+x) + sqr(beta2)*((1.0+x)*(-4.0*l1x+3.0*lx)
 					   - 4.0*lx/eps - 5.0 - x)/8.0) + corr;
 }

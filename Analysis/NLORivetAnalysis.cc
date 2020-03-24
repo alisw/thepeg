@@ -4,6 +4,7 @@
 // functions of the NLORivetAnalysis class.
 //
 
+#include <config.h>
 #include "NLORivetAnalysis.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -18,44 +19,43 @@
 #include "ThePEG/EventRecord/SubProcessGroup.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "HepMC/GenEvent.h"
 #include "Rivet/AnalysisHandler.hh"
 #include "Rivet/Tools/Logging.hh"
-#include "HepMC/IO_AsciiParticles.h"
-#include "HepMC/IO_GenEvent.h"
-#include <config.h>
 
 using namespace ThePEG;
 
 NLORivetAnalysis::NLORivetAnalysis() 
-  :  _remnantId(82), _format(1),_unitchoice(),
-   _geneventPrecision(16), debug(false), _rivet(), _nevent(0) {}
+  :  _remnantId(82),_unitchoice(),
+   debug(false), _rivet(), _nevent(0) {}
 
-HepMC::GenEvent * NLORivetAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, long no,
+namespace {
+
+// Special anonymous function for creating a genEvent.
+HepMC::GenEvent * makeEvent(tEventPtr event, tSubProPtr sub, long no, long remnantId,
 					  Energy eUnit, Length lUnit, 
-					  CrossSection xsec, CrossSection xsecErr) const {
+					  CrossSection xsec, CrossSection xsecErr) {
   
   // generate beam particles
   const PPair& beam = event->incoming();
-  HepMC::GenParticle * b1 =
+  HepMC::GenParticlePtr b1 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.first->momentum(),beam.first->id(),
 					      1,eUnit);
-  HepMC::GenParticle * b2 =
+  HepMC::GenParticlePtr b2 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.second->momentum(),beam.second->id(),
 					      1,eUnit);
 
   // generate remnants
-  HepMC::GenParticle * r1 =
+  HepMC::GenParticlePtr r1 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.first->momentum() - 
 					      sub->incoming().first->momentum(),
-					      _remnantId,1,eUnit);
-  HepMC::GenParticle * r2 =
+					      remnantId,1,eUnit);
+  HepMC::GenParticlePtr r2 =
     HepMCTraits<HepMC::GenEvent>::newParticle(beam.second->momentum() - 
 					      sub->incoming().second->momentum(),
-					      _remnantId,1,eUnit);
+					      remnantId,1,eUnit);
 
   // generate outgoing particles
-  vector<HepMC::GenParticle*> outgoing;
+  vector<HepMC::GenParticlePtr> outgoing;
   for ( ParticleVector::const_iterator p = sub->outgoing().begin();
 	p != sub->outgoing().end(); ++p ) {
     outgoing.push_back(HepMCTraits<HepMC::GenEvent>::newParticle((**p).momentum(),(**p).id(),
@@ -63,7 +63,7 @@ HepMC::GenEvent * NLORivetAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, l
   }
 
   // generate one blob vertex
-  HepMC::GenVertex * vertex = HepMCTraits<HepMC::GenEvent>::newVertex();
+  HepMC::GenVertexPtr vertex = HepMCTraits<HepMC::GenEvent>::newVertex();
 
   HepMCTraits<HepMC::GenEvent>::addIncoming(*vertex,b1);
   HepMCTraits<HepMC::GenEvent>::addIncoming(*vertex,b2);
@@ -71,7 +71,7 @@ HepMC::GenEvent * NLORivetAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, l
   HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,r1);
   HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,r2);
 
-  for ( vector<HepMC::GenParticle*>::const_iterator p = outgoing.begin();
+  for ( vector<HepMC::GenParticlePtr>::const_iterator p = outgoing.begin();
 	p != outgoing.end(); ++p )
     HepMCTraits<HepMC::GenEvent>::addOutgoing(*vertex,*p);
 
@@ -88,6 +88,7 @@ HepMC::GenEvent * NLORivetAnalysis::makeEvent(tEventPtr event, tSubProPtr sub, l
 
   return ev;
 
+}
 }
 
 void NLORivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int state) {
@@ -115,7 +116,7 @@ void NLORivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int
   // convert to hepmc
 
   HepMC::GenEvent * hepmc = 
-    makeEvent(event,sub,_nevent,eUnit,lUnit,xsec,xsecErr);
+    makeEvent(event,sub,_nevent,_remnantId,eUnit,lUnit,xsec,xsecErr);
  
 
   CurrentGenerator::Redirect stdout(cout);
@@ -141,7 +142,7 @@ void NLORivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int
     for ( SubProcessVector::const_iterator s = grp->dependent().begin();
 	  s != grp->dependent().end(); ++s ) {
 
-      hepmc = makeEvent(event,*s,_nevent,eUnit,lUnit,xsec,xsecErr);
+      hepmc = makeEvent(event,*s,_nevent,_remnantId,eUnit,lUnit,xsec,xsecErr);
 
       if ( _rivet ){
 #if ThePEG_RIVET_VERSION == 1
@@ -248,8 +249,8 @@ void NLORivetAnalysis::dofinish() {
   if( _nevent > 0 && _rivet ) {
     CurrentGenerator::Redirect stdout(cout);
 #if ThePEG_RIVET_VERSION > 2
-    _rivet->setCrossSection(generator()->integratedXSec()/picobarn,
-                            generator()->integratedXSecErr()/picobarn);
+    _rivet->setCrossSection(make_pair(generator()->integratedXSec()/picobarn,
+                                      generator()->integratedXSecErr()/picobarn));
 #else
     _rivet->setCrossSection(generator()->integratedXSec()/picobarn);
 #endif

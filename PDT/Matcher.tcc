@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Matcher.tcc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -15,7 +15,7 @@ namespace ThePEG {
 
 template <class T>
 Matcher<T>::~Matcher() {
-  assert ( initMatcher.check() );
+  if( !initMatcher.check() ) assert(false);
 } 
 
 template <class T>

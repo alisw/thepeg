@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // Particle.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -104,7 +104,7 @@ public:
    * private - there is no particle without a pointer to a
    * ParticleData object.
    */
-  Particle(tcEventPDPtr newData) : theData(newData), theRep(0) {}
+  Particle(tcEventPDPtr newData) : theData(newData), theRep(0), theStatus(0) {}
 
   /**
    * Copy constructor.
@@ -257,6 +257,16 @@ public:
   int number() const { 
     return hasRep() ? rep().theNumber : 0; 
   }
+
+  /**
+   * Get the status code of the particle
+   */
+  int status() const { return theStatus; }
+
+  /**
+   * Set the status code of the particle
+   */
+  void status(int n) { theStatus = n; }
   //@}
 
   /** @name Access the underlying ParticleData object. */
@@ -1014,6 +1024,11 @@ private:
    */
   ParticleRep * theRep;
 
+  /**
+   * The status code of the particle
+   */
+  int theStatus;
+
 public:
 
   /**
@@ -1121,7 +1136,7 @@ protected:
    * Private default constructor must only be used by the
    * PersistentIStream class via the ClassTraits<Particle> class.
    */
-  Particle() : theRep(0) {}
+  Particle() : theRep(0), theStatus(0) {}
 
   /**
    * The ClassTraits<Particle> class must be a friend to be able to

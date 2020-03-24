@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // EventGenerator.cc is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -166,9 +166,9 @@ EventGenerator::setup(string newRunName,
 
   // Force update of all objects and then reset.
   touch();
-  for_each(theObjects, mem_fun(&InterfacedBase::touch));
+  for_each(theObjects, mem_fn(&InterfacedBase::touch));
   update();
-  for_each(theObjects, mem_fun(&InterfacedBase::update));
+  for_each(theObjects, mem_fn(&InterfacedBase::update));
   clear();
   BaseRepository::clearAll(theObjects);
 
@@ -234,7 +234,7 @@ void EventGenerator::doinit() {
 	   (**it).state() == InterfacedBase::uninitialized )
 	preinits.insert(*it);
     if ( preinits.empty() ) break;
-    for_each(preinits, mem_fun(&InterfacedBase::init));
+    for_each(preinits, std::mem_fn(&InterfacedBase::init));
   }
 
   // Initialize the quick access to particles.
@@ -255,7 +255,7 @@ void EventGenerator::doinit() {
   for(ParticleMap::const_iterator pit = particles().begin();
       pit != particles().end(); ++pit) pit->second->init();
   
-  for_each(objects(), mem_fun(&InterfacedBase::init));
+  for_each(objects(), std::mem_fn(&InterfacedBase::init));
 
   // Then initialize the Event Handler calculating initial cross
   // sections and stuff.
@@ -293,7 +293,7 @@ void EventGenerator::doinitrun() {
   eventHandler()->initrun();
 
   
-  for_each(objects(), mem_fun(&InterfacedBase::initrun));
+  for_each(objects(), std::mem_fn(&InterfacedBase::initrun));
 
   if ( logNonDefault > 0 || ( ThePEG_DEBUG_LEVEL && logNonDefault == 0 ) ) {
     vector< pair<IBPtr, const InterfaceBase *> > changed =
@@ -346,7 +346,7 @@ void EventGenerator::dofinish() {
   eventHandler()->statistics(out());
 
   // Call the finish method for all other objects.
-  for_each(objects(), mem_fun(&InterfacedBase::finish));
+  for_each(objects(), std::mem_fn(&InterfacedBase::finish));
 
   if ( theExceptions.empty() ) {
     log() << "No exceptions reported in this run.\n";
@@ -475,7 +475,7 @@ EventPtr EventGenerator::doShoot() {
       else
 	log() << "An exception occurred before any event object was created!";
       log() << endl;
-      dump();
+      if ( ThePEG_DEBUG_LEVEL ) dump();
       throw;
     }
     if ( ThePEG_DEBUG_LEVEL ) {
@@ -808,14 +808,14 @@ logException(const Exception & ex, tcEventPtr event) {
 }
 
 struct MatcherOrdering {
-  bool operator()(tcPMPtr m1, tcPMPtr m2) {
+  bool operator()(tcPMPtr m1, tcPMPtr m2) const {
     return m1->name() < m2->name() ||
       ( m1->name() == m2->name() && m1->fullName() < m2->fullName() );
   }
 };
 
 struct ObjectOrdering {
-  bool operator()(tcIBPtr i1, tcIBPtr i2) {
+  bool operator()(tcIBPtr i1, tcIBPtr i2) const {
     return i1->fullName() < i2->fullName();
   }
 };
@@ -941,6 +941,20 @@ bool EventGenerator::preinitRegister(IPtr obj, string fullname) {
   PMPtr pm = dynamic_ptr_cast<PMPtr>(obj);
   if ( pm ) theMatchers.insert(pm);
   return true;
+}
+
+bool EventGenerator::preinitRemove(IPtr obj) {
+  bool deleted=true;
+  if(theObjects.find(obj)!=theObjects.end()) {
+    theObjects.erase(obj);
+  }
+  else
+    deleted = false;
+  if(theObjectMap.find(obj->fullName())!=theObjectMap.end())
+    theObjectMap.erase(obj->fullName());
+  else
+    deleted = false;
+  return deleted;
 }
 
 IPtr EventGenerator::

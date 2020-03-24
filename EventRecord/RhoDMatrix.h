@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // RhoDMatrix.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -90,7 +90,19 @@ public:
 	_matrix[ix][iy]*=invnorm;
   }
   //@}
-
+  
+  /**
+   *  Reset
+   */
+  void reset(bool average = true) {
+    for(size_t ix=0; ix<_ispin; ++ix)
+      for(size_t iy=0; iy<_ispin; ++iy)
+	_matrix[ix][iy]=0.;
+    if ( average )
+      for(size_t ix=0; ix<_ispin; ++ix)
+	_matrix[ix][ix] = 1./_ispin;
+  }
+    
   /** @name Access the spin. */
   //@{
 

@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // SpinInfo.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 2003-2017 Peter Richardson, Leif Lonnblad
+// Copyright (C) 2003-2019 Peter Richardson, Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -65,7 +65,8 @@ public:
   enum DevelopedStatus {
     Undeveloped=0, /**< Not developed. */
     Developed=1,   /**< Developed. */
-    NeedsUpdate=2  /**< Developed but needs recalculating due to some change. */
+    NeedsUpdate=2,  /**< Developed but needs recalculating due to some change. */
+    StopUpdate=3     /**< Stop recalculating at this spin info. */
   };
 
 public:
@@ -152,6 +153,13 @@ public:
     _currentmomentum.transform(r);
   }
 
+  /**
+   *  Reset - Undoes any transformations and calls undecay.
+   */
+  virtual void reset() {
+    _currentmomentum = _productionmomentum;
+  }
+  
 public:
 
 
@@ -247,6 +255,12 @@ public:
   }
 
   /**
+   *  Used for an unstable particle to *temporarily* stop
+   *  redevelop and redecay at that particle
+   */
+  void stopUpdate() const {_developed=StopUpdate;}
+
+  /**
    * Return 2s+1 for the particle
    */
   PDT::Spin iSpin() const { return _spin; }
@@ -311,7 +325,7 @@ public:
   RhoDMatrix & DMatrix() { return _Dmatrix; }
   //@}
 
-protected:
+public:
 
   /**
    *  Check if momentum is near to the current momentum

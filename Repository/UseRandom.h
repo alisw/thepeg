@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // UseRandom.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -173,6 +173,14 @@ public:
    */
   static int rnd4(double p0, double p1, double p2, double p3) {
     return current().rnd4(p0, p1, p2, p3);
+  }
+
+  /**
+   * Return an integer/ \f$i\f$ with probability p\f$i\f$(\a p0+\a
+   * p1+\a p2+\a p3+\a p4).
+   */
+  static int rnd5(double p0, double p1, double p2, double p3, double p4) {
+    return current().rnd5(p0, p1, p2, p3, p4);
   }
 
   /**

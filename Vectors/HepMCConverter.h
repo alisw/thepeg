@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // HepMCConverter.h is a part of ThePEG - Toolkit for HEP Event Generation
-// Copyright (C) 1999-2017 Leif Lonnblad
+// Copyright (C) 1999-2019 Leif Lonnblad
 //
 // ThePEG is licenced under version 3 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -52,19 +52,23 @@ public:
   /** Forward typedefs from Traits class. */
   typedef typename Traits::ParticleT GenParticle;
   /** Forward typedefs from Traits class. */
+  typedef typename Traits::ParticlePtrT GenParticlePtrT;
+  /** Forward typedefs from Traits class. */
   typedef typename Traits::EventT GenEvent;
   /** Forward typedefs from Traits class. */
   typedef typename Traits::VertexT GenVertex;
   /** Forward typedefs from Traits class. */
+  typedef typename Traits::VertexPtrT GenVertexPtrT;
+  /** Forward typedefs from Traits class. */
   typedef typename Traits::PdfInfoT PdfInfo;
   /** Map ThePEG particles to HepMC particles. */
-  typedef map<tcPPtr,GenParticle*> ParticleMap;
+  typedef map<tcPPtr,GenParticlePtrT> ParticleMap;
   /** Map ThePEG colour lines to HepMC colour indices. */
   typedef map<tcColinePtr,long> FlowMap;
   /** Map ThePEG particles to vertices. */
   typedef map<tcPPtr,Vertex*> VertexMap;
   /** Map vertices to GenVertex */
-  typedef map<const Vertex *, GenVertex*> GenVertexMap;
+  typedef map<const Vertex *, GenVertexPtrT> GenVertexMap;
 
 public:
 
@@ -146,7 +150,7 @@ private:
   /**
    * Create a GenParticle from a ThePEG Particle.
    */
-  GenParticle * createParticle(tcPPtr p) const;
+  GenParticlePtrT createParticle(tcPPtr p) const;
 
   /**
    * Join the decay vertex of the parent with the decay vertex of the
@@ -157,7 +161,7 @@ private:
   /**
    * Create a GenVertex from a temporary Vertex.
    */
-  GenVertex * createVertex(Vertex * v); 
+  GenVertexPtrT createVertex(Vertex * v); 
 
   /**
    * Create and set a PdfInfo object for the event
