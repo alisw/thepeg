@@ -26,7 +26,7 @@ describeThePEGVSSVertex("ThePEG::VSSVertex", "libThePEG.so");
 void VSSVertex::Init() {
       
 static ClassDocumentation<VSSVertex> documentation
-  ("The VSSVertex class is hte implementation of the"
+  ("The VSSVertex class is the implementation of the"
    "vector-scalar-scalar vertex for helicity amplitude calculations."
    " all such vertices should inherit from it"); 
 }

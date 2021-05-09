@@ -136,6 +136,11 @@ private:
   vector<string> _analyses;
 
   /**
+   *   Yoda files to be preloaded
+   */
+  vector<string> _preload;
+
+  /**
    * Search paths for finding rivet analyses. 
    */
   vector<string> _paths;
@@ -143,12 +148,12 @@ private:
   /**
    * The base name of the output file.
    */
-  string filename;
+  string _filename;
 
   /**
    * Enable debugging information from Rivet
    */
-  bool debug;
+  bool _debug;
 
   /**
    *  The RivetAnalysisHandler
@@ -160,41 +165,6 @@ private:
    */
   unsigned long _nevent;
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of RivetAnalysis. */
-template <>
-struct BaseClassTrait<RivetAnalysis,1> {
-  /** Typedef of the first base class of RivetAnalysis. */
-  typedef AnalysisHandler NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the RivetAnalysis class and the shared object where it is defined. */
-template <>
-struct ClassTraits<RivetAnalysis>
-  : public ClassTraitsBase<RivetAnalysis> {
-  /** Return a platform-independent class name */
-  static string className() { return "ThePEG::RivetAnalysis"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * RivetAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class RivetAnalysis depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "RivetAnalysis.so"; }
-};
-
-/** @endcond */
 
 }
 
