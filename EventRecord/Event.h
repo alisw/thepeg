@@ -14,6 +14,7 @@
 #include "StandardSelectors.h"
 #include "SubProcess.h"
 #include "ThePEG/Utilities/Named.h"
+#include "ThePEG/Utilities/AnyReference.h"
 
 namespace ThePEG {
 
@@ -261,6 +262,38 @@ public:
    */
   void primaryCollision(tCollPtr c);
 
+public:
+
+  /**
+   * Check for meta information
+   */
+  bool hasMeta(const string& id) const {
+    return theMeta.find(id) != theMeta.end();
+  }
+
+  /**
+   * Set meta information.
+   */
+  template<class T>
+  void meta(const string& id, T& ref) {
+    theMeta[id] = AnyReference(ref);
+  }
+
+  /**
+   * Erase meta information.
+   */
+  void eraseMeta(const string& id) {
+    theMeta.erase(id);
+  }
+
+  /**
+   * Retrieve meta information.
+   */
+  template<class T>
+  T& meta(const string& id) const {
+    return theMeta.find(id)->second.cast<T>();
+  }
+
 protected:
 
   /**
@@ -387,6 +420,11 @@ private:
    * Counter to keep track of particle numbering.
    */
   long theParticleNumber;
+
+  /**
+   * The meta information
+   */
+  map<string,AnyReference> theMeta;
 
 public:
 

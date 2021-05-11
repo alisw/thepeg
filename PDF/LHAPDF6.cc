@@ -143,14 +143,36 @@ cPDVector ThePEG::LHAPDF::partons(tcPDPtr particle) const {
   const vector<int> & flavs = 
     pdfset.get_entry_as< vector<int> >("Flavors");
 
-  cPDVector ret;
-  ret.reserve( flavs.size() );
-  if ( canHandleParticle(particle) ) {
-    for ( size_t i=0; i < flavs.size(); ++i ) {
-      ret.push_back(getParticleData(flavs[i]));
+  // check for leptons and antileptons
+  bool hasLepton    [3] = {false,false,false};
+  bool hasAntiLepton[3] = {false,false,false};
+  vector<int> flav2;
+  flav2.reserve(flavs.size()+3);
+  for (int val : flavs) {
+    if(abs(val) == 11 || abs(val) ==13 || abs(val)==15) {
+      int ilep = (abs(val)-11)/2;
+      if(val>0)     hasLepton[ilep]=true;
+      else      hasAntiLepton[ilep]=true;
+    }
+    flav2.push_back(val);
+  }
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(hasLepton[ix] && !hasAntiLepton[ix]) {
+      int pid = 11+2*ix;
+      cerr << "Charged lepton with pid=" << pid << " found in PDF but not the antilepton"
+	   << " assumming antilepton PDF is equal to the lepton one\n";
+      flav2.push_back(-pid);
     }
   }
-  assert( ret.size() == flavs.size() );
+  
+  cPDVector ret;
+  ret.reserve( flav2.size() );
+  if ( canHandleParticle(particle) ) {
+    for ( size_t i=0; i < flav2.size(); ++i ) {
+      ret.push_back(getParticleData(flav2[i]));
+    }
+  }
+  assert( ret.size() == flav2.size() );
   return ret;
 }
 
@@ -227,6 +249,12 @@ double ThePEG::LHAPDF::xfx(tcPDPtr particle, tcPDPtr parton,
     return thePDF->xfxQ2(g,x,Q2);
   case ParticleID::gamma:
     return thePDF->xfxQ2(ParticleID::gamma,x,Q2);
+  case ParticleID::eminus: case ParticleID::muminus: case ParticleID::tauminus:
+  case ParticleID::eplus : case ParticleID::muplus : case ParticleID::tauplus :
+    if(pid>0 || thePDF->hasFlavor(pid))
+      return thePDF->xfxQ2(pid,x,Q2);
+    else
+      return thePDF->xfxQ2(-pid,x,Q2);
   }
   return 0.0;
 }
@@ -384,6 +412,12 @@ double ThePEG::LHAPDF::xfsx(tcPDPtr particle, tcPDPtr parton,
     return thePDF->xfxQ2(g,x,Q2);
   case ParticleID::gamma:
     return thePDF->xfxQ2(ParticleID::gamma,x,Q2);
+  case ParticleID::eminus: case ParticleID::muminus: case ParticleID::tauminus:
+  case ParticleID::eplus : case ParticleID::muplus : case ParticleID::tauplus :
+    if(pid>0 || thePDF->hasFlavor(pid))
+      return thePDF->xfxQ2(pid,x,Q2);
+    else
+      return thePDF->xfxQ2(-pid,x,Q2);
   }
   return 0.0;
 }
