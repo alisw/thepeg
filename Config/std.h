@@ -97,7 +97,7 @@ using std::swap;
 using std::min;
 using std::max;
 using std::mem_fn;
-using std::mem_fun;
+//using std::mem_fun;
 using std::sqrt;
 //using std::pow;
 using std::abs;
