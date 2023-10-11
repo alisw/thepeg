@@ -37,7 +37,7 @@ void RivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int st
   if ( _rivet ){
 #if ThePEG_RIVET_VERSION > 1
     try {
-      _rivet->analyze(*hepmc);
+      _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
     } catch (const YODA::Exception & e) {
       Throw<Exception>() << "Warning: Rivet/Yoda got the exception: "<< e.what()<<"\n"
                          << Exception::warning;
