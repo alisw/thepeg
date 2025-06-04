@@ -126,11 +126,6 @@ public:
    * Copy-constructor.
    */
   DecayMode(const DecayMode &);
-
-  /**
-   * Destructor.
-   */
-  ~DecayMode();
   //@}
 
   /**

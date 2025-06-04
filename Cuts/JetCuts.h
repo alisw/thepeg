@@ -35,18 +35,10 @@ class JetCuts: public MultiCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   JetCuts();
-
-  /**
-   * The destructor.
-   */
-  virtual ~JetCuts();
-  //@}
 
 public:
 

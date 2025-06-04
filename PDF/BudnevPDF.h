@@ -6,13 +6,14 @@
 //
 
 #include "ThePEG/PDF/PDFBase.h"
+#include "ThePEG/Utilities/Maths.h"
 
 namespace ThePEG {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BudnevPDF class.
+ * The BudnevPDF class implements the PDF for the radiation of a photon from the proton.
  *
  * @see \ref BudnevPDFInterfaces "The interfaces"
  * defined for BudnevPDF.
@@ -138,12 +139,6 @@ protected:
 private:
 
   /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
-   */
-  static ClassDescription<BudnevPDF> initBudnevPDF;
-
-  /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
@@ -176,52 +171,19 @@ private:
    * Helper function for magnetic a electric form factors in Budnev flux
    */  
 
-  double gm2(Energy2 q2) const; 
+  double gm2(Energy2 q2) const {
+    return ge2(q2)*_mup2;
+  }
   
-
   /**
    * Helper function for magnetic a electric form factors in Budnev flux
    */
 
-  double ge2(Energy2 q2) const; 
-  
+  double ge2(Energy2 q2) const {
+    return Math::powi((1 + q2/_q02),-4);
+  }
 
 };
-
-}
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
-
-/** This template specialization informs ThePEG about the
- *  base classes of BudnevPDF. */
-template <>
-struct BaseClassTrait<BudnevPDF,1> {
-  /** Typedef of the first base class of BudnevPDF. */
-  typedef PDFBase NthBase;
-};
-
-/** This template specialization informs ThePEG about the name of
- *  the BudnevPDF class and the shared object where it is defined. */
-template <>
-struct ClassTraits<BudnevPDF>
-  : public ClassTraitsBase<BudnevPDF> {
-  /** Return a platform-independent class name */
-  static string className() { return "ThePEG::BudnevPDF"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * BudnevPDF is implemented. It may also include several, space-separated,
-   * libraries if the class BudnevPDF depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "BudnevPDF.so"; }
-};
-
-/** @endcond */
 
 }
 

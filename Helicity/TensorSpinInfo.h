@@ -187,8 +187,4 @@ private:
 }
 }
 
-
-namespace ThePEG {
-
-}
 #endif /* THEPEG_TensorSpinInfo_H */

@@ -28,8 +28,6 @@ using namespace ThePEG;
 NJetsCut::NJetsCut()
   : nJetsMin(0), nJetsMax(-1) {}
 
-NJetsCut::~NJetsCut() {}
-
 void NJetsCut::describe() const {
   CurrentGenerator::log()
     << fullName() << ": requires ";

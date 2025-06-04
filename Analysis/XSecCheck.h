@@ -22,18 +22,10 @@ class XSecCheck: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   XSecCheck() : target(ZERO), tol(0.01), sumw(0.0) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~XSecCheck();
-  //@}
 
 public:
 

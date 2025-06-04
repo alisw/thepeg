@@ -243,6 +243,49 @@ public:
   }
   //@}
 
+  /** @name Functions to apply the slash operator */
+  //@{
+  /**
+   *   Apply \f$p\!\!\!\!\!\not\f$
+   */
+  template<typename ValueB>
+  auto slash(const LorentzVector<ValueB> & p) const
+  -> LorentzSpinorBar<decltype(p.t()*Value())>
+  {
+    LorentzSpinorBar<decltype(p.t()*Value())> spin;
+    static const Complex ii(0.,1.);
+    complex<ValueB> p0pp3=p.t()+p.z();
+    complex<ValueB> p0mp3=p.t()-p.z();
+    complex<ValueB> p1pp2=p.x()+ii*p.y();
+    complex<ValueB> p1mp2=p.x()-ii*p.y();
+    spin.setS1(p0pp3*s3()+p1pp2*s4());
+    spin.setS2(p0mp3*s4()+p1mp2*s3());
+    spin.setS3(p0mp3*s1()-p1pp2*s2());
+    spin.setS4(p0pp3*s2()-p1mp2*s1());
+    return spin;
+  }
+
+  /**
+   *   Apply \f$p\!\!\!\!\!\not\f$
+   */
+  template<typename ValueB>
+  auto slash(const LorentzVector<complex<ValueB> > & p) const
+  -> LorentzSpinor<decltype(ValueB()*Value())>
+  {
+    LorentzSpinor<decltype(ValueB()*Value())> spin;
+    static const Complex ii(0.,1.);
+    complex<ValueB> p0pp3=p.t()+p.z();
+    complex<ValueB> p0mp3=p.t()-p.z();
+    complex<ValueB> p1pp2=p.x()+ii*p.y();
+    complex<ValueB> p1mp2=p.x()-ii*p.y();
+    spin.setS1(p0pp3*s3()+p1pp2*s4());
+    spin.setS2(p0mp3*s4()+p1mp2*s3());
+    spin.setS3(p0mp3*s1()-p1pp2*s2());
+    spin.setS4(p0pp3*s2()-p1mp2*s1());
+    return spin;
+  }
+  //@}
+
 private:
   /**
    * Type of spinor

@@ -33,18 +33,10 @@ class JetRegion: public HandlerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   JetRegion();
-
-  /**
-   * The destructor.
-   */
-  virtual ~JetRegion();
-  //@}
 
 public:
 

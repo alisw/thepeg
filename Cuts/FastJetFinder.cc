@@ -35,8 +35,6 @@ FastJetFinder::FastJetFinder()
     theVariant(kt), theMode(inclusive),
     theRecombination(recoE) {}
 
-FastJetFinder::~FastJetFinder() {}
-
 void FastJetFinder::doinit() {
   fastjet::ClusterSequence::set_fastjet_banner_stream(0);
 }

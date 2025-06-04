@@ -39,8 +39,6 @@ Cuts::Cuts(Energy MhatMin)
     theScaleMin(ZERO), theScaleMax(Constants::MaxEnergy2),
     theSubMirror(false), theCutWeight(1.0), theLastCutWeight(1.0) {}
 
-Cuts::~Cuts() {}
-
 IBPtr Cuts::clone() const {
   return new_ptr(*this);
 }

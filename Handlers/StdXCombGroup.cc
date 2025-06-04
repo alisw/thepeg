@@ -275,6 +275,8 @@ CrossSection StdXCombGroup::dSigDR(const pair<double,double> ll, int nr, const d
       activeXCombs.push_back(*dep);
   }
 
+  CrossSection headxsec = xsec;
+
   if ( xsec != ZERO &&
        depxsec != ZERO ) {
     if ( abs(xsec) < abs(depxsec) ) {
@@ -300,7 +302,8 @@ CrossSection StdXCombGroup::dSigDR(const pair<double,double> ll, int nr, const d
   }
 
   if ( theMEGroup->groupReweighted() && !activeXCombs.empty() ) {
-    xsec = theMEGroup->reweightHead(activeXCombs)*lastHeadCrossSection();
+    headxsec = theMEGroup->reweightHead(activeXCombs)*lastHeadCrossSection();
+    xsec = headxsec;
     depxsec = ZERO;
     for ( vector<tStdXCombPtr>::const_iterator dep = activeXCombs.begin();
 	  dep != activeXCombs.end(); ++dep ) {
@@ -319,14 +322,23 @@ CrossSection StdXCombGroup::dSigDR(const pair<double,double> ll, int nr, const d
        matrixElement()->maxMultCKKW() > matrixElement()->minMultCKKW() ) {
     newSubProcess(theMEGroup->subProcessGroups());
     CKKWHandler()->setXComb(this);
-    xsec *= CKKWHandler()->reweightCKKW(matrixElement()->minMultCKKW(),
-					matrixElement()->maxMultCKKW());
+    double factor = CKKWHandler()->reweightCKKW(matrixElement()->minMultCKKW(),
+						matrixElement()->maxMultCKKW());
+    xsec *= factor;
+    headxsec *= factor;
+    depxsec *= factor;
   }
 
   if ( matrixElement()->reweighted() ) {
     newSubProcess(theMEGroup->subProcessGroups());
-    xsec *= matrixElement()->reWeight() * matrixElement()->preWeight();
+    double factor = matrixElement()->reWeight() * matrixElement()->preWeight();
+    xsec *= factor;
+    headxsec *= factor;
+    depxsec *= factor;
   }
+
+  if ( theMEGroup->discard(headxsec,depxsec) )
+    return ZERO;
 
   return xsec;
 

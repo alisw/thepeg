@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([ThePEG],[2.2.2],[http://www.thep.lu.se/ThePEG/],[ThePEG])
+AC_INIT([ThePEG],[2.3.0],[http://www.thep.lu.se/ThePEG/],[ThePEG])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -90,7 +90,7 @@ AM_CPPFLAGS="-I\$(top_builddir)/include \$(GSLINCLUDE)"
 
 case "${ax_cv_cxx_compiler_vendor}" in
      gnu)
-    AM_CXXFLAGS="-pedantic -Wall -W"
+    AM_CXXFLAGS="-pedantic -Wall -W -Wno-use-after-free"
     ;;
      clang)
     AM_CXXFLAGS="-pedantic -Wall -Wno-overloaded-virtual -Wno-unused-function"

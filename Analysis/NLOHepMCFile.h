@@ -30,11 +30,6 @@ public:
    * The copy constructor.
    */
   NLOHepMCFile(const NLOHepMCFile &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~NLOHepMCFile() {}
   //@}
 
 public:

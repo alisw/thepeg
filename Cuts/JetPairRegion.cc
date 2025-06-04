@@ -34,8 +34,6 @@ JetPairRegion::JetPairRegion()
     theDeltaYMin(0.0), theDeltaYMax(Constants::MaxRapidity), 
     theOppositeHemispheres(false), theCutWeight(1.0) {}
 
-JetPairRegion::~JetPairRegion() {}
-
 IBPtr JetPairRegion::clone() const {
   return new_ptr(*this);
 }

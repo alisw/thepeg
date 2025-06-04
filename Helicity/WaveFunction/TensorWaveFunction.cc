@@ -13,7 +13,7 @@
 // Author: Peter Richardson
 //
 #include "TensorWaveFunction.h"
-
+#include "ThePEG/Helicity/HelicityFunctions.h"
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
@@ -38,7 +38,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
     // calculate the overall phase
     complex<double>phase;
     if(tphase==tensor_phase) {
-      phase = pt==ZERO ? 1. : complex<double>(ppx/pt,-fact*ppy/pt);
+      phase = pt==ZERO ? 1. : complex<double>(ppx/pt,fact*ppy/pt);
     }
     else phase = 1.; 
     phase = phase*sqrt(0.5);
@@ -66,7 +66,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
     // calculate the overall phase
     complex<double> phase;
     if(tphase==tensor_phase) {
-      phase = pt==ZERO ? 1. : complex<double>(ppx/pt,fact*ppy/pt);
+      phase = pt==ZERO ? 1. : complex<double>(ppx/pt,-fact*ppy/pt);
     }
     else phase = 1.;
     phase = phase*sqrt(0.5);
@@ -172,7 +172,7 @@ calculateWaveFunctions(vector<LorentzTensor<double> > & waves,
 	waves[ix] = LorentzTensor<double>();
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave.wave();
       }
     }
@@ -210,7 +210,7 @@ calculateWaveFunctions(vector<TensorWaveFunction> & waves,
 	waves[ix] = TensorWaveFunction(particle->momentum(),particle->dataPtr(),dir);
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave;
       }
     }
@@ -247,7 +247,7 @@ calculateWaveFunctions(vector<LorentzTensor<double> > & waves,
 	waves[ix] = LorentzTensor<double>();
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave.wave();
       }
     }
@@ -289,7 +289,7 @@ calculateWaveFunctions(vector<TensorWaveFunction> & waves,
 	waves[ix] = TensorWaveFunction(particle->momentum(),particle->dataPtr(),dir);
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave;
       }
     }

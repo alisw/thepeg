@@ -28,18 +28,10 @@ class NJetsCut: public MultiCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   NJetsCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~NJetsCut();
-  //@}
 
 public:
 

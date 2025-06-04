@@ -54,11 +54,6 @@ public:
     : RemnantDecayer(x), theZGenerator(x.theZGenerator),
       theFlavourGenerator(x.theFlavourGenerator), theMargin(x.theMargin),
       useSpecialValence(x.useSpecialValence) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~SimpleBaryonRemnantDecayer();
   //@}
 
 public:

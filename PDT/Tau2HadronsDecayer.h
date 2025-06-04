@@ -26,16 +26,6 @@ class Tau2HadronsDecayer: public FlatDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Destructor.
-   */
-  virtual ~Tau2HadronsDecayer();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the Decayer class.
    */
   //@{

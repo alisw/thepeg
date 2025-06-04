@@ -32,8 +32,6 @@
 
 using namespace ThePEG;
 
-SimpleBaryonRemnantDecayer::~SimpleBaryonRemnantDecayer() {}
-
 IBPtr SimpleBaryonRemnantDecayer::clone() const {
   return new_ptr(*this);
 }

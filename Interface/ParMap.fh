@@ -1,0 +1,21 @@
+// -*- C++ -*-
+#ifndef ThePEG_ParMap_FH
+#define ThePEG_ParMap_FH
+//
+// This is the forward declaration of the ParMap, ParMapTBase
+// and ParMapBase classes.
+//
+
+namespace ThePEG {
+
+class ParMapBase;
+
+template <typename Type>
+class ParMapTBase;
+
+template <typename T, typename Type = double>
+class ParMap;
+
+}
+
+#endif /* ThePEG_ParMap_FH */

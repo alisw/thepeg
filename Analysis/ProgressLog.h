@@ -30,18 +30,10 @@ class ProgressLog: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   ProgressLog();
-
-  /**
-   * The destructor.
-   */
-  virtual ~ProgressLog();
-  //@}
 
 public:
 

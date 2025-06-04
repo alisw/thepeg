@@ -14,6 +14,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/DescribeClass.h"
 
 using namespace ThePEG;
 
@@ -54,16 +55,27 @@ double BudnevPDF::xfvl(tcPDPtr, tcPDPtr, Energy2, double,
 }
 
 
-ClassDescription<BudnevPDF> 
-BudnevPDF::initBudnevPDF;
-// Definition of the static class description member.
+
+// The following static variable is needed for the type
+// description system in ThePEG.
+DescribeClass<BudnevPDF,PDFBase>
+describeBudnevPDF("ThePEG::BudnevPDF", "BudnevPDF.so");
 
 void BudnevPDF::Init() {
 
   static ClassDocumentation<BudnevPDF> documentation
     ("The BudnevPDF provides the PDF for a photon inside"
-     " an incoming lepton in the Weisszacker-Williams approximation");
-
+     " an incoming photon using the results of Phys. Rept. 15 (1975) 181.",
+     "The BudnevPDF provides the PDF for a photon inside"
+     " an incoming photon based on the results of \\cite{Budnev:1974de} was used.",
+     "\\bibitem{Budnev:1974de}"
+     "V.~M.~Budnev, I.~F.~Ginzburg, G.~V.~Meledin and V.~G.~Serbo,"
+     "%``The Two photon particle production mechanism. Physical problems. Applications. Equivalent photon approximation,''"
+     "Phys.\\ Rept.\\  {\\bf 15} (1975) 181."
+     "doi:10.1016/0370-1573(75)90009-5"
+     "%%CITATION = doi:10.1016/0370-1573(75)90009-5;%%"
+     "%1212 citations counted in INSPIRE as of 27 Nov 2019");
+     
   static Parameter<BudnevPDF,Energy2> interfaceQ2Min
     ("Q2Min",
      "Minimum value of the magnitude of Q^2 for the photon",
@@ -77,7 +89,6 @@ void BudnevPDF::Init() {
      false, false, Interface::limited);
 
 }
-
 
 double BudnevPDF::
 flattenScale(tcPDPtr proton, tcPDPtr, const PDFCuts & c,
@@ -108,14 +119,4 @@ void BudnevPDF::persistentOutput(PersistentOStream & os) const {
 
 void BudnevPDF::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_q2min,GeV2) >> iunit(_q2max,GeV2);
-}
-
-double BudnevPDF::gm2(Energy2 q2) const
-{
-  return ge2(q2)*_mup2;
-}
-
-double BudnevPDF::ge2(Energy2 q2) const
-{
- return Math::powi((1 + q2/_q02),-4);
 }

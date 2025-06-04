@@ -347,6 +347,43 @@ public:
   complex<Value> trace() const {
     return _tensor[3][3]-_tensor[0][0]-_tensor[1][1]-_tensor[2][2];
   }
+
+  /**
+   *  Inner product with another tensor
+   */
+  template<typename ValueB>
+  auto innerProduct(const LorentzTensor<ValueB> & ten) const 
+    -> LorentzTensor<decltype(ten.xx().real()*this->xx().real())> {
+    LorentzTensor<decltype(ten.xx().real()*this->xx().real())> output;
+    for(unsigned int ix=0;ix<4;++ix) {
+      for(unsigned int iy=0;iy<4;++iy) {
+	output(ix,iy) = _tensor[ix][3]*ten(3,iy);
+	for(unsigned int iz=0;iz<3;++iz) {
+	  output(ix,iy) -= _tensor[ix][iz]*ten(iz,iy);
+	}
+      }
+    }
+    return output;
+  }
+
+  /**
+   *  Outer product with another tensor
+   */
+  template<typename ValueB>
+  auto outerProduct(const LorentzTensor<ValueB> & ten) const 
+    -> LorentzTensor<decltype(ten.xx().real()*this->xx().real())> {
+    LorentzTensor<decltype(ten.xx().real()*this->xx().real())> output;
+    for(unsigned int ix=0;ix<4;++ix) {
+      for(unsigned int iy=0;iy<4;++iy) {
+	output(ix,iy) = _tensor[3][ix]*ten(iy,3);
+	for(unsigned int iz=0;iz<3;++iz) {
+	  output(ix,iy) -= _tensor[iz][ix]*ten(iy,iz);
+	}
+      }
+    }
+    return output;
+  }
+
   //@}
 
   /**
@@ -356,8 +393,10 @@ public:
   /**
    *  First index dot product with polarization vector
    */
-  LorentzVector<complex<Value> > preDot (const LorentzPolarizationVector & vec) const {
-    LorentzVector<complex<Value> > output;
+  template<typename ValueB>
+  auto preDot (const LorentzVector<complex<ValueB> > & vec) const 
+    -> LorentzVector<decltype(vec.x()*this->xx())> {
+    LorentzVector<decltype(vec.x()*this->xx())> output;
     output.setX(vec.t()*_tensor[3][0]-vec.x()*_tensor[0][0]-
                 vec.y()*_tensor[1][0]-vec.z()*_tensor[2][0]);
     output.setY(vec.t()*_tensor[3][1]-vec.x()*_tensor[0][1]-
@@ -372,8 +411,10 @@ public:
   /**
    *  Second index dot product with polarization vector
    */
-  LorentzVector<complex<Value> > postDot(const LorentzPolarizationVector & vec) const {
-    LorentzVector<complex<Value> > output;
+  template<typename ValueB>
+  auto postDot(const LorentzVector<complex<ValueB> > & vec) const 
+    -> LorentzVector<decltype(vec.x()*this->xx())> {
+    LorentzVector<decltype(vec.x()*this->xx())> output;
     output.setX(vec.t()*_tensor[0][3]-vec.x()*_tensor[0][0]-
                 vec.y()*_tensor[0][1]-vec.z()*_tensor[0][2]);
     output.setY(vec.t()*_tensor[1][3]-vec.x()*_tensor[1][0]-
@@ -515,7 +556,7 @@ operator*(const LorentzTensor<T> & t,
   for(unsigned int ix=0;ix<4;++ix) {
     temp = t._tensor[ix][3]*u._tensor[ix][3];
     for(unsigned int iy=0;iy<3;++iy) {
-      temp+= t._tensor[ix][iy]*u._tensor[ix][iy];
+      temp -= t._tensor[ix][iy]*u._tensor[ix][iy];
     }
     if(ix<3) output-=temp;
     else     output+=temp;

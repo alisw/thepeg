@@ -40,11 +40,12 @@ ParticleData::ParticleData()
     theHardProcessWidth(-1.0*GeV), hardProcessWidthSet(false),
     theWidthUpCut(-1.0*GeV), theWidthLoCut(-1.0*GeV), theCTau(-1.0*mm),
     theCharge(PDT::ChargeUnknown),
-    theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), isStable(true),
+    theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), theColouredInteraction(PDT::ColouredUnknown),
+    isStable(true),
     theVariableRatio(false), syncAnti(false), theDefMass(-1.0*GeV),
     theDefWidth(-1.0*GeV), theDefCut(-1.0*GeV), theDefCTau(-1.0*mm),
     theDefCharge(PDT::ChargeUnknown), theDefSpin(PDT::SpinUnknown),
-    theDefColour(PDT::ColourUnknown) {}
+    theDefColour(PDT::ColourUnknown), theDefColouredInteraction(PDT::ColouredUnknown) {}
 
 ParticleData::
 ParticleData(PID newId, const string & newPDGName)
@@ -53,13 +54,12 @@ ParticleData(PID newId, const string & newPDGName)
     theHardProcessWidth(-1.0*GeV), hardProcessWidthSet(false),
     theWidthUpCut(-1.0*GeV), theWidthLoCut(-1.0*GeV), theCTau(-1.0*mm),
     theCharge(PDT::ChargeUnknown),
-    theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), isStable(true),
+    theSpin(PDT::SpinUnknown), theColour(PDT::ColourUnknown), theColouredInteraction(PDT::ColouredUnknown),
+    isStable(true),
     theVariableRatio(false), syncAnti(false), theDefMass(-1.0*GeV),
     theDefWidth(-1.0*GeV), theDefCut(-1.0*GeV), theDefCTau(-1.0*mm),
     theDefCharge(PDT::ChargeUnknown), theDefSpin(PDT::SpinUnknown),
-    theDefColour(PDT::ColourUnknown) {}
-
-ParticleData::~ParticleData() {}
+    theDefColour(PDT::ColourUnknown), theDefColouredInteraction(PDT::ColouredUnknown) {}
 
 PDPtr ParticleData::Create(PID newId, const string & newPDGName) {
   return new_ptr(ParticleData(newId, newPDGName));
@@ -87,11 +87,12 @@ void ParticleData::readSetup(istream & is) {
   theCTau = theDefCTau;
   theCharge = theDefCharge;
   theColour = theDefColour;
+  theColouredInteraction = PDT::NotColoured;
   theSpin = theDefSpin;
   if ( PDGName() == "-" ) thePDGName = name();
   return;
 }
-  
+
 void ParticleData::antiSetup(const PDPair & pap) {
   pap.first->theAntiPartner = pap.second;
   pap.second->theAntiPartner = pap.first;
@@ -105,7 +106,7 @@ PDPtr ParticleData::pdclone() const {
 IBPtr ParticleData::clone() const {
   return pdclone();
 }
-  
+
 IBPtr ParticleData::fullclone() const {
   PDPtr pd = pdclone();
   Repository::Register(pd);
@@ -234,6 +235,7 @@ void ParticleData::synchronize() {
   theCharge = PDT::Charge(-CC()->theCharge);
   theSpin = CC()->theSpin;
   theColour = PDT::antiColour(CC()->theColour);
+  theColouredInteraction = CC()->theColouredInteraction;
   theMassGenerator = CC()->theMassGenerator;
   theWidthGenerator = CC()->theWidthGenerator;
   syncAnti = CC()->syncAnti;
@@ -339,7 +341,7 @@ Energy ParticleData::generateWidth(Energy m) const {
 }
 
 Length ParticleData::generateLifeTime(Energy m, Energy w) const {
-  return widthGenerator() ? 
+  return widthGenerator() ?
     widthGenerator()->lifeTime(*this, m, w) :
     UseRandom::rndExp(cTau());
 }
@@ -402,7 +404,7 @@ void ParticleData::setHardProcessWidth(Energy mi) {
 }
 
 string ParticleData::doUnsetHardProcessMass(string) {
-  hardProcessMassSet = false;  
+  hardProcessMassSet = false;
   theHardProcessMass = -1.*GeV;
   return "";
 }
@@ -412,9 +414,9 @@ string ParticleData::doAdjustNominalMass(string) {
     setMass(theHardProcessMass);
   return "";
 }
-  
+
 string ParticleData::doUnsetHardProcessWidth(string) {
-  hardProcessWidthSet = false;  
+  hardProcessWidthSet = false;
   theHardProcessWidth = -1.*GeV;
   return "";
 }
@@ -525,6 +527,19 @@ long ParticleData::defColour() const {
   return theDefColour;
 }
 
+void ParticleData::setColouredInteraction(long c) {
+  theColouredInteraction = PDT::ColouredInteraction(c);
+}
+
+long ParticleData::getColouredInteraction() const {
+  return theColouredInteraction;
+}
+
+long ParticleData::defColouredInteraction() const {
+  return theDefColouredInteraction;
+}
+
+  
 void ParticleData::setCharge(int c) {
   theCharge = PDT::Charge(c);
 }
@@ -596,12 +611,12 @@ void ParticleData::persistentOutput(PersistentOStream & os) const {
      << ounit(theHardProcessWidth,GeV) << hardProcessWidthSet
      << ounit(theWidthUpCut, GeV) << ounit(theWidthLoCut, GeV)
      << ounit(theCTau, mm) << oenum(theCharge) << oenum(theSpin)
-     << oenum(theColour);
+     << oenum(theColour) << oenum(theColouredInteraction);
   os << theMassGenerator << isStable << modes << theDecaySelector
      << theWidthGenerator << theVariableRatio << theAntiPartner << syncAnti
      << ounit(theDefMass, GeV) << ounit(theDefWidth, GeV)
      << ounit(theDefCut, GeV) << ounit(theDefCTau, mm) << oenum(theDefColour)
-     << oenum(theDefCharge) << oenum(theDefSpin);
+     << oenum(theDefCharge) << oenum(theDefSpin) << oenum(theDefColouredInteraction);
 }
 
 void ParticleData::persistentInput(PersistentIStream & is, int) {
@@ -611,12 +626,12 @@ void ParticleData::persistentInput(PersistentIStream & is, int) {
      >> iunit(theHardProcessWidth,GeV) >> hardProcessWidthSet
      >> iunit(theWidthUpCut, GeV) >> iunit(theWidthLoCut, GeV)
      >> iunit(theCTau, mm) >> ienum(theCharge) >> ienum(theSpin)
-     >> ienum(theColour) >> theMassGenerator >> isStable
+     >> ienum(theColour) >> ienum(theColouredInteraction) >> theMassGenerator >> isStable
      >> theDecayModes >> theDecaySelector >> theWidthGenerator >> theVariableRatio
      >> theAntiPartner >> syncAnti >> iunit(theDefMass, GeV)
      >> iunit(theDefWidth, GeV) >> iunit(theDefCut, GeV)
      >> iunit(theDefCTau, mm) >> ienum(theDefColour) >> ienum(theDefCharge)
-     >> ienum(theDefSpin);
+     >> ienum(theDefSpin) >> ienum(theDefColouredInteraction);
   theId = id;
 }
 
@@ -685,7 +700,7 @@ void ParticleData::Init() {
      false, false, Interface::lowerlim,
      &ParticleData::setUpCut, &ParticleData::getUpCut,
      0, 0, &ParticleData::defCut);
-  
+
   static Parameter<ParticleData,Energy> interfaceWidthLoCut
     ("WidthLoCut",
      "The lower hard cutoff in GeV in generated mass, which is the maximum "
@@ -695,7 +710,7 @@ void ParticleData::Init() {
      false, false, Interface::lowerlim,
      &ParticleData::setLoCut, &ParticleData::getLoCut,
      0, 0, &ParticleData::defCut);
-  
+
   static Parameter<ParticleData,Energy> interfaceWidthCut
     ("WidthCut",
      "The hard cutoff in GeV in generated mass, which is the maximum "
@@ -707,7 +722,7 @@ void ParticleData::Init() {
      &ParticleData::setCut, &ParticleData::getCut,
      0, 0, &ParticleData::defCut);
   interfaceWidthCut.setHasDefault(false);
-  
+
   static Parameter<ParticleData,Energy> interfaceDefWidthCut
     ("DefaultWidthCut",
      "The default hard cutoff in GeV in generated mass, which is the maximum "
@@ -716,7 +731,7 @@ void ParticleData::Init() {
      &ParticleData::theDefCut, GeV, ZERO, ZERO, Constants::MaxEnergy,
      false, true, Interface::lowerlim);
   interfaceDefWidthCut.setHasDefault(false);
-  
+
   static Parameter<ParticleData,Length> interfaceCTau
     ("LifeTime",
      "c times the average lifetime of the particle measuerd in mm."
@@ -760,7 +775,7 @@ void ParticleData::Init() {
      "This particle is a colour anti-sextet.", -6);
   static SwitchOption interfaceColour8
     (interfaceColour, "Octet", "This particle is a colour octet.", 8);
-  
+
   static Switch<ParticleData,PDT::Colour> interfaceDefColour
     ("DefaultColour",
      "The default colour quantum number of this particle type.",
@@ -781,8 +796,31 @@ void ParticleData::Init() {
      "This particle is a colour anti-sextet.", -6);
   static SwitchOption interfaceDefColour8
     (interfaceDefColour, "Octet", "This particle is a colour octet.", 8);
-  interfaceDefColour.setHasDefault(false);  
+  interfaceDefColour.setHasDefault(false);
 
+  static Switch<ParticleData> interfaceColouredInteraction
+    ("ColouredInteraction",
+     "The coloured interaction of this particle type.",
+     0, -1, false, false, &ParticleData::setColouredInteraction, &ParticleData::getColouredInteraction,
+     &ParticleData::defColouredInteraction);
+  static SwitchOption interfaceColouredInteractionUndefined
+    (interfaceColouredInteraction, "Undefined", "The coloured interaction is undefined.", -2);
+  static SwitchOption interfaceColouredInteractionNotColoured
+    (interfaceColouredInteraction, "NotColoured", "There are no coloured interactions.", -1);  
+  static SwitchOption interfaceColouredInteractionQCD
+    (interfaceColouredInteraction, "QCD", "This particle is a QCD particle.", 0);
+
+  static Switch<ParticleData,PDT::ColouredInteraction> interfaceDefColouredInteraction
+    ("DefaultColouredInteraction",
+     "The default coloured interaction of this particle type.",
+     &ParticleData::theDefColouredInteraction, PDT::ColouredInteraction(-1), false, true);
+  static SwitchOption interfaceDefColouredInteractionUndefined
+    (interfaceDefColouredInteraction, "Undefined", "The coloured interaction is undefined.", -2);
+  static SwitchOption interfaceDefColouredInteractionNotColoured
+    (interfaceDefColouredInteraction, "NotColoured", "There are no coloured interactions.", -1);
+  static SwitchOption interfaceDefColouredInteractionQCD
+    (interfaceDefColouredInteraction, "QCD", "This particle is a QCD particle.", 0);
+  
   static Parameter<ParticleData, int> interfaceCharge
     ("Charge",
      "The charge of this particle in units of e/3. "
@@ -922,8 +960,6 @@ void ParticleData::Init() {
      "Print all decay modes of this particle.",
      &ParticleData::doPrintDecayModes, true);
 
-
-
   static Command<ParticleData> interfaceUnsetHardProcessMass
     ("UnsetHardProcessMass",
      "Unset a previously set hard process mass.",
@@ -950,7 +986,6 @@ void ParticleData::Init() {
   interfaceWidthUpCut.rank(-0.1);
   interfaceWidthLoCut.rank(-0.1);
 
-
 }
 
 string ParticleData::doPrintDecayModes(string) {
@@ -959,7 +994,7 @@ string ParticleData::doPrintDecayModes(string) {
 	it != decayModes().end(); ++it )
     sorted.insert(make_pair((**it).brat(), *it));
   ostringstream os;
-  for ( multimap<double,tDMPtr, 
+  for ( multimap<double,tDMPtr,
 	  std::greater<double> >::iterator it = sorted.begin();
 	it != sorted.end(); ++it )
     os << it->second->tag()

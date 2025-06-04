@@ -23,8 +23,6 @@
 
 using namespace ThePEG;
 
-V2LeptonsCut::~V2LeptonsCut() {}
-
 void V2LeptonsCut::describe() const {
   CurrentGenerator::log() 
     << fullName() << ":\n"

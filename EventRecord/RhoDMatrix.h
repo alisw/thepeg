@@ -132,7 +132,7 @@ private:
   /**
    * Spin matrix size
    */
-  enum { MAXSPIN = 5 };
+  enum { MAXSPIN = 7 };
 
   /**
    * Storage for the matrix allowing up to spin 2 particles.

@@ -36,8 +36,6 @@ JetRegion::JetRegion()
     theFuzzy(false), theCutWeight(1.0),
     theEnergyCutWidth(1.0*GeV), theRapidityCutWidth(0.1) {}
 
-JetRegion::~JetRegion() {}
-
 IBPtr JetRegion::clone() const {
   return new_ptr(*this);
 }

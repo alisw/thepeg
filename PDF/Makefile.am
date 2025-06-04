@@ -20,7 +20,7 @@ CLEANFILES = .done-all-links
 noinst_LTLIBRARIES = libThePEGPDF.la
 pkglib_LTLIBRARIES = LeptonLeptonPDF.la UnResolvedRemnant.la \
           GRVBase.la GRV94L.la GRV94M.la WeizsackerWilliamsPDF.la \
-          BudnevPDF.la
+          BudnevPDF.la NuclearPhotonPDF.la
 
 if USELHAPDF
 pkglib_LTLIBRARIES += ThePEGLHAPDF.la
@@ -50,6 +50,10 @@ WeizsackerWilliamsPDF_la_SOURCES = WeizsackerWilliamsPDF.cc WeizsackerWilliamsPD
 BudnevPDF_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
 BudnevPDF_la_SOURCES = BudnevPDF.cc BudnevPDF.h
 
+# Version info should be updated if any interface or persistent I/O
+# function is changed
+NuclearPhotonPDF_la_LDFLAGS = $(AM_LDFLAGS) -module $(LIBTOOLVERSIONINFO)
+NuclearPhotonPDF_la_SOURCES = NuclearPhotonPDF.cc NuclearPhotonPDF.h
 
 # Version info should be updated if any interface or persistent I/O
 # function is changed

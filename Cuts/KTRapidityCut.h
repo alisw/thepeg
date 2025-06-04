@@ -24,8 +24,6 @@ class KTRapidityCut: public OneCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -33,12 +31,6 @@ public:
     : theMinKT(minKT), theMaxKT(Constants::MaxEnergy),
       theMinRapidity(-Constants::MaxRapidity),
       theMaxRapidity(Constants::MaxRapidity) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~KTRapidityCut();
-  //@}
 
 public:
 

@@ -1,15 +1,16 @@
 mySOURCES = InterfaceBase.cc InterfacedBase.cc Interfaced.cc ParVector.cc \
-          Parameter.cc RefVector.cc Reference.cc Switch.cc Command.cc \
+          ParMap.cc Parameter.cc RefVector.cc Reference.cc Switch.cc Command.cc \
           ClassDocumentation.cc Deleted.cc
 
 DOCFILES = Command.h InterfaceBase.h Interfaced.h InterfacedBase.h ParVector.h \
            Parameter.h RefVector.h Reference.h Switch.h ClassDocumentation.h \
-           Interface.h
+           Interface.h ParMap.h
 
 INCLUDEFILES = $(DOCFILES) Command.fh Command.tcc \
             Command.xh InterfaceBase.fh InterfaceBase.xh \
             InterfacedBase.xh ParVector.fh \
             ParVector.tcc ParVector.xh Parameter.fh \
+            ParMap.fh ParMap.tcc ParMap.xh \
             Parameter.tcc Parameter.xh RefVector.fh \
             RefVector.tcc RefVector.xh Reference.fh \
             Reference.tcc Reference.xh Switch.fh \

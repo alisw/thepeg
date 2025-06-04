@@ -17,8 +17,6 @@
 
 using namespace ThePEG;
 
-KTRapidityCut::~KTRapidityCut() {}
-
 void KTRapidityCut::describe() const {
   CurrentGenerator::log() 
     << fullName() << ":\n"

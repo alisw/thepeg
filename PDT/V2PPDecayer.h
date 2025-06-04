@@ -31,16 +31,6 @@ class V2PPDecayer: public FlatDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Destructor.
-   */
-  virtual ~V2PPDecayer();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the Decayer class.
    */
   //@{

@@ -29,18 +29,10 @@ class OneJetCut: public MultiCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   OneJetCut();
-
-  /**
-   * The destructor.
-   */
-  virtual ~OneJetCut();
-  //@}
 
 public:
 

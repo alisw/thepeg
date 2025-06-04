@@ -390,7 +390,7 @@ public:
    */
   template<typename ValueB>
   auto generalCurrent(const LorentzSpinorBar<ValueB>& fb,
-		                  Complex left, Complex right) const 
+		      Complex left, Complex right) const
   -> LorentzVector<decltype(fb.s3()*this->s2())>
   {
     typedef decltype(fb.s3()*this->s2()) ResultT;
@@ -483,11 +483,10 @@ public:
    */
   template<typename ValueB>
   auto sigma(const LorentzSpinorBar<ValueB>& fb) const 
-  -> LorentzTensor<decltype(fb.s1()*this->s1())>
-  {
-    typedef decltype(fb.s1()*this->s1()) ResultT;
+    -> LorentzTensor<decltype(ValueB()*Value())> {
+    typedef decltype(ValueB()*Value()) ResultT;
     LorentzTensor<ResultT> output;
-    ResultT s11(fb.s1()*s1()),s22(fb.s2()*s2()),
+    complex<ResultT> s11(fb.s1()*s1()),s22(fb.s2()*s2()),
       s33(fb.s3()*s3()),s44(fb.s4()*s4()),
       s12(fb.s1()*s2()),s21(fb.s2()*s1()),
       s34(fb.s3()*s4()),s43(fb.s4()*s3());

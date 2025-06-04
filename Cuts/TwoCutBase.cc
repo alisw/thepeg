@@ -19,8 +19,6 @@
 
 using namespace ThePEG;
 
-TwoCutBase::~TwoCutBase() {}
-
 void TwoCutBase::describe() const {
   CurrentGenerator::log() << fullName() << " has no description.\n\n";
 }

@@ -164,6 +164,11 @@ private:
    *  Event count
    */
   unsigned long _nevent;
+
+  /**
+   *  Disable beam check
+   */
+  bool _checkBeams;
 };
 
 }

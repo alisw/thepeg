@@ -28,8 +28,6 @@ using namespace ThePEG;
 OneJetCut::OneJetCut()
   : ptMin(20.*GeV), yMin(-5), yMax(5) {}
 
-OneJetCut::~OneJetCut() {}
-
 void OneJetCut::describe() const {
   CurrentGenerator::log()
     << fullName() << " requesting one jet with:\n"

@@ -71,7 +71,7 @@ public:
    */
   LesHouchesEventHandler()
     : theWeightOption(unitweight), theUnitTolerance(1.0e-6), warnPNum(true),
-      theNormWeight(0)
+      theNormWeight(0), UseLHEEvent(0)
   {
     selector().tolerance(unitTolerance());
   }
@@ -404,6 +404,11 @@ private:
    *  How to normalize the weights
    */
   unsigned int theNormWeight;
+
+  /** 
+   * How to number the events
+   */
+  unsigned int UseLHEEvent;
 
 public:
 

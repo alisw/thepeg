@@ -103,6 +103,16 @@ public:
   };
 
   /**
+   * Define type of nonabelian interactions
+   */
+  enum ColouredInteraction {
+    ColouredUnknown = -2,
+    ColouredUndefined = -2,
+    NotColoured = -1,
+    ColouredQCD = 0
+  };
+
+  /**
    * True if the argument corresponds to a non-zero charge.
    */
   static bool charged(Charge c) {

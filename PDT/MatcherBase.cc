@@ -35,8 +35,6 @@ MatcherBase::MatcherBase(const MatcherBase & m)
     commonSpin(m.commonSpin), commonColour(m.commonColour),
     commonStable(m.commonStable), theAntiPartner(m.theAntiPartner) {}
 
-MatcherBase::~MatcherBase() {}
-
 void MatcherBase::doupdate() {
   Interfaced::doupdate();
   tPDSet oldParticles;

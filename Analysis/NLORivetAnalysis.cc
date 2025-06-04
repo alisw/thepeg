@@ -122,10 +122,10 @@ void NLORivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int
   CurrentGenerator::Redirect stdout(cout);
   if(_rivet){
 #if ThePEG_RIVET_VERSION == 1
-    _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
+    _rivet->analyze(*hepmc);
 #elif ThePEG_RIVET_VERSION > 1
     try {
-      _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
+      _rivet->analyze(*hepmc);
     } catch (const YODA::Exception & e) {
       Throw<Exception>() << "Warning: Rivet/Yoda got the exception: "<< e.what()<<"\n"
                          << Exception::warning;
@@ -146,10 +146,10 @@ void NLORivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int
 
       if ( _rivet ){
 #if ThePEG_RIVET_VERSION == 1
-        _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
+        _rivet->analyze(*hepmc);
 #elif ThePEG_RIVET_VERSION > 1
         try {
-          _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
+          _rivet->analyze(*hepmc);
         } catch (const YODA::Exception & e) {
           Throw<Exception>() << "Warning: Rivet/Yoda got the exception: "<< e.what()<<"\n"
                              << Exception::warning;

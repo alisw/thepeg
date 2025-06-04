@@ -30,12 +30,12 @@ cPDVector WeizsackerWilliamsPDF::partons(tcPDPtr) const {
   return cPDVector(1,getParticleData(ParticleID::gamma));
 }
 
-double WeizsackerWilliamsPDF::xfl(tcPDPtr, tcPDPtr parton, Energy2,
+double WeizsackerWilliamsPDF::xfl(tcPDPtr e, tcPDPtr parton, Energy2 qq,
                       double l, Energy2 ) const {
   if(parton->id()!=ParticleID::gamma) return 0.;
   double x(exp(-l));
   // remember this is x fx so no x in the denominator!!
-  return 0.5*SM().alphaEM()/Constants::pi*(1.+sqr(1.-x));
+  return 0.5*SM().alphaEM()/Constants::pi*(1.+sqr(1.-x)-2.*sqr(e->mass()*x)/qq);
 }
 
 double WeizsackerWilliamsPDF::xfvl(tcPDPtr, tcPDPtr, Energy2, double,

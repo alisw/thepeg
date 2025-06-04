@@ -546,6 +546,14 @@ void LesHouchesFileReader::open() {
        */
       if(readingInitWeights_sc && !cfile.find("</weightgroup")) {
 	hs = cfile.getline();
+    //cout << "hs=" << hs << endl;
+    //cout << "weightinfo= " << weightinfo << endl;
+    //fix for potential new lines:
+    if(!cfile.find("<weight") and !cfile.find("</weightgroup")) {
+      weightinfo = weightinfo + hs;
+      //cout << "weightinfo fixed= " << weightinfo << endl;
+      continue;
+    }
 	istringstream isc(hs);
 	int ws = 0;
 	/* get the name that will be used to identify the scale 
@@ -724,6 +732,8 @@ bool LesHouchesFileReader::doReadEvent() {
     } 
   }
 
+  LHEeventnum = -1; // set the LHEeventnum to -1, this will be the default if the tag <event num> is not found
+  
   // Now read any additional comments and named weights.
   // read until the end of rwgt is found
   bool readingWeights = false, readingaMCFast = false, readingMG5ClusInfo = false;
@@ -795,6 +805,20 @@ bool LesHouchesFileReader::doReadEvent() {
       string str_arrow = ">";
       erase_substr(mg5scinfo,str_arrow);
       optionalWeights[mg5scinfo.c_str()] = -333; //for the mg5 scale info weights we give them a weight -333 for future identification
+    }
+
+    //the event num tag
+    if(cfile.find("<event num")) {
+      string hs = cfile.getline();
+      string startDEL = "<event num"; //starting delimiter
+      string stopDEL = "</event num>"; //end delimiter
+      unsigned firstLim = hs.find(startDEL);
+      string LHEeventnum_str = hs.substr(firstLim);
+      erase_substr(LHEeventnum_str,stopDEL);
+      erase_substr(LHEeventnum_str,startDEL);
+      string str_arrow = ">";
+      erase_substr(LHEeventnum_str,str_arrow);
+      LHEeventnum =  std::stol(LHEeventnum_str, nullptr, 10); 
     }
 
     //determine start of aMCFast weights

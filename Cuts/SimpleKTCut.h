@@ -30,8 +30,6 @@ class SimpleKTCut: public OneCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
@@ -39,12 +37,6 @@ public:
     : theMinKT(minKT), theMaxKT(Constants::MaxEnergy),
       theMinEta(-Constants::MaxRapidity),
       theMaxEta(Constants::MaxRapidity) {}
-  
-  /**
-   * The destructor.
-   */
-  virtual ~SimpleKTCut();
-  //@}
 
 public:
 

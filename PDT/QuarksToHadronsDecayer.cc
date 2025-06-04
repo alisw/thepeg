@@ -24,8 +24,6 @@
 
 using namespace ThePEG;
 
-QuarksToHadronsDecayer::~QuarksToHadronsDecayer() {}
-
 IBPtr QuarksToHadronsDecayer::clone() const {
   return new_ptr(*this);
 }

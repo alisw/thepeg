@@ -52,7 +52,7 @@ calculateWaveFunctions(vector<LorentzPolarizationVector> & waves,
 	waves[ix] = LorentzPolarizationVector();
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave.wave();
       }
     }
@@ -100,7 +100,9 @@ calculateWaveFunctions(vector<VectorWaveFunction> & waves,
       waves[ix] = VectorWaveFunction(momentum,parton,dir);
     }
     else {
-      if(ix!=0) wave.reset(ix);
+      if(ix!=0) {
+	wave.reset(ix,phase);
+      }
       waves[ix] = wave;
     }
   }
@@ -136,7 +138,7 @@ calculateWaveFunctions(vector<LorentzPolarizationVector> & waves,
 	waves[ix] = LorentzPolarizationVector();
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave.wave();
       }
     }
@@ -179,7 +181,7 @@ calculateWaveFunctions(vector<VectorWaveFunction> & waves,
 				       particle->dataPtr(),dir);
       }
       else {
-	if(ix!=0) wave.reset(ix);
+	if(ix!=0) wave.reset(ix,phase);
 	waves[ix] = wave;
       }
     }

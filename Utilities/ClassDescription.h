@@ -263,12 +263,6 @@ public:
     T::Init();
   }
 
-
-  /**
-   * The descructor.
-   */
-  virtual ~ClassDescriptionTBase() {}
-
   /**
    * Set up the base class information for this object.
    */

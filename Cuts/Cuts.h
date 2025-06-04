@@ -77,11 +77,6 @@ public:
    * The default constructor.
    */
   Cuts(Energy MhatMin=2*GeV);
-
-  /**
-   * The destructor.
-   */
-  virtual ~Cuts();
   //@}
 
 public:

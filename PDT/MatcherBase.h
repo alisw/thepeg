@@ -56,11 +56,6 @@ public:
    * Copy-constructor.
    */
   MatcherBase(const MatcherBase &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~MatcherBase();
   //@}
 
 public:

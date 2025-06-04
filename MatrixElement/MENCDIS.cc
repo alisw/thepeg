@@ -29,8 +29,6 @@ MENCDIS::MENCDIS()
 MENCDIS::MENCDIS(const MENCDIS & x)
   : ME2to2QCD(x), mZ2(x.mZ2) {}
 
-MENCDIS::~MENCDIS() {}
-
 unsigned int MENCDIS::orderInAlphaS() const {
   return 0;
 }

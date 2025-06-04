@@ -28,8 +28,6 @@
 
 using namespace ThePEG;
 
-Onium3GDecayer::~Onium3GDecayer() {}
-
 IBPtr Onium3GDecayer::clone() const {
   return new_ptr(*this);
 }

@@ -31,18 +31,10 @@ class JetFinder: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   JetFinder();
-
-  /**
-   * The destructor.
-   */
-  virtual ~JetFinder();
-  //@}
 
 public:
 

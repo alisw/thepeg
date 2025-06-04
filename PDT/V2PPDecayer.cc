@@ -22,8 +22,6 @@
 
 using namespace ThePEG;
 
-V2PPDecayer::~V2PPDecayer() {}
-
 IBPtr V2PPDecayer::clone() const {
   return new_ptr(*this);
 }

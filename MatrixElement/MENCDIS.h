@@ -42,11 +42,6 @@ public:
    * Copy-constructor.
    */
   MENCDIS(const MENCDIS &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~MENCDIS();
   //@}
 
 public:

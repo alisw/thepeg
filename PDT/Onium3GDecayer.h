@@ -31,18 +31,10 @@ class Onium3GDecayer: public FlatDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   Onium3GDecayer() : doShower(true), theMinGGMass(2.0*GeV) {}
-
-  /**
-   * Destructor.
-   */
-  virtual ~Onium3GDecayer();
-  //@}
 
 public:
 

@@ -19,8 +19,6 @@
 
 using namespace ThePEG;
 
-XSecCheck::~XSecCheck() {}
-
 IBPtr XSecCheck::clone() const {
   return new_ptr(*this);
 }

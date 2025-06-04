@@ -245,8 +245,17 @@ EventPtr LesHouchesEventHandler::generateEvent() {
       	theNormWeight ? 
       	  double(selector().sum()/picobarn) : 1.;
  
-      currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
+      //whether to use the LHE event number or not for the event identification
+      if(UseLHEEvent==0 || currentReader()->LHEEventNum() == -1) { 
+	currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
                                  generator()->currentEventNumber(), weight*fact )));
+      }
+      else if(UseLHEEvent==1 && currentReader()->LHEEventNum() != -1) {
+	currentEvent(new_ptr(Event(lastParticles(), this, generator()->runName(),
+				  currentReader()->LHEEventNum(), weight*fact )));
+      }
+
+      
       currentEvent()->optionalWeights() = currentReader()->optionalEventWeights();
       // normalize the optional weights
       for(map<string,double>::iterator it = currentEvent()->optionalWeights().begin();
@@ -512,13 +521,13 @@ int LesHouchesEventHandler::ntriesinternal() const {
 void LesHouchesEventHandler::persistentOutput(PersistentOStream & os) const {
   os << stats << histStats << theReaders << theSelector
      << oenum(theWeightOption) << theUnitTolerance << theCurrentReader << warnPNum
-     << theNormWeight;
+     << theNormWeight << UseLHEEvent;
 }
 
 void LesHouchesEventHandler::persistentInput(PersistentIStream & is, int) {
   is >> stats >> histStats >> theReaders >> theSelector
      >> ienum(theWeightOption) >> theUnitTolerance >> theCurrentReader >> warnPNum
-     >> theNormWeight;
+     >> theNormWeight >> UseLHEEvent;
 }
 
 ClassDescription<LesHouchesEventHandler>
@@ -611,6 +620,22 @@ void LesHouchesEventHandler::Init() {
     (interfaceWeightNormalization,
      "CrossSection",
      "Normalize the weights to the max cross section in pb",
+     1);
+
+
+    static Switch<LesHouchesEventHandler,unsigned int> interfaceEventNumbering
+    ("EventNumbering",
+     "How to number the events",
+     &LesHouchesEventHandler::UseLHEEvent, 0, false, false);
+  static SwitchOption interfaceEventNumberingIncremental
+    (interfaceEventNumbering,
+     "Incremental",
+     "Standard incremental numbering (i.e. as they are generated)",
+     0);
+  static SwitchOption interfaceEventNumberingLHE
+    (interfaceEventNumbering,
+     "LHE",
+     "Corresponding to the LHE event number",
      1);
 
 

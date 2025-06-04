@@ -36,19 +36,11 @@ class QuarksToHadronsDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   QuarksToHadronsDecayer()
     : theFixedN(0), theMinN(2), theC1(4.5), theC2(0.7*GeV), theC3(0.0) {}
-
-  /**
-   * Destructor.
-   */
-  virtual ~QuarksToHadronsDecayer();
-  //@}
 
 public:
 

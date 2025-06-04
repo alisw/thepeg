@@ -22,8 +22,6 @@ using namespace ThePEG;
 
 ProgressLog::ProgressLog(): secstep(0) {}
 
-ProgressLog::~ProgressLog() {}
-
 void ProgressLog::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   long n = generator()->N();

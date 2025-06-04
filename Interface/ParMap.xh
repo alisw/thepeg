@@ -1,0 +1,68 @@
+// -*- C++ -*-
+//
+// ParMap.xh is a part of ThePEG - Toolkit for HEP Event Generation
+// Copyright (C) 1999-2019 Leif Lonnblad
+//
+// ThePEG is licenced under version 3 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+#ifndef ThePEG_ParMap_XH
+#define ThePEG_ParMap_XH
+//
+// This is the declarations of the exception classes used by the
+// ParMap class.
+//
+
+#include "InterfaceBase.xh"
+
+namespace ThePEG {
+
+/** @cond EXCEPTIONCLASSES */
+/** Exception class used by ParMap if a value is set outside the
+ *  given limits. */
+struct ParMExLimit: public InterfaceException {
+  /** Standard constructor. */
+  template <typename T>
+  ParMExLimit(const InterfaceBase & i, const InterfacedBase & o, T v);
+};
+
+/** Exception class used by ParMap if an unknown error was encountered. */
+struct ParMExUnknown: public InterfaceException {
+  /** Standard constructor. */
+  template <typename T>
+  ParMExUnknown(const InterfaceBase & i, const InterfacedBase & o,
+		T v, int j, const char * s);
+};
+
+/** Exception class used by ParMap if an index is outside the given
+ *  limits. */
+struct ParMExIndex: public InterfaceException {
+  /** Standard constructor. */
+  ParMExIndex(const InterfaceBase & i, const InterfacedBase & o, int index);
+};
+
+/** Exception class used by ParMap if the size of a fixed-size
+ *  container is changed. */
+struct ParMExFixed: public InterfaceException {
+  /** Standard constructor. */
+  ParMExFixed(const InterfaceBase & i, const InterfacedBase & o);
+};
+
+/** Exception class used by ParMap if an unknown error was encountered. */
+struct ParMExDelUnknown: public InterfaceException {
+  /** Standard constructor. */
+  ParMExDelUnknown(const InterfaceBase & i, const InterfacedBase & o, int j);
+};
+
+/** Exception class used by ParMap if an unknown error was encountered. */
+struct ParMExGetUnknown: public InterfaceException {
+  /** Standard constructor. */
+  ParMExGetUnknown(const InterfaceBase & i,
+		   const InterfacedBase & o, const char * s);
+};
+/** @endcond */
+
+}
+
+#endif /* ThePEG_ParMap_XH */
+

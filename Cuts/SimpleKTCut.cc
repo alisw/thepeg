@@ -24,8 +24,6 @@
 
 using namespace ThePEG;
 
-SimpleKTCut::~SimpleKTCut() {}
-
 void SimpleKTCut::describe() const {
   CurrentGenerator::log() 
     << fullName() << ":\n"

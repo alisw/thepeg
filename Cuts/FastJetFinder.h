@@ -28,18 +28,10 @@ class FastJetFinder: public JetFinder {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FastJetFinder();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FastJetFinder();
-  //@}
 
 public:
 

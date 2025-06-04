@@ -27,16 +27,6 @@ class DalitzDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Destructor.
-   */
-  virtual ~DalitzDecayer();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the Decayer class.
    */
   //@{

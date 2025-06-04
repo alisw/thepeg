@@ -29,8 +29,6 @@ using namespace ThePEG;
 JetCuts::JetCuts() 
   : theOrdering(orderPt) {}
 
-JetCuts::~JetCuts() {}
-
 void JetCuts::describe() const {
   CurrentGenerator::log() << name() << " cutting on jets ordered in "
 			  << (ordering() == orderPt ? "pt " : "y ")

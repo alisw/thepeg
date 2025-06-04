@@ -58,18 +58,10 @@ class FuzzyTheta: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FuzzyTheta();
-
-  /**
-   * The destructor.
-   */
-  virtual ~FuzzyTheta();
-  //@}
 
 public:
 

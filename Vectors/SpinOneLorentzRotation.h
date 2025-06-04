@@ -10,6 +10,7 @@
 #define ThePEG_SpinOneLorentzRotation_H
 
 #include "ThePEG/Helicity/HelicityDefinitions.h"
+#include "ThePEG/Helicity/LorentzRank3Tensor.fh"
 #include "ThePEG/Helicity/LorentzTensor.fh"
 #include "ThePEG/Helicity/LorentzRSSpinor.fh"
 #include "ThePEG/Helicity/LorentzRSSpinorBar.fh"
@@ -340,6 +341,7 @@ public:
 private:
 
   template<typename Value> friend class Helicity::LorentzTensor;
+  template<typename Value> friend class Helicity::LorentzRank3Tensor;
   template<typename Value> friend class Helicity::LorentzRSSpinor;
   template<typename Value> friend class Helicity::LorentzRSSpinorBar;
 

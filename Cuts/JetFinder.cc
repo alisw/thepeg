@@ -32,8 +32,6 @@ JetFinder::JetFinder()
   : theMinOutgoing(1), theRestrictConstituents(false),
     theConstituentRapidityRange(Constants::MaxRapidity,Constants::MaxRapidity) {}
 
-JetFinder::~JetFinder() {}
-
 string JetFinder::doYRange(string in) {
   istringstream ins(in);
   double first, second;

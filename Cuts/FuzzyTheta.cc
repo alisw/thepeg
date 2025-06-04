@@ -30,8 +30,6 @@ FuzzyTheta::FuzzyTheta()
   : theEnergyWidth(1*GeV), theRapidityWidth(0.1),
     theAngularWidth(0.1) {}
 
-FuzzyTheta::~FuzzyTheta() {}
-
 IBPtr FuzzyTheta::clone() const {
   return new_ptr(*this);
 }

@@ -22,8 +22,6 @@
 
 using namespace ThePEG;
 
-Tau2HadronsDecayer::~Tau2HadronsDecayer() {}
-
 IBPtr Tau2HadronsDecayer::clone() const {
   return new_ptr(*this);
 }

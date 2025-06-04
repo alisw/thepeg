@@ -23,7 +23,7 @@
 
 using namespace ThePEG;
 
-RivetAnalysis::RivetAnalysis() :  _debug(false), _rivet(), _nevent(0)
+RivetAnalysis::RivetAnalysis() :  _debug(false), _rivet(), _nevent(0), _checkBeams(true)
 {}
 
 void RivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int state) {
@@ -37,7 +37,7 @@ void RivetAnalysis::analyze(ThePEG::tEventPtr event, long ieve, int loop, int st
   if ( _rivet ){
 #if ThePEG_RIVET_VERSION > 1
     try {
-      _rivet->analyze(const_cast<const HepMC::GenEvent&>(*hepmc));
+      _rivet->analyze(*hepmc);
     } catch (const YODA::Exception & e) {
       Throw<Exception>() << "Warning: Rivet/Yoda got the exception: "<< e.what()<<"\n"
                          << Exception::warning;
@@ -68,11 +68,11 @@ ThePEG::IBPtr RivetAnalysis::fullclone() const {
 }
 
 void RivetAnalysis::persistentOutput(ThePEG::PersistentOStream & os) const {
-  os << _analyses << _preload << _paths << _filename << _debug;
+  os << _analyses << _preload << _paths << _filename << _debug << _checkBeams;
 }
 
 void RivetAnalysis::persistentInput(ThePEG::PersistentIStream & is, int) {
-  is >> _analyses >> _preload >> _paths >> _filename >> _debug;
+  is >> _analyses >> _preload >> _paths >> _filename >> _debug >> _checkBeams;
 }
 
 // The following static variable is needed for the type
@@ -131,6 +131,20 @@ void RivetAnalysis::Init() {
      "Enable debug information from Rivet.",
      true);
 
+  static Switch<RivetAnalysis,bool> interfaceCheckBeams
+    ("CheckBeams",
+     "Whether or not to get rivet to check the beams for the analyses",
+     &RivetAnalysis::_checkBeams, true, false, false);
+  static SwitchOption interfaceCheckBeamsYes
+    (interfaceCheckBeams,
+     "Yes",
+     "Check the beams(default)",
+     true);
+  static SwitchOption interfaceCheckBeamsNo
+    (interfaceCheckBeams,
+     "No",
+     "Don't check the beams",
+     false);
 
   interfaceAnalyses.rank(10);
 
@@ -170,6 +184,7 @@ void RivetAnalysis::doinit() {
 
   // check that analysis list is available
   _rivet = new Rivet::AnalysisHandler; //(fname);
+  _rivet->checkBeams(_checkBeams);
   for ( int i = 0, N = _paths.size(); i < N; ++i ) Rivet::addAnalysisLibPath(_paths[i]);
   _rivet->addAnalyses(_analyses);
   if ( _rivet->analysisNames().size() != _analyses.size() ) {
@@ -187,6 +202,7 @@ void RivetAnalysis::doinitrun() {
   // create Rivet analysis handler
   CurrentGenerator::Redirect stdout(cout);
   _rivet = new Rivet::AnalysisHandler;
+  _rivet->checkBeams(_checkBeams);
   for ( int i = 0, N = _paths.size(); i < N; ++i ) Rivet::addAnalysisLibPath(_paths[i]);
   _rivet->addAnalyses(_analyses);
   // check that analysis list is still available

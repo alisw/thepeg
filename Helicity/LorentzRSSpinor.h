@@ -386,7 +386,7 @@ public:
   //@}
 
   /**
-   * Scalar product \f$\bar{f}^\alpha(c_LP_L+c_RP_R)f_\alpha\f$for general couplings
+   * Scalar product \f$\bar{f}^\alpha(c_LP_L+c_RP_R)f_\alpha\f$ for general couplings
    * @param fbar The barred spinor
    * @param left The left-handed coupling, \f$c_L\f$.
    * @param right The right-handed coupling, \f$c_R\f$.

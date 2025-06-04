@@ -162,11 +162,18 @@ void HepMCConverter<HepMCEventT,Traits>::init(const Event & ev, bool nocopies) {
     if ( !member(vmap, it->second) )
       vmap[it->second] = createVertex(it->second);
 
+  // First add the decay vertices for the first beam particle to avoid issue in HepMC3
+  const Vertex * prim = decv[ev.incoming().first];
+  if(prim) {
+    Traits::addVertex(*geneve, vmap[prim]);
+    vmap.erase(prim);
+  }
+
   // Now find the primary signal process vertex defined to be the
   // decay vertex of the first parton coming into the primary hard
   // sub-collision.
   tSubProPtr sub = ev.primarySubProcess();
-  if ( sub && sub->incoming().first ) {
+  if ( sub && sub->incoming().first && sub->incoming().first!=ev.incoming().first) {
     const Vertex * prim = decv[sub->incoming().first];
     Traits::setSignalProcessVertex(*geneve, vmap[prim]);
     vmap.erase(prim);

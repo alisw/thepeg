@@ -36,7 +36,7 @@ class PdfInfo;
 }
 #endif
 
- 
+
 namespace ThePEG {
 
 /**
@@ -90,7 +90,7 @@ struct HepMCTraitsBase {
     e->set_event_number(evno);
     std::vector<std::string> wnames;
     std::vector<double> wvalues;
-    
+
     wnames.push_back("Default");
     wvalues.push_back(weight);
     for ( map<string,double>::const_iterator w = optionalWeights.begin();
@@ -104,16 +104,16 @@ struct HepMCTraitsBase {
   e->run_info()->set_weight_names(wnames);
   e->weights()=wvalues;
 
-#else 
+#else
 #ifdef HEPMC_HAS_NAMED_WEIGHTS
-      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i]; 
+      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i];
 #else
       e->weights()=wvalues;
 #endif
 #endif
 
-    
-    
+
+
     return e;
   }
 
@@ -124,7 +124,7 @@ struct HepMCTraitsBase {
     e->weights().clear();
     std::vector<std::string> wnames;
     std::vector<double> wvalues;
-    
+
     wnames.push_back("Default");
     wvalues.push_back(weight);
     for ( map<string,double>::const_iterator w = optionalWeights.begin();
@@ -138,9 +138,9 @@ struct HepMCTraitsBase {
   e->run_info()->set_weight_names(wnames);
   e->weights()=wvalues;
 
-#else 
+#else
 #ifdef HEPMC_HAS_NAMED_WEIGHTS
-      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i]; 
+      for (size_t i=0;i<wnames.size();i++) e->weights()[wnames[i]] = wvalues[i];
 #else
       e->weights()=wvalues;
 #endif
@@ -151,7 +151,7 @@ struct HepMCTraitsBase {
    * Return true if this version of HepMC accept user-defined units.
    */
   static bool hasUnits() {
-#ifdef HEPMC_HAS_UNITS   
+#ifdef HEPMC_HAS_UNITS
     return true;
 #else
     return false;
@@ -186,7 +186,7 @@ struct HepMCTraitsBase {
    * HepMC does not support units this must return GeV.
    */
   static Energy momentumUnit(const EventT & e) {
-#ifdef HEPMC_HAS_UNITS   
+#ifdef HEPMC_HAS_UNITS
     return e.momentum_unit() == HepMC::Units::MEV? MeV: GeV;
 #else
     return GeV;
@@ -198,7 +198,7 @@ struct HepMCTraitsBase {
    * HepMC does not support units this must return millimeter.
    */
   static Length lengthUnit(const EventT & e) {
-#ifdef HEPMC_HAS_UNITS   
+#ifdef HEPMC_HAS_UNITS
     return e.length_unit() == HepMC::Units::CM? centimeter: millimeter;
 #else
     return millimeter;
@@ -209,7 +209,7 @@ struct HepMCTraitsBase {
    * Set the units to be used by the given GenEvent object. If
    * HepMC does not support units this should be a no-op.
    */
-#ifdef HEPMC_HAS_UNITS   
+#ifdef HEPMC_HAS_UNITS
   static void setUnits(EventT & e, Energy momu, Length lenu) {
     e.use_units(momu == MeV? HepMC::Units::MEV: HepMC::Units::GEV,
 		lenu == centimeter? HepMC::Units::CM: HepMC::Units::MM);
@@ -300,7 +300,7 @@ struct HepMCTraitsBase {
   static void setPdfInfo(EventT & e, int id1, int id2, double x1, double x2,
 			 double scale, double xf1, double xf2) {
 #ifdef HAVE_HEPMC3
-    
+
     HepMC::GenPdfInfoPtr pdfinfo = std::make_shared<HepMC::GenPdfInfo>();
     pdfinfo->set(id1, id2, x1, x2, scale, xf1, xf2);
     e.set_pdf_info(pdfinfo);
@@ -313,22 +313,31 @@ struct HepMCTraitsBase {
 			 double, double, double) {}
 #endif
 
-  /** Set the cross section info for the event. */
-#ifdef HEPMC_HAS_CROSS_SECTION
-  static void setCrossSection(EventT & ev, double xs, double xserr) {
+/** Set the cross section info for the event. */
 #ifdef HAVE_HEPMC3
-     std::shared_ptr<HepMC::GenCrossSection> x =std::make_shared<HepMC::GenCrossSection>();
+
+  static void setCrossSection(EventT & ev, double xs, double xserr) {
+    std::shared_ptr<HepMC::GenCrossSection> x = std::make_shared<HepMC::GenCrossSection>();
     x->set_cross_section(xs,xserr);
     ev.set_cross_section(x);
-#else
-    HepMC::GenCrossSection x;
-    x.set_cross_section(xs, xserr);
-    ev.set_cross_section(x);
-
-#endif
   }
+
 #else
-  static void setCrossSection(EventT &, double, double) {}
+
+  #ifdef HEPMC_HAS_CROSS_SECTION
+
+    static void setCrossSection(EventT & ev, double xs, double xserr) {
+      HepMC::GenCrossSection x;
+      x.set_cross_section(xs, xserr);
+      ev.set_cross_section(x);
+    }
+
+  #else
+
+    static void setCrossSection(EventT &, double, double) {}
+
+  #endif
+
 #endif
 
 };
@@ -351,4 +360,3 @@ struct HepMCTraits {};
 }
 
 #endif
-

@@ -25,8 +25,6 @@
 
 using namespace ThePEG;
 
-DalitzDecayer::~DalitzDecayer() {}
-
 IBPtr DalitzDecayer::clone() const {
   return new_ptr(*this);
 }

@@ -48,19 +48,11 @@ class V2LeptonsCut: public MultiCutBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   V2LeptonsCut() : theMinM(70.0*GeV), theMaxM(90.0*GeV), theFamilies(electron|muon),
 		   theCComb(negneu|posneu) {}
-
-  /**
-   * The destructor.
-   */
-  virtual ~V2LeptonsCut();
-  //@}
 
 public:
 
