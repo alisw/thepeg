@@ -21,7 +21,9 @@ namespace HepMC3 {
 using PdfInfo=GenPdfInfo;
 using Polarization=std::pair<double,double>;
 }
-namespace HepMC=HepMC3;
+#ifndef SKIP_HEPMC_CONVERSION
+namespace HepMC = HepMC3;
+#endif
 #else
 #include "HepMC/GenEvent.h"
 namespace HepMC {
@@ -317,7 +319,7 @@ struct HepMCTraitsBase {
 #ifdef HAVE_HEPMC3
 
   static void setCrossSection(EventT & ev, double xs, double xserr) {
-    std::shared_ptr<HepMC::GenCrossSection> x = std::make_shared<HepMC::GenCrossSection>();
+    std::shared_ptr<HepMC3::GenCrossSection> x = std::make_shared<HepMC3::GenCrossSection>();
     x->set_cross_section(xs,xserr);
     ev.set_cross_section(x);
   }
